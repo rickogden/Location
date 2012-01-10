@@ -127,14 +127,8 @@ class Location_Point {
         return new Location_Line($this, $point);
     }
 
-    public function getMbr($distance, $unit) {
-        $north = $this->getRelativePoint($distance, '0', $unit);
-        $nw = $north->getRelativePoint($distance, '270', $unit);
-        $ne = $north->getRelativePoint($distance, '90', $unit);
-        $south = $this->getRelativePoint($distance, '180', $unit);
-        $se = $south->getRelativePoint($distance, '90', $unit);
-        $sw = $south->getRelativePoint($distance, '270', $unit);
-        return new Location_Polygon(array($nw, $ne, $se, $sw));
+    public function getMbr($distance, $unit = 'km') {
+        return new Location_Mbr($this, $radius, $unit);
     }
 
     public function toSql() {

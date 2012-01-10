@@ -53,7 +53,7 @@ class Location_Mbr {
 
     /**
      *
-     * @return Location_Polygon 
+     * @return Location_Polygon
      */
     public function toPolygon() {
         if ($this->_polygon === null) {
@@ -70,5 +70,4 @@ class Location_Mbr {
     public function __get($offset) {
         return $this->_limits[$offset];
     }
-
 }
