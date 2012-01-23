@@ -7,8 +7,8 @@ class Location_Polygon extends Location_MultiPointLine {
             $points = $points->toArray();
         }
         
-        if(end($points) == $points[0]) {
-            array_pop($points);
+        if(end($points) != $points[0]) {
+            $points[] = $points[0];
         }
         parent::__construct($points);
     }
