@@ -27,7 +27,7 @@ class Location_Line {
     }
     
     public function getMidPoint() {
-        
+        //TODO
     }
     
     /**
