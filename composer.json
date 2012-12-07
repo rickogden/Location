@@ -1,0 +1,12 @@
+{
+    "name": "Ricklab/Location",
+    "type":"library",
+    "description":"A library of PHP objects for spatial calculations",
+    "version":"1.0.0-dev",
+    "require": {
+        "php": ">=5.2.3"
+    },
+    "autoload": {
+        "psr-0": { "Ricklab\\Location":"src/" }
+    }
+}
