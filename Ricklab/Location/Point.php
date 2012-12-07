@@ -10,7 +10,9 @@
  *
  * @author rick
  */
-class Location_Point {
+namespace Ricklab\Location;
+
+class Point {
 
     protected $_longitude, $_latitude;
 
@@ -66,11 +68,11 @@ class Location_Point {
 
     /**
      * Find distance to another point
-     * @param Location_Point $point2
-     * @return Location_Distance 
+     * @param Point $point2
+     * @return Distance 
      */
-    public function distanceTo(Location_Point $point2) {
-        $distance = new Location_Distance($this, $point2);
+    public function distanceTo(Point $point2) {
+        $distance = new Distance($this, $point2);
         return $distance;
     }
 
@@ -91,10 +93,10 @@ class Location_Point {
      * @param Number $distance distance to other point
      * @param Number $bearing to other point
      * @param String $unit The unit the distance is in
-     * @return Location_Point
+     * @return Point
      */
     public function getRelativePoint($distance, $bearing, $unit = 'km') {
-        $rad = Location_Earth::radius($unit);
+        $rad = Earth::radius($unit);
         $lat1 = $this->latitudeToRad();
         $lon1 = $this->longitudeToRad();
         $bearing = deg2rad($bearing);
@@ -106,29 +108,29 @@ class Location_Point {
         $lon2y = sin($bearing) * sin($distance / $rad) * cos($lat1);
         $lon2x = cos($distance / $rad) - sin($lat1) * sin($lat2);
         $lon2 = $lon1 + atan2($lon2y, $lon2x);
-        return new Location_Point(rad2deg($lat2), rad2deg($lon2));
+        return new Point(rad2deg($lat2), rad2deg($lon2));
     }
 
     /**
      * 
-     * @param Location_Point $point2
+     * @param Point $point2
      * @return Number 
      */
-    public function bearingTo(Location_Point $point2) {
+    public function bearingTo(Point $point2) {
         return $this->lineTo($point2)->getBearing();
     }
 
     /**
      * Create a line between this point and another point
-     * @param Location_Point $point
-     * @return Location_Line 
+     * @param Point $point
+     * @return Line 
      */
-    public function lineTo(Location_Point $point) {
-        return new Location_Line($this, $point);
+    public function lineTo(Point $point) {
+        return new Line($this, $point);
     }
 
     public function getMbr($distance, $unit = 'km') {
-        return new Location_Mbr($this, $radius, $unit);
+        return new Mbr($this, $distance, $unit);
     }
 
     public function toSql() {

@@ -1,7 +1,16 @@
 <?php
 
-class Location_Mars {
-    protected static $_radius = array('km' => 3376, 'miles' => 2097);
+/**
+ * The radius of the Earth
+ *
+ * @author rick
+ */
+
+namespace Ricklab\Location;
+
+class Earth {
+
+    protected static $_radius = array('km' => 6371, 'miles' => 3959);
 
     public static function radius($unit = 'km') {
         if (isset(self::$_radius[$unit])) {

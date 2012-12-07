@@ -1,11 +1,28 @@
 <?php
+namespace Ricklab\Location;
 
-class Location_Mbr {
-
-    protected $_point, $_radius, $_unit, $_polygon;
+class Mbr {
+    
+    /**
+     *
+     * @var Point 
+     */
+    protected $_point;
+    protected $_radius, $_unit;
+    
+    /**
+     *
+     * @var Polygon 
+     */
+    protected $_polygon;
+    
+    /**
+     *
+     * @var Point[string]  
+     */
     protected $_limits = array('n' => null, 's' => null, 'e' => null, 'w' => null);
 
-    public function __construct(Location_Point $point, $radius, $unit = 'km') {
+    public function __construct(Point $point, $radius, $unit = 'km') {
         $this->_point = $point;
         $this->_radius = $radius;
         $this->_unit = $unit;
@@ -15,7 +32,7 @@ class Location_Mbr {
     protected function _setLimits() {
         /* $this->_limits['n'] =  $this->_point->getRelativePoint($this->_radius, 0, $this->_unit)->getLatitude();
           $this->_limits['s']= $this->_point->getRelativePoint($this->_radius, 180, $this->_unit)->getLatitude();
-          $radius = Location_Earth::radius($this->_unit);
+          $radius = Earth::radius($this->_unit);
           $latt = asin(sin($this->_point->getLatitude())/  cos($radius));
           $tlon = acos((cos($radius)-sin($latt)*sin($this->_point->getLatitude()))/(cos($latt)*  cos($this->_point->getLatitude()))); */
 
@@ -27,7 +44,7 @@ class Location_Mbr {
         $this->_limits['n'] = $north->lat;
         $this->_limits['s'] = $south->lat;
 
-        $radDist = $this->_radius / Location_Earth::radius($this->_unit);
+        $radDist = $this->_radius / Earth::radius($this->_unit);
         $minLat = deg2rad($this->_limits['s']);
         $maxLat = deg2rad($this->_limits['n']);
         $radLon = $this->_point->longitudeToRad();
@@ -53,15 +70,15 @@ class Location_Mbr {
 
     /**
      *
-     * @return Location_Polygon
+     * @return Polygon
      */
     public function toPolygon() {
         if ($this->_polygon === null) {
-            $nw = new Location_Point($this->_limits['n'], $this->_limits['w']);
-            $ne = new Location_Point($this->_limits['n'], $this->_limits['e']);
-            $sw = new Location_Point($this->_limits['s'], $this->_limits['w']);
-            $se = new Location_Point($this->_limits['s'], $this->_limits['e']);
-            $this->_polygon = new Location_Polygon(array($nw, $ne, $se, $sw));
+            $nw = new Point($this->_limits['n'], $this->_limits['w']);
+            $ne = new Point($this->_limits['n'], $this->_limits['e']);
+            $sw = new Point($this->_limits['s'], $this->_limits['w']);
+            $se = new Point($this->_limits['s'], $this->_limits['e']);
+            $this->_polygon = new Polygon(array($nw, $ne, $se, $sw));
         }
 
         return $this->_polygon;

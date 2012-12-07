@@ -10,9 +10,20 @@
  *
  * @author rick
  */
-class Location_MultiPointLine implements SeekableIterator {
-    protected $_points = array(), $_position = 0;
+namespace Ricklab\Location;
+
+class MultiPointLine implements SeekableIterator {
+    /**
+     *
+     * @var Point[int] 
+     */
+    protected $_points = array();
+    protected $_position = 0;
     
+    /**
+     *
+     * @param Point[int] $points 
+     */
     public function __construct(array $points) {
         $this->_points = $points;
     }
@@ -59,10 +70,10 @@ class Location_MultiPointLine implements SeekableIterator {
     
     public function getPartial($start, $end) {
         if(($end - $start) == 1) {
-            $line = new Location_Line($this->_points[$start], $this->_points[$end]);
+            $line = new Line($this->_points[$start], $this->_points[$end]);
         } else {
             $a = array_slice($this->_points, $start, $end - $start);
-            $line = new Location_MultiPointLine($a);
+            $line = new MultiPointLine($a);
         }
         
         return $line;

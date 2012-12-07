@@ -1,21 +1,23 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of Distance
+ * Distance object for calculating and displaying distances between 2 Point objects.
  *
- * @author rick
+ * @author Rick Ogden
  */
-class Location_Distance {
+namespace Ricklab\Location;
+
+class Distance {
 
     //put your code here
     protected $_firstLocation, $_secondLocation, $_distanceLat, $_distanceLong, $_distance;
-
-    public function __construct(Location_Point $firstLocation, Location_Point $secondLocation) {
+    
+    /**
+     *
+     * @param Point $firstLocation
+     * @param Point $secondLocation 
+     */
+    public function __construct(Point $firstLocation, Point $secondLocation) {
         $this->_firstLocation = $firstLocation;
         $this->_secondLocation = $secondLocation;
         $this->_distanceLat = $firstLocation->latitudeToRad() - $secondLocation->latitudeToRad();
@@ -50,7 +52,7 @@ class Location_Distance {
 
     public function to($unit) {
         try {
-        $radius = Location_Earth::radius($unit);
+        $radius = Earth::radius($unit);
         
         } catch(InvalidArgumentException $e) {
             return $e->getMessage();

@@ -6,24 +6,31 @@
  */
 
 /**
- * Description of Line
+ * A line (2 points only)
  *
- * @author rick
+ * @author Rick Ogden
  */
-class Location_Line {
+namespace Ricklab\Location;
+
+class Line {
+    
+    /**
+     *
+     * @var Point 
+     */
     protected $_start, $_end;
     
-    public function __construct(Location_Point $start, Location_Point $end) {
+    public function __construct(Point $start, Point $end) {
         $this->_start = $start;
         $this->_end = $end;
     }
     
     /**
      * Get the length of the line
-     * @return Location_Distance 
+     * @return Distance 
      */
     public function getLength() {
-        return new Location_Distance($this->_start, $this->_end);
+        return new Distance($this->_start, $this->_end);
     }
     
     public function getMidPoint() {

@@ -1,9 +1,14 @@
 <?php
+namespace Ricklab\Location;
 
-class Location_Polygon extends Location_MultiPointLine {
+class Polygon extends MultiPointLine {
     
+    /**
+     *
+     * @param Point[int] $points 
+     */
     public function __construct($points) {
-        if($points instanceof Location_MultiPointLine) {
+        if($points instanceof MultiPointLine) {
             $points = $points->toArray();
         }
         
@@ -20,5 +25,7 @@ class Location_Polygon extends Location_MultiPointLine {
             $text .= $point;
         }
         $text .= '))';
+        
+        return $text;
     }
 }

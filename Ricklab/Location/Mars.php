@@ -1,13 +1,7 @@
 <?php
-
-/**
- * Description of EarthRadius
- *
- * @author rick
- */
-class Location_Earth {
-
-    protected static $_radius = array('km' => 6371, 'miles' => 3959);
+namespace Ricklab\Location;
+class Mars {
+    protected static $_radius = array('km' => 3376, 'miles' => 2097);
 
     public static function radius($unit = 'km') {
         if (isset(self::$_radius[$unit])) {
