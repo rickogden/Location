@@ -1,5 +1,5 @@
 {
-    "name": "Ricklab/Location",
+    "name": "ricklab/location",
     "type":"library",
     "description":"A library of PHP objects for spatial calculations",
     "version":"1.0.0-dev",
