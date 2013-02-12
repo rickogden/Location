@@ -33,6 +33,10 @@ class Line {
         return new Distance($this->_start, $this->_end);
     }
     
+    /**
+     * Gets the mid-point of the line.
+     * @return \Ricklab\Location\Point
+     */
     public function getMidPoint() {
         $bx = cos($this->_end->latitudeToRad()) * cos($this->_lonDiff());
         $by = cos($this->_end->latitudeToRad()) * sin($this->_lonDiff());
