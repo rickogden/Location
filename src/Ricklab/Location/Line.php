@@ -34,7 +34,14 @@ class Line {
     }
     
     public function getMidPoint() {
-        //TODO
+        $bx = cos($this->_end->latitudeToRad()) * cos($this->_lonDiff());
+        $by = cos($this->_end->latitudeToRad()) * sin($this->_lonDiff());
+        $mLat = atan2(sin($this->_start->latitudeToRad()) + sin($this->_end->latitudeToRad()),
+        sqrt(pow(cos($this->_start->latitudeToRad()) + $bx,2)  + pow($by,2)));
+      
+        $mLon = $this->_start->longitudeToRad() + atan2($by, cos($this->_start->latitudeToRad()) + $bx);
+        
+        return new Point(rad2deg($mLat), rad2deg($mLon));
     }
     
     /**
