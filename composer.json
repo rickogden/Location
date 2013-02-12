@@ -2,9 +2,10 @@
     "name": "ricklab/location",
     "type":"library",
     "description":"A library of PHP objects for spatial calculations",
+    "keywords":["location", "geo-location", "geolocation", "gis", "geo location"],
     "version":"1.0.0-dev",
     "require": {
-        "php": ">=5.2.3"
+        "php": ">=5.3"
     },
     "autoload": {
         "psr-0": { "Ricklab\\Location":"src/" }
