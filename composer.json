@@ -4,6 +4,13 @@
     "description":"A library of PHP objects for spatial calculations",
     "keywords":["location", "geo-location", "geolocation", "gis", "geo location"],
     "version":"1.0.0-dev",
+    "license":"BSD-3-Clause",
+    "authors":[{
+        "name":"Rick Ogden",
+        "email":"rick@rickogden.com",
+        "homepage":"http://www.rickogden.com",
+        "role":"developer"
+    }],
     "require": {
         "php": ">=5.3"
     },
