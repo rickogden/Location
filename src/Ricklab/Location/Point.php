@@ -13,6 +13,8 @@
 
 namespace Ricklab\Location;
 
+require_once __DIR__.'/Distance.php';
+
 class Point implements \JsonSerializable
 {
 

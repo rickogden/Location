@@ -2,6 +2,9 @@
 
 namespace Ricklab\Location;
 
+require_once __DIR__.'/Earth.php';
+require_once __DIR__.'/Polygon.php';
+
 class Mbr implements \JsonSerializable
 {
 

@@ -8,6 +8,8 @@
 
 namespace Ricklab\Location;
 
+require_once __DIR__.'/Earth.php';
+
 class Distance
 {
 
