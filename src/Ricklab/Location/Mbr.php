@@ -1,35 +1,39 @@
 <?php
+
 namespace Ricklab\Location;
 
-class Mbr {
-    
+class Mbr implements \JsonSerializable
+{
+
     /**
      *
      * @var Point 
      */
     protected $_point;
     protected $_radius, $_unit;
-    
+
     /**
      *
      * @var Polygon 
      */
     protected $_polygon;
-    
+
     /**
      *
      * @var Point[string]  
      */
     protected $_limits = array('n' => null, 's' => null, 'e' => null, 'w' => null);
 
-    public function __construct(Point $point, $radius, $unit = 'km') {
+    public function __construct(Point $point, $radius, $unit = 'km')
+    {
         $this->_point = $point;
         $this->_radius = $radius;
         $this->_unit = $unit;
         $this->_setLimits();
     }
 
-    protected function _setLimits() {
+    protected function _setLimits()
+    {
         /* $this->_limits['n'] =  $this->_point->getRelativePoint($this->_radius, 0, $this->_unit)->getLatitude();
           $this->_limits['s']= $this->_point->getRelativePoint($this->_radius, 180, $this->_unit)->getLatitude();
           $radius = Earth::radius($this->_unit);
@@ -55,7 +59,7 @@ class Mbr {
             $minLon += 2 * pi();
         }
         $maxLon = $radLon + $deltaLon;
-        if ($maxLon > deg2rad(180)){
+        if ($maxLon > deg2rad(180)) {
             $maxLon -= 2 * pi();
         }
         //}
@@ -64,7 +68,8 @@ class Mbr {
         $this->_limits['e'] = rad2deg($maxLon);
     }
 
-    public function getLocation() {
+    public function getLocation()
+    {
         return $this->_point;
     }
 
@@ -72,7 +77,8 @@ class Mbr {
      *
      * @return Polygon
      */
-    public function toPolygon() {
+    public function toPolygon()
+    {
         if ($this->_polygon === null) {
             $nw = new Point($this->_limits['n'], $this->_limits['w']);
             $ne = new Point($this->_limits['n'], $this->_limits['e']);
@@ -84,7 +90,16 @@ class Mbr {
         return $this->_polygon;
     }
 
-    public function __get($offset) {
+    public function __get($offset)
+    {
         return $this->_limits[$offset];
     }
+    
+    public function jsonSerialize()
+    {
+        $polygon = $this->toPolygon();
+        
+        return $polygon->jsonSerialize();
+    }
+
 }

@@ -52,4 +52,10 @@ class PointTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(round($newPoint->lon, 5), -2.23194);        
     }
     
+    public function testJsonSerializable() {
+        $geoJSON = json_encode($this->point);
+        $this->assertInternalType('string', $geoJSON);
+        $this->assertJsonStringEqualsJsonString('{"type":"Point", "coordinates":[-2.27354, 53.48575]}', $geoJSON);
+    }
+    
 }

@@ -10,9 +10,11 @@
  *
  * @author rick
  */
+
 namespace Ricklab\Location;
 
-class Point {
+class Point implements \JsonSerializable
+{
 
     protected $_longitude, $_latitude;
 
@@ -21,7 +23,8 @@ class Point {
      * @param Number $long Longitude coordinates 
      * @param Number $lat Latitude coordinates
      */
-    public function __construct($lat, $long) {
+    public function __construct($lat, $long)
+    {
         if (!is_numeric($long)) {
             throw new InvalidArgumentException('$long must be a valid number');
         }
@@ -38,7 +41,8 @@ class Point {
      * Get the latitude in Rads
      * @return Number Latitude in Rads 
      */
-    public function latitudeToRad() {
+    public function latitudeToRad()
+    {
         return deg2rad($this->_latitude);
     }
 
@@ -46,7 +50,8 @@ class Point {
      * Get the longitude in Rads
      * @return Number Longitude in Rads 
      */
-    public function longitudeToRad() {
+    public function longitudeToRad()
+    {
         return deg2rad($this->_longitude);
     }
 
@@ -54,15 +59,18 @@ class Point {
      *
      * @return String 
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->_latitude . ' ' . $this->_longitude;
     }
 
-    public function getLatitude() {
+    public function getLatitude()
+    {
         return $this->_latitude;
     }
 
-    public function getLongitude() {
+    public function getLongitude()
+    {
         return $this->_longitude;
     }
 
@@ -71,12 +79,14 @@ class Point {
      * @param Point $point2
      * @return Distance 
      */
-    public function distanceTo(Point $point2) {
+    public function distanceTo(Point $point2)
+    {
         $distance = new Distance($this, $point2);
         return $distance;
     }
 
-    public function __get($request) {
+    public function __get($request)
+    {
         $request = strtolower($request);
         if (in_array($request, array('x', 'lon', 'long', 'longitude'))) {
             return $this->_longitude;
@@ -95,7 +105,8 @@ class Point {
      * @param String $unit The unit the distance is in
      * @return Point
      */
-    public function getRelativePoint($distance, $bearing, $unit = 'km') {
+    public function getRelativePoint($distance, $bearing, $unit = 'km')
+    {
         $rad = Earth::radius($unit);
         $lat1 = $this->latitudeToRad();
         $lon1 = $this->longitudeToRad();
@@ -116,7 +127,8 @@ class Point {
      * @param Point $point2
      * @return Number 
      */
-    public function bearingTo(Point $point2) {
+    public function bearingTo(Point $point2)
+    {
         return $this->lineTo($point2)->getBearing();
     }
 
@@ -125,16 +137,29 @@ class Point {
      * @param Point $point
      * @return Line 
      */
-    public function lineTo(Point $point) {
+    public function lineTo(Point $point)
+    {
         return new Line($this, $point);
     }
 
-    public function getMbr($distance, $unit = 'km') {
+    public function getMbr($distance, $unit = 'km')
+    {
         return new Mbr($this, $distance, $unit);
     }
 
-    public function toSql() {
-        return 'POINT('.$this->__toString().')';
+    public function toSql()
+    {
+        return 'POINT(' . $this->__toString() . ')';
+    }
+    
+    /**
+     * A GeoJSON representation of the class.
+     * @return array a geoJSON representation
+     */
+    public function jsonSerialize()
+    {
+        return array('type' => 'Point', 'coordinates' 
+            => array($this->_longitude, $this->_latitude));
     }
 
 }

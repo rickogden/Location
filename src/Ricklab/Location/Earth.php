@@ -8,11 +8,13 @@
 
 namespace Ricklab\Location;
 
-class Earth {
+class Earth
+{
 
     protected static $_radius = array('km' => 6371, 'miles' => 3959);
 
-    public static function radius($unit = 'km') {
+    public static function radius($unit = 'km')
+    {
         if (isset(self::$_radius[$unit])) {
             return self::$_radius[$unit];
         } else {
