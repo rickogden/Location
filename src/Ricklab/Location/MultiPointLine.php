@@ -7,7 +7,7 @@
 
 namespace Ricklab\Location;
 
-class MultiPointLine implements SeekableIterator, \JsonSerializable
+class MultiPointLine implements \SeekableIterator, \JsonSerializable
 {
 
     /**

@@ -2,6 +2,8 @@
 
 namespace Ricklab\Location;
 
+require_once __DIR__ .'/MultiPointLine.php';
+
 class Polygon extends MultiPointLine
 {
 
