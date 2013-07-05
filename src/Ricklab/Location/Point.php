@@ -13,7 +13,7 @@
 
 namespace Ricklab\Location;
 
-require_once __DIR__.'/Distance.php';
+require_once __DIR__ . '/Distance.php';
 
 class Point implements \JsonSerializable
 {
@@ -21,18 +21,30 @@ class Point implements \JsonSerializable
     protected $_longitude, $_latitude;
 
     /**
-     *
+     * Create a new Point from Longitude and latitude.
+     * 
+     * Usage: new Point(latitude, longitude);
+     * or new Point([longitude, latitude]);
+     * 
      * @param Number $long Longitude coordinates 
      * @param Number $lat Latitude coordinates
      */
-    public function __construct($lat, $long)
+    public function __construct($lat, $long = null)
     {
+        if ($long === null) {
+            if (is_array($lat)) {
+                $long = $lat[0];
+                $lat = $lat[1];
+            } else {
+                throw new \InvalidArgumentException('');
+            }
+        }
         if (!is_numeric($long)) {
-            throw new InvalidArgumentException('$long must be a valid number');
+            throw new \InvalidArgumentException('$long must be a valid number');
         }
 
         if (!is_numeric($lat)) {
-            throw new InvalidArgumentException('$lat must be a valid number');
+            throw new \InvalidArgumentException('$lat must be a valid number');
         }
 
         $this->_longitude = $long;
@@ -153,14 +165,14 @@ class Point implements \JsonSerializable
     {
         return 'POINT(' . $this->__toString() . ')';
     }
-    
+
     /**
      * A GeoJSON representation of the class.
      * @return array a geoJSON representation
      */
     public function jsonSerialize()
     {
-        return array('type' => 'Point', 'coordinates' 
+        return array('type' => 'Point', 'coordinates'
             => array($this->_longitude, $this->_latitude));
     }
 
