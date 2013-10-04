@@ -38,6 +38,12 @@ class PolygonTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Ricklab\Location\Polygon', $this->polygon);
     }
 
+    public function testToSql()
+    {
+        $retVal = $this->polygon->toSql();
+        $this->assertEquals('POLYGON((2 3, 2 4, 3 4, 2 3))', $retVal);
+    }
+
     public function tearDown()
     {
         $this->polygon = null;

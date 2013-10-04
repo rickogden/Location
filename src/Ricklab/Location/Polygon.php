@@ -44,4 +44,9 @@ class Polygon extends MultiPointLine
         return $geo;
     }
 
+    public function getPerimeter($unit = 'km')
+    {
+        return $this->getLength($unit);
+    }
+
 }
