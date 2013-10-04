@@ -45,5 +45,10 @@ class LineTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(-2.25274, round($midPoint->lon, 5));
                 
     }
+
+    public function testToSql() {
+        $retVal = $this->line->toSql();
+        $this->assertEquals('LineString(53.48575 -2.27354, 53.48204 -2.23194)');
+    }
 }
 

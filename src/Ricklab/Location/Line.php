@@ -80,4 +80,9 @@ class Line implements \JsonSerializable
         ));
     }
 
+    public function toSql()
+    {
+        return 'LineString('.(string) $this->_start.', '.(string)$this->_end.')';
+    }
+
 }

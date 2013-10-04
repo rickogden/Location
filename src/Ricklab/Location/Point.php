@@ -163,7 +163,7 @@ class Point implements \JsonSerializable
 
     public function toSql()
     {
-        return 'POINT(' . $this->__toString() . ')';
+        return 'POINT(' . (string) $this . ')';
     }
 
     /**

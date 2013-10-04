@@ -101,4 +101,17 @@ class MultiPointLine implements \SeekableIterator, \JsonSerializable
         return array('type' => 'LineString', 'coordinates' => $coordinates);
     }
 
+    public function toSql() {
+        $retVal = 'LineString(';
+        $pointArray = array();
+        foreach($this->_points as $point) {
+            $pointArray[] = (string) $point;
+        }
+
+        $retVal .= implode(', ', $pointArray);
+        $retVal .= ')';
+
+        return $retVal;
+    }
+
 }

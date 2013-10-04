@@ -104,4 +104,9 @@ class Mbr implements \JsonSerializable
         return $this->toPolygon()->jsonSerialize();
     }
 
+    public function toSql()
+    {
+        return $this->toPolygon()->toSql();
+    }
+
 }
