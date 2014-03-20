@@ -50,5 +50,11 @@ class LineTest extends \PHPUnit_Framework_TestCase {
         $retVal = $this->line->toSql();
         $this->assertEquals('LineString(53.48575 -2.27354, 53.48204 -2.23194)', $retVal);
     }
+
+    public function testGeoJson()
+    {
+        $retval = json_encode($this->line);
+        $this->assertEquals('{"type":"LineString","coordinates":[[-2.27354,53.48575],[-2.23194,53.48204]]}', $retval);
+    }
 }
 

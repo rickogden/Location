@@ -65,6 +65,12 @@ class PointTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(round($newPoint->lon, 5), -2.23194);
     }
 
+    public function testDistanceTo()
+    {
+        $newPoint = new Location\Point(53.48204, -2.23194);
+        $this->assertEquals(round($this->point->distanceTo($newPoint)->toKm(), 3), 2.783);
+    }
+
     public function testJsonSerializable()
     {
         $geoJSON = json_encode($this->point);

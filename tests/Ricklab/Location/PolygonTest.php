@@ -11,7 +11,7 @@ class PolygonTest extends \PHPUnit_Framework_TestCase
 
     /**
      *
-     * @var Ricklab\Location\Polygon 
+     * @var \Ricklab\Location\Polygon
      */
     public $polygon;
 
@@ -47,6 +47,12 @@ class PolygonTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $this->polygon = null;
+    }
+
+    public function testJsonSerialize()
+    {
+        $json = json_encode($this->polygon);
+        $this->assertEquals('{"type":"Polygon","coordinates":[[[3,2],[4,2],[4,3],[3,2]]]}', $json);
     }
 
 }

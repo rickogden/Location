@@ -2,14 +2,14 @@
 
 namespace Ricklab\Location;
 
-require_once __DIR__ .'/MultiPointLine.php';
+require_once __DIR__ . '/MultiPointLine.php';
 
 class Polygon extends MultiPointLine
 {
 
     /**
      *
-     * @param Point[int] $points 
+     * @param Point [int] $points
      */
     public function __construct($points)
     {
@@ -27,8 +27,9 @@ class Polygon extends MultiPointLine
     {
         $text = 'POLYGON((';
         foreach ($this->_points as $i => $point) {
-            if ($i > 0)
+            if ($i > 0) {
                 $text .= ', ';
+            }
             $text .= $point;
         }
         $text .= '))';
@@ -40,6 +41,7 @@ class Polygon extends MultiPointLine
     {
         $geo = parent::jsonSerialize();
         $geo['type'] = 'Polygon';
+        $geo['coordinates'] = [$geo['coordinates']];
 
         return $geo;
     }

@@ -2,28 +2,28 @@
 
 namespace Ricklab\Location;
 
-require_once __DIR__.'/Earth.php';
-require_once __DIR__.'/Polygon.php';
+require_once __DIR__ . '/Earth.php';
+require_once __DIR__ . '/Polygon.php';
 
 class Mbr implements \JsonSerializable
 {
 
     /**
      *
-     * @var Point 
+     * @var Point
      */
     protected $_point;
     protected $_radius, $_unit;
 
     /**
      *
-     * @var Polygon 
+     * @var Polygon
      */
     protected $_polygon;
 
     /**
      *
-     * @var Point[string]  
+     * @var Point[string]
      */
     protected $_limits = array('n' => null, 's' => null, 'e' => null, 'w' => null);
 
@@ -37,13 +37,6 @@ class Mbr implements \JsonSerializable
 
     protected function _setLimits()
     {
-        /* $this->_limits['n'] =  $this->_point->getRelativePoint($this->_radius, 0, $this->_unit)->getLatitude();
-          $this->_limits['s']= $this->_point->getRelativePoint($this->_radius, 180, $this->_unit)->getLatitude();
-          $radius = Earth::radius($this->_unit);
-          $latt = asin(sin($this->_point->getLatitude())/  cos($radius));
-          $tlon = acos((cos($radius)-sin($latt)*sin($this->_point->getLatitude()))/(cos($latt)*  cos($this->_point->getLatitude()))); */
-
-
 
         $north = $this->_point->getRelativePoint($this->_radius, '0', $this->_unit);
         $south = $this->_point->getRelativePoint($this->_radius, '180', $this->_unit);
@@ -66,7 +59,7 @@ class Mbr implements \JsonSerializable
             $maxLon -= 2 * pi();
         }
         //}
-        //
+
         $this->_limits['w'] = rad2deg($minLon);
         $this->_limits['e'] = rad2deg($maxLon);
     }
@@ -97,10 +90,10 @@ class Mbr implements \JsonSerializable
     {
         return $this->_limits[$offset];
     }
-    
+
     public function jsonSerialize()
     {
-        
+
         return $this->toPolygon()->jsonSerialize();
     }
 

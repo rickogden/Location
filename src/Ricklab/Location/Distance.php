@@ -8,7 +8,7 @@
 
 namespace Ricklab\Location;
 
-require_once __DIR__.'/Earth.php';
+require_once __DIR__ . '/Earth.php';
 
 class Distance
 {
@@ -19,7 +19,7 @@ class Distance
     /**
      *
      * @param Point $firstLocation
-     * @param Point $secondLocation 
+     * @param Point $secondLocation
      */
     public function __construct(Point $firstLocation, Point $secondLocation)
     {
@@ -33,20 +33,16 @@ class Distance
     protected function _trigCalc()
     {
         $distance = sin($this->_distanceLat / 2) * sin($this->_distanceLat / 2) +
-                cos($this->_firstLocation->latitudeToRad()) * cos($this->_secondLocation->latitudeToRad()) *
-                sin($this->_distanceLong / 2) * sin($this->_distanceLong / 2);
-        $distance = 2 * asin(sqrt($distance));
+            cos($this->_firstLocation->latitudeToRad()) * cos($this->_secondLocation->latitudeToRad()) *
+            sin($this->_distanceLong / 2) * sin($this->_distanceLong / 2);
+        $distance = 2 * atan2(sqrt($distance), sqrt(1 - $distance));
 
         return $distance;
     }
 
     public function getBearing()
     {
-        $y = sin($this->_distanceLong) * cos($this->_secondLocation->latitudeToRad());
-        $x = cos($this->_firstLocation->latitudeToRad()) * sin($this->_secondLocation->latitudeToRad()) -
-                sin($this->_firstLocation->latitudeToRad()) * cos($this->_distanceLong);
-        $bearing = atan2($y, $x);
-        return rad2deg($bearing);
+        return $this->_firstLocation->lineTo($this->_secondLocation)->getBearing();
     }
 
     public function toMiles()
@@ -63,7 +59,7 @@ class Distance
     {
         try {
             $radius = Earth::radius($unit);
-        } catch (InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             return $e->getMessage();
         }
 

@@ -36,19 +36,19 @@ class Point implements \JsonSerializable
                 $long = $lat[0];
                 $lat = $lat[1];
             } else {
-                throw new \InvalidArgumentException('');
+                throw new \InvalidArgumentException('Arguments must be an array or two numbers.');
             }
         }
-        if (!is_numeric($long)) {
-            throw new \InvalidArgumentException('$long must be a valid number');
+        if (!is_numeric($long) || $long > 180 || $long < -180) {
+            throw new \InvalidArgumentException('longitude must be a valid number between -180 and 180.');
         }
 
-        if (!is_numeric($lat)) {
-            throw new \InvalidArgumentException('$lat must be a valid number');
+        if (!is_numeric($lat) || $lat > 90 || $lat < -90) {
+            throw new \InvalidArgumentException('latitude must be a valid number between -90 and 90.');
         }
 
-        $this->_longitude = $long;
-        $this->_latitude = $lat;
+        $this->_longitude = (float)$long;
+        $this->_latitude = (float)$lat;
     }
 
     /**
@@ -107,7 +107,7 @@ class Point implements \JsonSerializable
         } elseif (in_array($request, array('y', 'lat', 'latitude'))) {
             return $this->_latitude;
         } else {
-            throw new InvalidArgumentException('Unexpected value for retrieval');
+            throw new \InvalidArgumentException('Unexpected value for retrieval');
         }
     }
 
