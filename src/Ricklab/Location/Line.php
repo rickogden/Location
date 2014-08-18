@@ -29,7 +29,7 @@ class Line extends Geometry
     /**
      * Get the length of the line
      * @param String $unit Unit of measurement
-     * @return Distance 
+     * @return Float
      */
     public function getLength($unit = 'km')
     {
