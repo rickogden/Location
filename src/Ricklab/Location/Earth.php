@@ -8,20 +8,20 @@
 
 namespace Ricklab\Location;
 
-class Earth
+class Earth extends Planet
 {
 
-    protected static $_radius = array(
+    protected static $radius = array(
         'km' => 6371.009,
         'miles' => 3958.761,
         'm' => 6371009,
         'nmi' => 3440.069
     );
 
-    public static function radius($unit = 'km')
+    public function radius($unit = 'km', $location = null)
     {
-        if (isset(self::$_radius[$unit])) {
-            return self::$_radius[$unit];
+        if (isset(self::$radius[$unit])) {
+            return self::$radius[$unit];
         } else {
             throw new \InvalidArgumentException('Argument is not a valid unit');
         }

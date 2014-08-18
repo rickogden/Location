@@ -4,8 +4,9 @@ namespace Ricklab\Location;
 
 require_once __DIR__ . '/Earth.php';
 require_once __DIR__ . '/Polygon.php';
+require_once __DIR__ . '/Geometry.php';
 
-class Mbr implements \JsonSerializable
+class Mbr extends Geometry
 {
 
     /**
@@ -44,7 +45,7 @@ class Mbr implements \JsonSerializable
         $this->_limits['n'] = $north->lat;
         $this->_limits['s'] = $south->lat;
 
-        $radDist = $this->_radius / Earth::radius($this->_unit);
+        $radDist = $this->_radius / Location::getPlanet()->radius($this->_unit);
         $minLat = deg2rad($this->_limits['s']);
         $maxLat = deg2rad($this->_limits['n']);
         $radLon = $this->_point->longitudeToRad();
