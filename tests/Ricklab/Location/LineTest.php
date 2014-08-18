@@ -35,7 +35,7 @@ class LineTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testLength() {
-        $this->assertEquals(round($this->line->getLength()->toKm(),3), 2.783);
+        $this->assertEquals(round($this->line->getLength(), 3), 2.783);
     }
     
     public function testMidPoint() {
