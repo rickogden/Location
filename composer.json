@@ -16,5 +16,10 @@
     },
     "autoload": {
         "psr-0": { "Ricklab\\Location":"src/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0-dev"
+        }
     }
 }
