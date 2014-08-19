@@ -6,7 +6,7 @@ require_once __DIR__ . '/Earth.php';
 require_once __DIR__ . '/Polygon.php';
 require_once __DIR__ . '/Geometry.php';
 
-class Mbr extends Geometry
+class Mbr implements Geometry
 {
 
     /**

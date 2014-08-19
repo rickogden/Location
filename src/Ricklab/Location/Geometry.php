@@ -4,10 +4,8 @@
 namespace Ricklab\Location;
 
 
-abstract class Geometry implements \JsonSerializable
+interface Geometry extends \JsonSerializable
 {
-    abstract public function toSql();
-
-    abstract public function jsonSerialize();
+    public function toSql();
 
 } 

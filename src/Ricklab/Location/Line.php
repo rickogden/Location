@@ -11,7 +11,7 @@ namespace Ricklab\Location;
 require_once __DIR__ . '/Geometry.php';
 require_once __DIR__.'/Distance.php';
 
-class Line extends Geometry
+class Line implements Geometry
 {
 
     /**

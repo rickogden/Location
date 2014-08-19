@@ -16,7 +16,7 @@ namespace Ricklab\Location;
 require_once __DIR__ . '/Geometry.php';
 require_once __DIR__ . '/Distance.php';
 
-class Point extends Geometry
+class Point implements Geometry
 {
 
     protected $longitude, $latitude;
