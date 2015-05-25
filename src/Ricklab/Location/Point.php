@@ -13,12 +13,13 @@
 
 namespace Ricklab\Location;
 
+require_once __DIR__ . '/Geometry.php';
 require_once __DIR__ . '/Distance.php';
 
-class Point implements \JsonSerializable
+class Point implements Geometry
 {
 
-    protected $_longitude, $_latitude;
+    protected $longitude, $latitude;
 
     /**
      * Create a new Point from Longitude and latitude.
@@ -47,8 +48,8 @@ class Point implements \JsonSerializable
             throw new \InvalidArgumentException('latitude must be a valid number between -90 and 90.');
         }
 
-        $this->_longitude = (float)$long;
-        $this->_latitude = (float)$lat;
+        $this->longitude = (float)$long;
+        $this->latitude = (float)$lat;
     }
 
     /**
@@ -57,7 +58,7 @@ class Point implements \JsonSerializable
      */
     public function latitudeToRad()
     {
-        return deg2rad($this->_latitude);
+        return deg2rad($this->latitude);
     }
 
     /**
@@ -66,7 +67,7 @@ class Point implements \JsonSerializable
      */
     public function longitudeToRad()
     {
-        return deg2rad($this->_longitude);
+        return deg2rad($this->longitude);
     }
 
     /**
@@ -75,37 +76,38 @@ class Point implements \JsonSerializable
      */
     public function __toString()
     {
-        return $this->_latitude . ' ' . $this->_longitude;
+        return $this->latitude . ' ' . $this->longitude;
     }
 
     public function getLatitude()
     {
-        return $this->_latitude;
+        return $this->latitude;
     }
 
     public function getLongitude()
     {
-        return $this->_longitude;
+        return $this->longitude;
     }
 
     /**
      * Find distance to another point
      * @param Point $point2
-     * @return Distance 
+     * @param string $unit
+     * @return float
      */
-    public function distanceTo(Point $point2)
+    public function distanceTo(Point $point2, $unit = 'km')
     {
         $distance = new Distance($this, $point2);
-        return $distance;
+        return $distance->to($unit);
     }
 
     public function __get($request)
     {
         $request = strtolower($request);
         if (in_array($request, array('x', 'lon', 'long', 'longitude'))) {
-            return $this->_longitude;
+            return $this->longitude;
         } elseif (in_array($request, array('y', 'lat', 'latitude'))) {
-            return $this->_latitude;
+            return $this->latitude;
         } else {
             throw new \InvalidArgumentException('Unexpected value for retrieval');
         }
@@ -121,7 +123,7 @@ class Point implements \JsonSerializable
      */
     public function getRelativePoint($distance, $bearing, $unit = 'km')
     {
-        $rad = Earth::radius($unit);
+        $rad = Location::getPlanet()->radius($unit);
         $lat1 = $this->latitudeToRad();
         $lon1 = $this->longitudeToRad();
         $bearing = deg2rad($bearing);
@@ -173,7 +175,8 @@ class Point implements \JsonSerializable
     public function jsonSerialize()
     {
         return array('type' => 'Point', 'coordinates'
-            => array($this->_longitude, $this->_latitude));
+        => array($this->longitude, $this->latitude)
+        );
     }
 
 }

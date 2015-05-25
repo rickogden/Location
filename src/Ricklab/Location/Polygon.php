@@ -9,7 +9,7 @@ class Polygon extends MultiPointLine
 
     /**
      *
-     * @param Point [int] $points
+     * @param Array $points
      */
     public function __construct($points)
     {
@@ -26,7 +26,7 @@ class Polygon extends MultiPointLine
     public function toSql()
     {
         $text = 'POLYGON((';
-        foreach ($this->_points as $i => $point) {
+        foreach ($this->points as $i => $point) {
             if ($i > 0) {
                 $text .= ', ';
             }

@@ -25,9 +25,17 @@ class Distance
     {
         $this->_firstLocation = $firstLocation;
         $this->_secondLocation = $secondLocation;
-        $this->_distanceLat = $firstLocation->latitudeToRad() - $secondLocation->latitudeToRad();
-        $this->_distanceLong = $firstLocation->longitudeToRad() - $secondLocation->longitudeToRad();
-        $this->_distance = $this->_trigCalc();
+
+        if (function_exists('haversine') && Location::$usePeclExtension) {
+            $from = $firstLocation->jsonSerialize();
+            $to = $secondLocation->jsonSerialize();
+
+            $this->_distance = haversine($from, $to) / 6378137;
+        } else {
+            $this->_distanceLat = $firstLocation->latitudeToRad() - $secondLocation->latitudeToRad();
+            $this->_distanceLong = $firstLocation->longitudeToRad() - $secondLocation->longitudeToRad();
+            $this->_distance = $this->_trigCalc();
+        }
     }
 
     protected function _trigCalc()
@@ -58,7 +66,7 @@ class Distance
     public function to($unit)
     {
         try {
-            $radius = Earth::radius($unit);
+            $radius = Location::getPlanet()->radius($unit);
         } catch (\InvalidArgumentException $e) {
             return $e->getMessage();
         }

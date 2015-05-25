@@ -8,30 +8,32 @@
 
 namespace Ricklab\Location;
 
+require_once __DIR__ . '/Geometry.php';
 require_once __DIR__.'/Distance.php';
 
-class Line implements \JsonSerializable
+class Line implements Geometry
 {
 
     /**
      *
      * @var Point 
      */
-    protected $_start, $_end;
+    protected $start, $end;
 
     public function __construct(Point $start, Point $end)
     {
-        $this->_start = $start;
-        $this->_end = $end;
+        $this->start = $start;
+        $this->end = $end;
     }
 
     /**
      * Get the length of the line
-     * @return Distance 
+     * @param String $unit Unit of measurement
+     * @return Float
      */
-    public function getLength()
+    public function getLength($unit = 'km')
     {
-        return new Distance($this->_start, $this->_end);
+        return $this->start->distanceTo($this->end, $unit);
     }
 
     /**
@@ -40,49 +42,68 @@ class Line implements \JsonSerializable
      */
     public function getMidPoint()
     {
-        $bx = cos($this->_end->latitudeToRad()) * cos($this->_lonDiff());
-        $by = cos($this->_end->latitudeToRad()) * sin($this->_lonDiff());
-        $mLat = atan2(sin($this->_start->latitudeToRad()) + sin($this->_end->latitudeToRad()), sqrt(pow(cos($this->_start->latitudeToRad()) + $bx, 2) + pow($by, 2)));
+        $bx = cos($this->end->latitudeToRad()) * cos($this->_lonDiff());
+        $by = cos($this->end->latitudeToRad()) * sin($this->_lonDiff());
+        $mLat = atan2(
+            sin($this->start->latitudeToRad()) + sin($this->end->latitudeToRad()),
+            sqrt(pow(cos($this->start->latitudeToRad()) + $bx, 2) + pow($by, 2))
+        );
 
-        $mLon = $this->_start->longitudeToRad() + atan2($by, cos($this->_start->latitudeToRad()) + $bx);
+        $mLon = $this->start->longitudeToRad() + atan2($by, cos($this->start->latitudeToRad()) + $bx);
 
         return new Point(rad2deg($mLat), rad2deg($mLon));
     }
 
     /**
-     * Find the bearing of the line
+     * Finds the initial bearing of the line
      * @return Number the bearing
      */
     public function getBearing()
     {
-        $y = sin($this->_lonDiff()) * cos($this->_end->latitudeToRad());
-        $x = cos($this->_start->latitudeToRad()) * sin($this->_end->latitudeToRad()) - sin($this->_start->latitudeToRad()) * cos($this->_end->latitudeToRad()) * cos($this->_lonDiff());
-        $result = atan2($y, $x);
-
-        return fmod(rad2deg($result) + 360, 360);
+        return $this->getInitialBearing();
     }
+
+    /**
+     * Finds the initial bearing of the line
+     * @return Number the bearing
+     */
+    public function getInitialBearing()
+    {
+        if (function_exists('initial_bearing') && Location::$usePeclExtension) {
+            return initial_bearing($this->start->jsonSerialize(), $this->end->jsonSerialize());
+        } else {
+            $y = sin($this->_lonDiff()) * cos($this->end->latitudeToRad());
+            $x = cos($this->start->latitudeToRad()) * sin($this->end->latitudeToRad()) - sin(
+                    $this->start->latitudeToRad()
+                ) * cos($this->end->latitudeToRad()) * cos($this->_lonDiff());
+            $result = atan2($y, $x);
+
+            return fmod(rad2deg($result) + 360, 360);
+        }
+    }
+
 
     protected function _latDiff()
     {
-        return $this->_end->latitude - $this->_start->latitude;
+        return $this->end->latitude - $this->start->latitude;
     }
 
     protected function _lonDiff()
     {
-        return deg2rad($this->_end->getLongitude() - $this->_start->getLongitude());
+        return deg2rad($this->end->getLongitude() - $this->start->getLongitude());
     }
 
     public function jsonSerialize()
     {
         return array('type' => 'LineString', 'coordinates' => array(
-            array($this->_start->getLongitude(), $this->_start->getLatitude()),
-            array($this->_end->getLongitude(), $this->_end->getLatitude())
+            array($this->start->getLongitude(), $this->start->getLatitude()),
+            array($this->end->getLongitude(), $this->end->getLatitude())
         ));
     }
 
     public function toSql()
     {
-        return 'LineString('.(string) $this->_start.', '.(string)$this->_end.')';
+        return 'LineString(' . (string)$this->start . ', ' . (string)$this->end . ')';
     }
 
 }
