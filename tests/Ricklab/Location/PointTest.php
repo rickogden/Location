@@ -68,10 +68,17 @@ class PointTest extends \PHPUnit_Framework_TestCase
     public function testDistanceTo()
     {
         $newPoint = new Location\Point(53.48204, -2.23194);
-        $this->assertEquals(round($this->point->distanceTo($newPoint, 'miles'),3),1.728);
+        $this->assertEquals( round( $this->point->distanceTo( $newPoint, 'miles' ), 3 ), 1.729 );
         $this->assertEquals(round($this->point->distanceTo($newPoint), 3), 2.783);
-       // $this->setExpectedException('InvalidArgumentException');
-        echo $this->point->distanceTo($newPoint, 'foo');
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testDistanceToException()
+    {
+        $newPoint = new Location\Point( 53.48204, - 2.23194 );
+        $this->point->distanceTo( $newPoint, 'foo' );
     }
 
     public function testJsonSerializable()

@@ -49,5 +49,17 @@ class LocationTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testConvert()
+    {
+        $this->assertEquals( 5.754, round( Location\Location::convert( 5, 'nm', 'miles' ), 3 ) );
+
+        $this->assertEquals( 300, round( Location\Location::convert( 100, 'yards', 'ft' ), 3 ) );
+
+        $this->assertEquals( 8.047, round( Location\Location::convert( 5, 'miles', 'km' ), 3 ) );
+
+
+    }
+
+
 
 }

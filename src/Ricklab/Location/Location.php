@@ -109,4 +109,15 @@ class Location
 
         return $result;
     }
+
+    public static function convert( $distance, $from, $to )
+    {
+
+        $planet = self::getPlanet();
+
+        $km = $distance / $planet->getMultiplier( $from );
+
+        return $km * $planet->getMultiplier( $to );
+
+    }
 } 
