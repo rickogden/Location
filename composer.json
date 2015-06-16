@@ -3,7 +3,6 @@
     "type":"library",
     "description":"A library of PHP objects for spatial calculations",
     "keywords":["location", "geo-location", "geolocation", "gis", "geo location"],
-    "version": "2.0",
     "license":"BSD-3-Clause",
     "authors":[{
         "name":"Rick Ogden",
@@ -12,7 +11,7 @@
         "role":"developer"
     }],
     "require": {
-        "php": ">=5.3"
+        "php": ">=5.4"
     },
     "autoload": {
         "psr-0": { "Ricklab\\Location":"src/" }

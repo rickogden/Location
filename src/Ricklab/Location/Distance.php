@@ -21,16 +21,16 @@ class Distance
      * @param Point $firstLocation
      * @param Point $secondLocation
      */
-    public function __construct(Point $firstLocation, Point $secondLocation)
+    public function __construct( Point $firstLocation, Point $secondLocation )
     {
         $this->_firstLocation = $firstLocation;
         $this->_secondLocation = $secondLocation;
 
-        if (function_exists('haversine') && Location::$usePeclExtension) {
+        if (function_exists( 'haversine' ) && Location::$usePeclExtension) {
             $from = $firstLocation->jsonSerialize();
             $to = $secondLocation->jsonSerialize();
 
-            $this->_distance = haversine($from, $to) / 6378137;
+            $this->_distance = haversine( $from, $to ) / 6378137;
         } else {
             $this->_distanceLat = $firstLocation->latitudeToRad() - $secondLocation->latitudeToRad();
             $this->_distanceLong = $firstLocation->longitudeToRad() - $secondLocation->longitudeToRad();
@@ -40,36 +40,32 @@ class Distance
 
     protected function _trigCalc()
     {
-        $distance = sin($this->_distanceLat / 2) * sin($this->_distanceLat / 2) +
-            cos($this->_firstLocation->latitudeToRad()) * cos($this->_secondLocation->latitudeToRad()) *
-            sin($this->_distanceLong / 2) * sin($this->_distanceLong / 2);
-        $distance = 2 * atan2(sqrt($distance), sqrt(1 - $distance));
+        $distance = sin( $this->_distanceLat / 2 ) * sin( $this->_distanceLat / 2 ) +
+                    cos( $this->_firstLocation->latitudeToRad() ) * cos( $this->_secondLocation->latitudeToRad() ) *
+                    sin( $this->_distanceLong / 2 ) * sin( $this->_distanceLong / 2 );
+        $distance = 2 * atan2( sqrt( $distance ), sqrt( 1 - $distance ) );
 
         return $distance;
     }
 
     public function getBearing()
     {
-        return $this->_firstLocation->lineTo($this->_secondLocation)->getBearing();
+        return $this->_firstLocation->lineTo( $this->_secondLocation )->getBearing();
     }
 
     public function toMiles()
     {
-        return $this->to('miles');
+        return $this->to( 'miles' );
     }
 
     public function toKm()
     {
-        return $this->to('km');
+        return $this->to( 'km' );
     }
 
-    public function to($unit)
+    public function to( $unit )
     {
-        try {
-            $radius = Location::getPlanet()->radius($unit);
-        } catch (\InvalidArgumentException $e) {
-            return $e->getMessage();
-        }
+        $radius = Location::getPlanet()->radius( $unit );
 
         return $this->_distance * $radius;
     }
