@@ -66,7 +66,7 @@ abstract class Planet
     public function getMultiplier( $unit )
     {
         try {
-            return $this->multipliers[$this->keys[$unit]];
+            return $this->multipliers[$this->keys[strtolower( $unit )]];
         } catch ( \Exception $e ) {
             throw new \InvalidArgumentException( 'Unit ' . $unit . ' is not a recognised unit.' );
         }
