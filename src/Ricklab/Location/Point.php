@@ -14,7 +14,6 @@
 namespace Ricklab\Location;
 
 require_once __DIR__ . '/Geometry.php';
-require_once __DIR__ . '/Distance.php';
 
 class Point implements Geometry
 {
@@ -26,9 +25,9 @@ class Point implements Geometry
      * 
      * Usage: new Point(latitude, longitude);
      * or new Point([longitude, latitude]);
-     * 
-     * @param Number $long Longitude coordinates 
-     * @param Number $lat Latitude coordinates
+     *
+     * @param Number|Array $lat Latitude coordinates or a coordinates array in the order of [longitude, latitude]
+     * @param Number $long Longitude coordinates
      */
     public function __construct($lat, $long = null)
     {
@@ -97,8 +96,9 @@ class Point implements Geometry
      */
     public function distanceTo(Point $point2, $unit = 'km')
     {
-        $distance = new Distance($this, $point2);
-        return $distance->to($unit);
+        $radDistance = Location::haversine( $this, $point2 );
+
+        return $radDistance * Location::getPlanet()->radius( $unit );
     }
 
     public function __get($request)

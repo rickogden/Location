@@ -9,7 +9,6 @@
 namespace Ricklab\Location;
 
 require_once __DIR__ . '/Geometry.php';
-require_once __DIR__.'/Distance.php';
 
 class Line implements Geometry
 {
@@ -69,7 +68,7 @@ class Line implements Geometry
      */
     public function getInitialBearing()
     {
-        if (function_exists('initial_bearing') && Location::$usePeclExtension) {
+        if (function_exists( 'initial_bearing' ) && Location::$useSpatialExtension) {
             return initial_bearing($this->start->jsonSerialize(), $this->end->jsonSerialize());
         } else {
             $y = sin($this->_lonDiff()) * cos($this->end->latitudeToRad());
@@ -85,7 +84,7 @@ class Line implements Geometry
 
     protected function _latDiff()
     {
-        return $this->end->latitude - $this->start->latitude;
+        return $this->end->getLatitude() - $this->start->getLatitude();
     }
 
     protected function _lonDiff()

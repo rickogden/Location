@@ -19,13 +19,14 @@ class Location
     /**
      * @var bool Set to false if you have the pecl geospatial extension installed but do not want to use it
      */
-    public static $usePeclExtension = true;
+    public static $useSpatialExtension = true;
 
     /**
      * Set the planet to perform the calculations on
+     *
      * @param Planet $planet
      */
-    public static function setPlanet(Planet $planet)
+    public static function setPlanet( Planet $planet )
     {
 
         self::$planet = $planet;
@@ -46,68 +47,99 @@ class Location
 
     /**
      * @param $geojson
+     *
      * @throws \ErrorException
      * @return \Ricklab\Location\Geometry
      */
-    public static function fromGeoJson($geojson)
+    public static function fromGeoJson( $geojson )
     {
-        if (is_string($geojson)) {
-            $geojson = json_decode($geojson, true);
+        if (is_string( $geojson )) {
+            $geojson = json_decode( $geojson, true );
         }
 
-        if (is_object($geojson)) {
-            $geojson = json_decode(json_encode($geojson), true);
+        if (is_object( $geojson )) {
+            $geojson = json_decode( json_encode( $geojson ), true );
         }
 
 
-        $type = $geojson['type'];
+        $type     = $geojson['type'];
         $coordinates = $geojson['coordinates'];
-        $geometry = self::createGeometry($type, $coordinates);
+        $geometry = self::createGeometry( $type, $coordinates );
 
         return $geometry;
 
 
     }
 
-    protected static function createGeometry($type, array $coordinates)
+    protected static function createGeometry( $type, array $coordinates )
     {
         switch ($type) {
             case 'Point':
-                $result = new Point($coordinates);
+                $result = new Point( $coordinates );
                 break;
 
             case 'LineString':
                 $points = array();
                 foreach ($coordinates as $coordinate) {
-                    $points[] = new Point($coordinate);
+                    $points[] = new Point( $coordinate );
                 }
-                if (count($points) > 2) {
-                    $result = new MultiPointLine($points);
-                } elseif (count($points) === 2) {
-                    $result = new Line($points[0], $points[1]);
+                if (count( $points ) > 2) {
+                    $result = new MultiPointLine( $points );
+                } elseif (count( $points ) === 2) {
+                    $result = new Line( $points[0], $points[1] );
                 } else {
-                    throw new \ErrorException('cannot parse as Line');
+                    throw new \ErrorException( 'cannot parse as Line' );
                 }
                 break;
             case 'Polygon':
                 $points = array();
                 foreach ($coordinates[0] as $coordinate) {
-                    if (is_array($coordinate)) {
-                        $points[] = new Point($coordinate);
+                    if (is_array( $coordinate )) {
+                        $points[] = new Point( $coordinate );
                     }
 
-                    $result = new Polygon($points);
+                    $result = new Polygon( $points );
                 }
 
                 break;
 
         }
 
-        if (!isset($result)) {
-            throw new \InvalidArgumentException('This type of geojson is not supported');
+        if ( ! isset( $result )) {
+            throw new \InvalidArgumentException( 'This type of geojson is not supported' );
         }
 
         return $result;
+    }
+
+    /**
+     * Uses the haversine formula to calculate the distance between 2 points.
+     *
+     * @param Point $point1
+     * @param Point $point2
+     *
+     * @return float distance in radians
+     */
+    public static function haversine( Point $point1, Point $point2 )
+    {
+
+        if (function_exists( 'haversine' ) && self::$useSpatialExtension) {
+            $from = $point1->jsonSerialize();
+            $to   = $point2->jsonSerialize();
+
+            $radDistance = haversine( $from, $to ) / 6378137;
+        } else {
+            $distanceLat  = $point1->latitudeToRad() - $point2->latitudeToRad();
+            $distanceLong = $point1->longitudeToRad() - $point2->longitudeToRad();
+
+            $radDistance = sin( $distanceLat / 2 ) * sin( $distanceLat / 2 ) +
+                           cos( $point1->latitudeToRad() ) * cos( $point2->latitudeToRad() ) *
+                           sin( $distanceLong / 2 ) * sin( $distanceLong / 2 );
+            $radDistance = 2 * atan2( sqrt( $radDistance ), sqrt( 1 - $radDistance ) );
+        }
+
+        return $radDistance;
+
     }
 
     public static function convert( $distance, $from, $to )
