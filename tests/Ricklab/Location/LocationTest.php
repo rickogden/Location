@@ -9,6 +9,12 @@ use \Ricklab\Location;
 class LocationTest extends \PHPUnit_Framework_TestCase
 {
 
+    public function setUp()
+    {
+
+        Location\Location::$useSpatialExtension = false;
+    }
+
 
     public function testCreatePoint()
     {
@@ -58,6 +64,15 @@ class LocationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 8.047, round( Location\Location::convert( 5, 'miles', 'km' ), 3 ) );
 
 
+    }
+
+    public function testVincenty()
+    {
+        $flinders = new Location\Point( - 37.95103341666667, 144.42486788888888 );
+
+        $buninyond = new Location\Point( - 37.65282113888889, 143.92649552777777 );
+
+        $this->assertEquals( 54972.2, Location\Location::vincenty( $flinders, $buninyond ) );
     }
 
 

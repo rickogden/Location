@@ -19,6 +19,8 @@ class PointTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+
+        Location\Location::$useSpatialExtension = false;
         $this->point = new Location\Point($this->lat, $this->lon);
     }
 
@@ -50,26 +52,26 @@ class PointTest extends \PHPUnit_Framework_TestCase
 
     public function testToStringMethod()
     {
-        $this->assertEquals((string) $this->point, $this->lat . ' ' . $this->lon);
+        $this->assertEquals( $this->lat . ' ' . $this->lon, (string) $this->point );
     }
 
     public function testToSqlConversion()
     {
-        $this->assertEquals($this->point->toSql(), 'POINT(' . $this->lat . ' ' . $this->lon . ')');
+        $this->assertEquals( 'POINT(' . $this->lat . ' ' . $this->lon . ')', $this->point->toSql() );
     }
 
     public function testRelativePoint()
     {
         $newPoint = $this->point->getRelativePoint(2.783, 98.50833, 'km');
-        $this->assertEquals(round($newPoint->lat, 5), 53.48204);
-        $this->assertEquals(round($newPoint->lon, 5), -2.23194);
+        $this->assertEquals( 53.48204, round( $newPoint->lat, 5 ) );
+        $this->assertEquals( - 2.23194, round( $newPoint->lon, 5 ) );
     }
 
     public function testDistanceTo()
     {
         $newPoint = new Location\Point(53.48204, -2.23194);
-        $this->assertEquals( round( $this->point->distanceTo( $newPoint, 'miles' ), 3 ), 1.729 );
-        $this->assertEquals(round($this->point->distanceTo($newPoint), 3), 2.783);
+        $this->assertEquals( 1.729, round( $this->point->distanceTo( $newPoint, 'miles' ), 3 ) );
+        $this->assertEquals( 2.783, round( $this->point->distanceTo( $newPoint ), 3 ) );
     }
 
     /**

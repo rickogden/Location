@@ -142,6 +142,79 @@ class Location
 
     }
 
+    /**
+     *
+     * Vincenty formula for calculating distances. NOT WORKING!!!!!
+     *
+     * @param Point $point1
+     * @param Point $point2
+     *
+     * @return float distance in metres
+     */
+    public static function vincenty( Point $point1, Point $point2 )
+    {
+        if (function_exists( 'vincenty' ) && self::$useSpatialExtension && self::$planet instanceof Earth) {
+
+            $from = $point1->jsonSerialize();
+            $to   = $point2->jsonSerialize();
+
+            $distance = vincenty( $from, $to );
+
+            return $distance;
+
+        } else {
+            $planet = self::$planet;
+
+            $u1        = atan( 1 - $planet->getFlattening() ) * tan( $point1->getLatitude() );
+            $u2        = atan( 1 - $planet->getFlattening() ) * tan( $point2->getLatitude() );
+            $l         = $point2->getLongitude() - $point1->getLongitude();
+            $sinU1     = sin( $u1 );
+            $cosU1     = cos( $u1 );
+            $sinU2     = sin( $u2 );
+            $cosU2     = cos( $u2 );
+            $lambda    = $l;
+            $looplimit = 100;
+
+            do {
+                $sinLambda   = sin( $lambda );
+                $cosLambda   = cos( $lambda );
+                $sinSigma    = sqrt(
+                    pow( ( $cosU2 * $sinLambda ), 2 ) +
+                    pow( ( $cosU1 * $sinU2 - $sinU1 * $cosU2 * $cosLambda ), 2 )
+                );
+                $cosSigma    = $sinU1 * $sinU2 + $cosU1 * $cosU2 * $cosLambda;
+                $sigma       = atan2( $sinSigma, $cosSigma );
+                $sinAlpha    = $cosU1 * $cosU2 * $sinLambda / $sinSigma;
+                $cos2Alpha   = 1 - $sinAlpha * $sinAlpha;
+                $cosof2sigma = $cosSigma - 2 * $sinU1 * $sinU2 / $cos2Alpha;
+                $c           = $planet->getFlattening() / 16 * $cos2Alpha *
+                               ( 4 + $planet->getFlattening() * ( 4 - 3 * $cos2Alpha ) );
+
+                $lambdaP = $lambda;
+                $lambda  = $l + ( 1 - $c ) * $planet->getFlattening() * $sinAlpha * (
+                        $sigma + $c * $sinSigma * ( $cosof2sigma + $c * $cosSigma * (
+                                - 1 + 2 * $cosof2sigma * $cosof2sigma
+                            ) )
+                    );
+            } while (abs( $lambda - $lambdaP ) > 1e-12 && -- $looplimit > 0);
+
+            $uSq        = $cos2Alpha * ( pow( $planet->getSemiMajorAxis(), 2 ) - pow( $planet->getSemiMinorAxis(),
+                        2 ) ) / pow( $planet->getSemiMinorAxis(), 2 );
+            $a          = 1 + $uSq / 16384 * ( 4096 + $uSq * ( - 768 + $uSq * ( 320 - 175 * $uSq ) ) );
+            $b          = $uSq / 1024 * ( 256 + $uSq * ( - 128 + $uSq * ( 74 - 47 * $uSq ) ) );
+            $deltaSigma = $b * $sinSigma * ( $cosof2sigma + $b / 4 * ( $cosSigma *
+                                                                       ( - 1 + 2 * pow( $cosof2sigma, 2 ) ) -
+                                                                       $b / 6 * $cosof2sigma * ( - 3 + 4 * pow( $sinSigma,
+                                                                               2 ) )
+                                                                       * ( - 3 + 4 * pow( $cosof2sigma, 2 ) )
+                    ) );
+            $s          = $planet->getSemiMinorAxis() * $a * ( $sigma - $deltaSigma );
+            $s          = floor( $s * 1000 ) / 1000;
+
+            return $s;
+        }
+    }
+
     public static function convert( $distance, $from, $to )
     {
 

@@ -17,6 +17,8 @@ class PolygonTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+
+        Location\Location::$useSpatialExtension = false;
         $this->polygon = new Location\Polygon([new Location\Point(2, 3), new Location\Point(2, 4), new Location\Point(3, 4)]);
     }
 

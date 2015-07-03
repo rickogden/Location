@@ -21,6 +21,9 @@ class LineTest extends \PHPUnit_Framework_TestCase {
     public $start, $end;
     
     public function setUp() {
+
+        Location\Location::$useSpatialExtension = false;
+
         $this->start = new Location\Point(53.48575, -2.27354);
         $this->end = new Location\Point(53.48204, -2.23194);
         $this->line = new Location\Line($this->start, $this->end);
@@ -32,6 +35,15 @@ class LineTest extends \PHPUnit_Framework_TestCase {
     
     public function testBearing() {
         $this->assertEquals(round($this->line->getBearing(), 5), 98.50702);
+    }
+
+    public function testBearingAgainstExtension()
+    {
+        $p1   = new Location\Point( 53, - 1 );
+        $p2   = new Location\Point( 52, 0 );
+        $line = new Location\Line( $p1, $p2 );
+
+        $this->assertEquals( 148.270892801715, $line->getBearing() );
     }
     
     public function testLength() {
