@@ -52,25 +52,19 @@ abstract class Planet
     /**
      * @var float The radius at the equator in metres (for use in vincenty)
      */
-    protected $semiMajorAxis;
+    protected $majorSemiAxis;
 
     /**
      * @var float The radius at the poles in metres (for use in vincenty)
      */
-    protected $semiMinorAxis;
-
-    /**
-     * @var float The flattening of the planet in metres (for use in vincenty)
-     */
-    protected $flattening;
+    protected $minorSemiAxis;
 
     /**
      * @param string $unit can be 'km', 'miles', 'metres', 'feet', 'yards', 'nautical miles'
-     * @param mixed $location can either be a latitude (float) or a Point object. Not used currently.
      *
      * @return mixed
      */
-    public function radius( $unit = 'km', $location = null )
+    public function radius( $unit = 'km' )
     {
         return $this->unitConversion( $this->radius, $unit );
     }
@@ -106,13 +100,13 @@ abstract class Planet
      *
      * @return float
      */
-    public function getSemiMajorAxis( $unit = 'm' )
+    public function getMajorSemiAxis( $unit = 'm' )
     {
         if ($unit !== 'm') {
-            return $this->unitConversion( $this->semiMajorAxis / 1000, $unit );
+            return $this->unitConversion( $this->majorSemiAxis / 1000, $unit );
         }
 
-        return $this->semiMajorAxis;
+        return $this->majorSemiAxis;
     }
 
     /**
@@ -120,13 +114,13 @@ abstract class Planet
      *
      * @return float
      */
-    public function getSemiMinorAxis( $unit = 'm' )
+    public function getMinorSemiAxis( $unit = 'm' )
     {
         if ($unit !== 'm') {
-            return $this->unitConversion( $this->semiMinorAxis / 1000, $unit );
+            return $this->unitConversion( $this->minorSemiAxis / 1000, $unit );
         }
 
-        return $this->semiMinorAxis;
+        return $this->minorSemiAxis;
     }
 
     /**
@@ -134,7 +128,7 @@ abstract class Planet
      */
     public function getFlattening()
     {
-        return $this->flattening;
+        return ( $this->getMajorSemiAxis() - $this->getMinorSemiAxis() ) / $this->getMajorSemiAxis();
     }
 
 

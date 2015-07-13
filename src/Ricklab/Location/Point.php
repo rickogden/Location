@@ -141,11 +141,18 @@ class Point implements Geometry
     /**
      * 
      * @param Point $point2
-     * @return Number 
+     *
+     * @return Number
+     * @deprecated use initialBearingTo instead
      */
     public function bearingTo(Point $point2)
     {
         return $this->lineTo($point2)->getBearing();
+    }
+
+    public function initialBearingTo( Point $point2 )
+    {
+        return $this->lineTo( $point2 )->getInitialBearing();
     }
 
     /**

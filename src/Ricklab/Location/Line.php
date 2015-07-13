@@ -56,6 +56,7 @@ class Line implements Geometry
     /**
      * Finds the initial bearing of the line
      * @return Number the bearing
+     * @deprecated use getInitialBearing() instead
      */
     public function getBearing()
     {

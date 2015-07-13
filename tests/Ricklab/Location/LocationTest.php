@@ -72,7 +72,7 @@ class LocationTest extends \PHPUnit_Framework_TestCase
 
         $buninyond = new Location\Point( - 37.65282113888889, 143.92649552777777 );
 
-        $this->assertEquals( 54972.2, Location\Location::vincenty( $flinders, $buninyond ) );
+        $this->assertEquals( 54972.271, Location\Location::vincenty( $flinders, $buninyond ) );
     }
 
 
