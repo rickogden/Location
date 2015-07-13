@@ -4,7 +4,7 @@ namespace Ricklab\Location\Tests;
 
 require __DIR__ . '/../../../vendor/autoload.php';
 
-use \Ricklab\Location;
+use Ricklab\Location;
 
 class PointTest extends \PHPUnit_Framework_TestCase
 {
@@ -72,6 +72,8 @@ class PointTest extends \PHPUnit_Framework_TestCase
         $newPoint = new Location\Point(53.48204, -2.23194);
         $this->assertEquals( 1.729, round( $this->point->distanceTo( $newPoint, 'miles' ), 3 ) );
         $this->assertEquals( 2.783, round( $this->point->distanceTo( $newPoint ), 3 ) );
+        $this->assertEquals( 2.792,
+            round( $this->point->distanceTo( $newPoint, 'km', Location\Location::VINCENTY ), 3 ) );
     }
 
     /**

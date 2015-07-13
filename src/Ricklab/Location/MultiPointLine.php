@@ -33,11 +33,11 @@ class MultiPointLine implements Geometry, \SeekableIterator
         $this->points = $points;
     }
 
-    public function getLength($unit = 'km')
+    public function getLength( $unit = 'km', $formula = null )
     {
         $distance = 0;
         for ($i = 1; $i < count($this->points); $i++) {
-            $distance += $this->points[$i - 1]->distanceTo($this->points[$i], $unit);
+            $distance += $this->points[$i - 1]->distanceTo( $this->points[$i], $unit, $formula );
         }
         return $distance;
     }

@@ -4,7 +4,7 @@ namespace Ricklab\Location\Tests;
 
 require __DIR__.'/../../../vendor/autoload.php';
 
-use \Ricklab\Location;
+use Ricklab\Location;
 
 class LineTest extends \PHPUnit_Framework_TestCase {
     
@@ -34,7 +34,7 @@ class LineTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testBearing() {
-        $this->assertEquals(round($this->line->getBearing(), 5), 98.50702);
+        $this->assertEquals( 98.50702, round( $this->line->getInitialBearing(), 5 ) );
     }
 
     public function testBearingAgainstExtension()
@@ -47,7 +47,8 @@ class LineTest extends \PHPUnit_Framework_TestCase {
     }
     
     public function testLength() {
-        $this->assertEquals(round($this->line->getLength(), 3), 2.783);
+        $this->assertEquals( 2.783, round( $this->line->getLength(), 3 ) );
+        $this->assertEquals( 2.792, round( $this->line->getLength( 'km', Location\Location::VINCENTY ), 3 ) );
     }
     
     public function testMidPoint() {

@@ -60,6 +60,8 @@ abstract class Planet
     protected $minorSemiAxis;
 
     /**
+     * Returns the average radius of the planet in specified units.
+     *
      * @param string $unit can be 'km', 'miles', 'metres', 'feet', 'yards', 'nautical miles'
      *
      * @return mixed

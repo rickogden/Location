@@ -11,6 +11,11 @@ namespace Ricklab\Location;
 class Location
 {
 
+
+    const HAVERSINE = 1;
+
+    const VINCENTY = 2;
+
     /**
      * @var Planet
      */
@@ -20,6 +25,11 @@ class Location
      * @var bool Set to false if you have the pecl geospatial extension installed but do not want to use it
      */
     public static $useSpatialExtension = true;
+
+    /**
+     * @var bool Set to true to use Vincenty as distance calculator, set to either Location::HAVERSINE or Location::VICENTY
+     */
+    public static $defaultFormula = self::HAVERSINE;
 
     /**
      * Set the planet to perform the calculations on
@@ -153,7 +163,7 @@ class Location
      */
     public static function vincenty( Point $point1, Point $point2 )
     {
-        if (function_exists( 'vincenty' ) && self::$useSpatialExtension && self::$planet instanceof Earth) {
+        if (function_exists( 'vincenty' ) && self::$useSpatialExtension && self::getPlanet() instanceof Earth) {
 
             $from = $point1->jsonSerialize();
             $to   = $point2->jsonSerialize();
@@ -163,7 +173,7 @@ class Location
             return $distance;
 
         } else {
-            $planet = self::$planet;
+            $planet = self::getPlanet();
 
             $U1            = atan( ( 1.0 - $planet->getFlattening() ) * tan( $point1->latitudeToRad() ) );
             $U2            = atan( ( 1.0 - $planet->getFlattening() ) * tan( $point2->latitudeToRad() ) );
@@ -212,6 +222,43 @@ class Location
         }
     }
 
+    /**
+     * @param Point $point1 distance from this point
+     * @param Point $point2 distance to this point
+     * @param string $unit of measurement in which to return the result
+     * @param null|int $formula formula to use, either Location::VINCENTY or Location::HAVERSINE. Defaults to Location::$defaultFormula
+     *
+     * @return float
+     */
+    public static function calculateDistance( Point $point1, Point $point2, $unit, $formula = null )
+    {
+        if ($formula === null) {
+            $formula = self::$defaultFormula;
+        }
+        if ($formula === self::VINCENTY) {
+            $mDistance = self::vincenty( $point1, $point2 );
+            if ($unit === 'm') {
+                return $mDistance;
+            } else {
+
+                return self::convert( $mDistance, 'm', $unit );
+            }
+        } else {
+            $radDistance = self::haversine( $point1, $point2 );
+
+            return $radDistance * self::getPlanet()->radius( $unit );
+        }
+    }
+
+    /**
+     * Converts distances from one unit of measurement to another.
+     *
+     * @param $distance float the distance measurement
+     * @param $from string the unit the distance measurement is in
+     * @param $to string the unit the distance should be converted into
+     *
+     * @return float the distance in the new unit of measurement
+     */
     public static function convert( $distance, $from, $to )
     {
 
