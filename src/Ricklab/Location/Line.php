@@ -20,7 +20,11 @@ class Line implements Geometry
      */
     protected $start, $end;
 
-    public function __construct( Point $start, Point $end )
+    /**
+     * @param Point|array $start first point or array of points
+     * @param Point|null $end 2nd point, ignored if $start is an array
+     */
+    public function __construct( $start, Point $end = null )
     {
         $this->start = $start;
         $this->end = $end;
@@ -45,26 +49,7 @@ class Line implements Geometry
      */
     public function getMidPoint()
     {
-        $bx   = cos( $this->end->latitudeToRad() ) * cos( $this->_lonDiff() );
-        $by   = cos( $this->end->latitudeToRad() ) * sin( $this->_lonDiff() );
-        $mLat = atan2(
-            sin( $this->start->latitudeToRad() ) + sin( $this->end->latitudeToRad() ),
-            sqrt( pow( cos( $this->start->latitudeToRad() ) + $bx, 2 ) + pow( $by, 2 ) )
-        );
-
-        $mLon = $this->start->longitudeToRad() + atan2( $by, cos( $this->start->latitudeToRad() ) + $bx );
-
-        return new Point( rad2deg( $mLat ), rad2deg( $mLon ) );
-    }
-
-    /**
-     * Finds the initial bearing of the line
-     * @return Number the bearing
-     * @deprecated use getInitialBearing() instead
-     */
-    public function getBearing()
-    {
-        return $this->getInitialBearing();
+        return $this->start->getMidpoint( $this->end );
     }
 
     /**
@@ -73,17 +58,7 @@ class Line implements Geometry
      */
     public function getInitialBearing()
     {
-        if (function_exists( 'initial_bearing' ) && Location::$useSpatialExtension) {
-            return initial_bearing( $this->start->jsonSerialize(), $this->end->jsonSerialize() );
-        } else {
-            $y      = sin( $this->_lonDiff() ) * cos( $this->end->latitudeToRad() );
-            $x      = cos( $this->start->latitudeToRad() ) * sin( $this->end->latitudeToRad() ) - sin(
-                                                                                                      $this->start->latitudeToRad()
-                                                                                                  ) * cos( $this->end->latitudeToRad() ) * cos( $this->_lonDiff() );
-            $result = atan2( $y, $x );
-
-            return fmod( rad2deg( $result ) + 360, 360 );
-        }
+        return $this->start->initialBearingTo( $this->end );
     }
 
 

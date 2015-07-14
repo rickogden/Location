@@ -43,7 +43,7 @@ class LineTest extends \PHPUnit_Framework_TestCase {
         $p2   = new Location\Point( 52, 0 );
         $line = new Location\Line( $p1, $p2 );
 
-        $this->assertEquals( 148.270892801715, $line->getBearing() );
+        $this->assertEquals( 148.270892801715, $line->getInitialBearing() );
     }
     
     public function testLength() {

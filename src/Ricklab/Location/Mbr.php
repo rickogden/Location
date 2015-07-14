@@ -2,7 +2,7 @@
 
 namespace Ricklab\Location;
 
-require_once __DIR__ . '/Earth.php';
+require_once __DIR__ . '/Ellipsoid/Earth.php';
 require_once __DIR__ . '/Polygon.php';
 require_once __DIR__ . '/Geometry.php';
 
@@ -45,7 +45,7 @@ class Mbr implements Geometry
         $this->limits['n'] = $north->lat;
         $this->limits['s'] = $south->lat;
 
-        $radDist = $this->radius / Location::getPlanet()->radius($this->unit);
+        $radDist = $this->radius / Location::getEllipsoid()->radius( $this->unit );
         $minLat = deg2rad($this->limits['s']);
         $maxLat = deg2rad($this->limits['n']);
         $radLon = $this->point->longitudeToRad();

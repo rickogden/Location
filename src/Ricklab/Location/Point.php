@@ -125,7 +125,7 @@ class Point implements Geometry
      */
     public function getRelativePoint( $distance, $bearing, $unit = 'km' )
     {
-        $rad     = Location::getPlanet()->radius( $unit );
+        $rad = Location::getEllipsoid()->radius( $unit );
         $lat1    = $this->latitudeToRad();
         $lon1    = $this->longitudeToRad();
         $bearing = deg2rad( $bearing );
@@ -142,20 +142,46 @@ class Point implements Geometry
     }
 
     /**
+     * Get the bearing from this Point to another.
      *
      * @param Point $point2
      *
-     * @return Number
-     * @deprecated use initialBearingTo instead
+     * @return float bearing
      */
-    public function bearingTo( Point $point2 )
-    {
-        return $this->lineTo( $point2 )->getBearing();
-    }
-
     public function initialBearingTo( Point $point2 )
     {
-        return $this->lineTo( $point2 )->getInitialBearing();
+
+        if (function_exists( 'initial_bearing' ) && Location::$useSpatialExtension) {
+            return initial_bearing( $this->jsonSerialize(), $point2->jsonSerialize() );
+        } else {
+            $y      = sin(
+                          deg2rad( $point2->getLongitude() - $this->getLongitude() )
+                      ) * cos( $point2->latitudeToRad() );
+            $x      = cos( $this->latitudeToRad() )
+                      * sin( $point2->latitudeToRad() ) - sin(
+                                                              $this->latitudeToRad()
+                                                          ) * cos( $point2->latitudeToRad() ) *
+                                                          cos(
+                                                              deg2rad( $point2->getLongitude() - $this->getLongitude() ) );
+            $result = atan2( $y, $x );
+
+            return fmod( rad2deg( $result ) + 360, 360 );
+        }
+    }
+
+
+    public function getMidpoint( Point $point )
+    {
+        $bx   = cos( $point->latitudeToRad() ) * cos( deg2rad( $point->getLongitude() - $this->getLongitude() ) );
+        $by   = cos( $point->latitudeToRad() ) * sin( deg2rad( $point->getLongitude() - $this->getLongitude() ) );
+        $mLat = atan2(
+            sin( $this->latitudeToRad() ) + sin( $point->latitudeToRad() ),
+            sqrt( pow( cos( $this->latitudeToRad() ) + $bx, 2 ) + pow( $by, 2 ) )
+        );
+
+        $mLon = $this->longitudeToRad() + atan2( $by, cos( $this->latitudeToRad() ) + $bx );
+
+        return new self( rad2deg( $mLat ), rad2deg( $mLon ) );
     }
 
     /**

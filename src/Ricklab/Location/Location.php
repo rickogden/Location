@@ -7,6 +7,8 @@
 
 namespace Ricklab\Location;
 
+use Ricklab\Location\Ellipsoid\Earth;
+use Ricklab\Location\Ellipsoid\Ellipsoid;
 
 class Location
 {
@@ -17,9 +19,9 @@ class Location
     const VINCENTY = 2;
 
     /**
-     * @var Planet
+     * @var Ellipsoid
      */
-    protected static $planet;
+    protected static $ellipsoid;
 
     /**
      * @var bool Set to false if you have the pecl geospatial extension installed but do not want to use it
@@ -32,27 +34,27 @@ class Location
     public static $defaultFormula = self::HAVERSINE;
 
     /**
-     * Set the planet to perform the calculations on
+     * Set the ellipsoid to perform the calculations on
      *
-     * @param Planet $planet
+     * @param Ellipsoid $ellipsoid
      */
-    public static function setPlanet( Planet $planet )
+    public static function setEllipsoid( Ellipsoid $ellipsoid )
     {
 
-        self::$planet = $planet;
+        self::$ellipsoid = $ellipsoid;
 
     }
 
     /**
-     * @return Earth|Planet the planet in use (generally Earth)
+     * @return Earth|Ellipsoid the ellipsoid in use (generally Earth)
      */
-    public static function getPlanet()
+    public static function getEllipsoid()
     {
-        if (self::$planet === null) {
-            self::$planet = new Earth;
+        if (self::$ellipsoid === null) {
+            self::$ellipsoid = new Earth;
         }
 
-        return self::$planet;
+        return self::$ellipsoid;
     }
 
     /**
@@ -163,7 +165,7 @@ class Location
      */
     public static function vincenty( Point $point1, Point $point2 )
     {
-        if (function_exists( 'vincenty' ) && self::$useSpatialExtension && self::getPlanet() instanceof Earth) {
+        if (function_exists( 'vincenty' ) && self::$useSpatialExtension && self::getEllipsoid() instanceof Earth) {
 
             $from = $point1->jsonSerialize();
             $to   = $point2->jsonSerialize();
@@ -173,10 +175,10 @@ class Location
             return $distance;
 
         } else {
-            $planet = self::getPlanet();
+            $ellipsoid = self::getEllipsoid();
 
-            $U1            = atan( ( 1.0 - $planet->getFlattening() ) * tan( $point1->latitudeToRad() ) );
-            $U2            = atan( ( 1.0 - $planet->getFlattening() ) * tan( $point2->latitudeToRad() ) );
+            $U1 = atan( ( 1.0 - $ellipsoid->getFlattening() ) * tan( $point1->latitudeToRad() ) );
+            $U2 = atan( ( 1.0 - $ellipsoid->getFlattening() ) * tan( $point2->latitudeToRad() ) );
             $L             = $point2->longitudeToRad() - $point1->longitudeToRad();
             $sinU1         = sin( $U1 );
             $cosU1         = cos( $U1 );
@@ -198,16 +200,16 @@ class Location
                 if ( ! is_numeric( $cosof2sigma )) {
                     $cosof2sigma = 0;
                 }
-                $C      = $planet->getFlattening() / 16 * $cos2Alpha * ( 4 + $planet->getFlattening() * ( 4 - 3 * $cos2Alpha ) );
+                $C      = $ellipsoid->getFlattening() / 16 * $cos2Alpha * ( 4 + $ellipsoid->getFlattening() * ( 4 - 3 * $cos2Alpha ) );
                 $lambdaP = $lambda;
-                $lambda = $L + ( 1 - $C ) * $planet->getFlattening() * $sinAlpha *
+                $lambda = $L + ( 1 - $C ) * $ellipsoid->getFlattening() * $sinAlpha *
                                ( $sigma + $C * $sinSigma * ( $cosof2sigma + $C * $cosSigma * ( - 1 + 2 * pow( $cosof2sigma,
                                                2 ) ) ) );
 
             } while (abs( $lambda - $lambdaP ) > 1e-12 && -- $looplimit > 0);
 
-            $uSq        = $cos2Alpha * ( pow( $planet->getMajorSemiAxis(), 2 ) - pow( $planet->getMinorSemiAxis(),
-                        2 ) ) / pow( $planet->getMinorSemiAxis(), 2 );
+            $uSq = $cos2Alpha * ( pow( $ellipsoid->getMajorSemiAxis(), 2 ) - pow( $ellipsoid->getMinorSemiAxis(),
+                        2 ) ) / pow( $ellipsoid->getMinorSemiAxis(), 2 );
             $A          = 1 + $uSq / 16384 * ( 4096 + $uSq * ( - 768 + $uSq * ( 320 - 175 * $uSq ) ) );
             $B          = $uSq / 1024 * ( 256 + $uSq * ( - 128 + $uSq * ( 74 - 47 * $uSq ) ) );
             $deltaSigma = $B * $sinSigma * ( $cosof2sigma + $B / 4 * ( $cosSigma * ( - 1 + 2 * pow( $cosof2sigma,
@@ -215,7 +217,7 @@ class Location
                                                                        $B / 6 * $cosof2sigma * ( - 3 + 4 * pow( $sinSigma,
                                                                                2 ) ) * ( - 3 + 4 * pow( $cosof2sigma,
                                                                                2 ) ) ) );
-            $s          = $planet->getMinorSemiAxis() * $A * ( $sigma - $deltaSigma );
+            $s   = $ellipsoid->getMinorSemiAxis() * $A * ( $sigma - $deltaSigma );
             $s          = floor( $s * 1000 ) / 1000;
 
             return $s;
@@ -246,7 +248,7 @@ class Location
         } else {
             $radDistance = self::haversine( $point1, $point2 );
 
-            return $radDistance * self::getPlanet()->radius( $unit );
+            return $radDistance * self::getEllipsoid()->radius( $unit );
         }
     }
 
@@ -262,11 +264,11 @@ class Location
     public static function convert( $distance, $from, $to )
     {
 
-        $planet = self::getPlanet();
+        $ellipsoid = self::getEllipsoid();
 
-        $km = $distance / $planet->getMultiplier( $from );
+        $m = $distance / $ellipsoid->getMultiplier( $from );
 
-        return $km * $planet->getMultiplier( $to );
+        return $m * $ellipsoid->getMultiplier( $to );
 
     }
 } 
