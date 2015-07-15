@@ -9,6 +9,11 @@ namespace Ricklab\Location;
 
 require_once __DIR__ . '/Geometry.php';
 
+/**
+ * Class MultiPointLine
+ * @package Ricklab\Location
+ * @deprecated
+ */
 class MultiPointLine implements Geometry, \SeekableIterator
 {
 

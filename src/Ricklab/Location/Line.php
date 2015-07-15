@@ -11,6 +11,11 @@ namespace Ricklab\Location;
 require_once __DIR__ . '/Geometry.php';
 require_once __DIR__ . '/Location.php';
 
+/**
+ * Class Line
+ * @package Ricklab\Location
+ * @deprecated
+ */
 class Line implements Geometry
 {
 
@@ -24,7 +29,7 @@ class Line implements Geometry
      * @param Point|array $start first point or array of points
      * @param Point|null $end 2nd point, ignored if $start is an array
      */
-    public function __construct( $start, Point $end = null )
+    public function __construct( Point $start, Point $end )
     {
         $this->start = $start;
         $this->end = $end;
