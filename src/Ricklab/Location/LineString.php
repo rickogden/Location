@@ -78,36 +78,36 @@ class LineString implements Geometry, \SeekableIterator, \ArrayAccess
         return $this->points[count( $this->points ) - 1];
     }
 
+    public function __toString()
+    {
+        $return = '(' . implode( ', ', $this->points ) . ')';
+
+        return $return;
+    }
+
 
     public function jsonSerialize()
     {
-        $coordinates = array();
-        /** @var Point $point */
-        foreach ($this->points as $point) {
-            $coordinates[] = [ $point->getLongitude(), $point->getLatitude() ];
-        }
+        $coordinates = $this->toArray();
 
         return [ 'type' => 'LineString', 'coordinates' => $coordinates ];
     }
 
-    public function toSql()
+    public function toWkt()
     {
-        $retVal     = 'LineString(';
-        $pointArray = array();
-        /** @var Point $point */
-        foreach ($this->points as $point) {
-            $pointArray[] = (string) $point;
-        }
-
-        $retVal .= implode( ', ', $pointArray );
-        $retVal .= ')';
+        $retVal = 'LineString' . $this;
 
         return $retVal;
     }
 
     public function toArray()
     {
-        return $this->points;
+        $return = [ ];
+        foreach ($this->points as $point) {
+            $return[] = $point->toArray();
+        }
+
+        return $return;
     }
 
     public function seek( $position )
@@ -196,8 +196,12 @@ class LineString implements Geometry, \SeekableIterator, \ArrayAccess
     public function offsetSet( $offset, $value )
     {
         if ($value instanceof Point) {
-            if (is_integer( $offset ) || $offset === null) {
+            if (is_integer( $offset )) {
                 $this->points[$offset] = $value;
+            } elseif ($offset === null) {
+                $this->points[] = $value;
+            } else {
+                throw new \OutOfBoundsException( 'Key must be numeric.' );
             }
         }
     }
@@ -216,6 +220,22 @@ class LineString implements Geometry, \SeekableIterator, \ArrayAccess
     public function offsetUnset( $offset )
     {
         unset( $this->points[$offset] );
+    }
+
+    /**
+     * @return Point[]
+     */
+    public function getPoints()
+    {
+        return $this->points;
+    }
+
+    /**
+     * @return Polygon
+     */
+    public function getBBox()
+    {
+        return Location::getBBox( $this );
     }
 
 

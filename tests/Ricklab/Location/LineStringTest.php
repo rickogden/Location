@@ -71,4 +71,30 @@ class LineStringTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 98.50702, round( $this->line->getInitialBearing(), 5 ) );
     }
 
+    public function testGeoJson()
+    {
+        $retval = json_encode( $this->line );
+        $this->assertEquals( '{"type":"LineString","coordinates":[[-2.27354,53.48575],[-2.23194,53.48204]]}', $retval );
+    }
+
+    public function testToArray()
+    {
+        $retval = [ [ - 2.27354, 53.48575 ], [ - 2.23194, 53.48204 ] ];
+
+        $this->assertEquals( $retval, $this->line->toArray() );
+    }
+
+    public function testToString()
+    {
+        $retval = '(-2.27354 53.48575, -2.23194 53.48204)';
+        $this->assertEquals( $retval, (string) $this->line );
+    }
+
+    public function testBBox()
+    {
+        $this->assertEquals(
+            '{"type":"Polygon","coordinates":[[[-2.27354,53.48575],[-2.23194,53.48575],[-2.23194,53.48204],[-2.27354,53.48204],[-2.27354,53.48575]]]}',
+            json_encode( $this->line->getBBox() ) );
+    }
+
 }

@@ -4,7 +4,7 @@ namespace Ricklab\Location\Tests;
 
 require __DIR__ . '/../../../vendor/autoload.php';
 
-use \Ricklab\Location;
+use Ricklab\Location;
 
 class LocationTest extends \PHPUnit_Framework_TestCase
 {
@@ -33,13 +33,13 @@ class LocationTest extends \PHPUnit_Framework_TestCase
             '{"type":"LineString","coordinates":[[-2.27354,53.48575],[-2.23194,53.48204]]}'
         );
 
-        $this->assertInstanceOf('Ricklab\Location\Line', $line);
-        $this->assertEquals(round($line->getLength(), 3), 2.783);
+        $this->assertInstanceOf( 'Ricklab\Location\LineString', $line );
+        $this->assertEquals( 2.783, round( $line->getLength(), 3 ) );
 
         $multiPointLine = Location\Location::fromGeoJson(
             '{"type":"LineString","coordinates":[[-2.27354,53.48575],[-2.23194,53.48204], [-2.23144,53.48254]]}'
         );
-        $this->assertInstanceOf('Ricklab\Location\MultiPointLine', $multiPointLine);
+        $this->assertInstanceOf( 'Ricklab\Location\LineString', $multiPointLine );
     }
 
     public function testCreatePolygon()
@@ -49,8 +49,8 @@ class LocationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Ricklab\Location\Polygon', $polygon);
 
-        $retVal = $polygon->toSql();
-        $this->assertEquals('POLYGON((2 3, 2 4, 3 4, 2 3))', $retVal);
+        $retVal = $polygon->toWkt();
+        $this->assertEquals( 'POLYGON((3 2, 4 2, 4 3, 3 2))', $retVal );
 
 
     }

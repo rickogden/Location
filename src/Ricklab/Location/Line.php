@@ -88,9 +88,19 @@ class Line implements Geometry
         );
     }
 
-    public function toSql()
+    public function toWkt()
     {
         return 'LineString(' . (string) $this->start . ', ' . (string) $this->end . ')';
+    }
+
+    public function toArray()
+    {
+        return [ $this->start->toArray(), $this->end->toArray() ];
+    }
+
+    public function getPoints()
+    {
+        return [ $this->start, $this->end ];
     }
 
 }

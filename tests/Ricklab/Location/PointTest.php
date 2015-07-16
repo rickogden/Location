@@ -52,12 +52,12 @@ class PointTest extends \PHPUnit_Framework_TestCase
 
     public function testToStringMethod()
     {
-        $this->assertEquals( $this->lat . ' ' . $this->lon, (string) $this->point );
+        $this->assertEquals( $this->lon . ' ' . $this->lat, (string) $this->point );
     }
 
-    public function testToSqlConversion()
+    public function testToWktConversion()
     {
-        $this->assertEquals( 'POINT(' . $this->lat . ' ' . $this->lon . ')', $this->point->toSql() );
+        $this->assertEquals( 'POINT(' . $this->lon . ' ' . $this->lat . ')', $this->point->toWkt() );
     }
 
     public function testRelativePoint()

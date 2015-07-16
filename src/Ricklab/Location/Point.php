@@ -75,7 +75,7 @@ class Point implements Geometry
      */
     public function __toString()
     {
-        return $this->latitude . ' ' . $this->longitude;
+        return $this->longitude . ' ' . $this->latitude;
     }
 
     public function getLatitude()
@@ -138,7 +138,7 @@ class Point implements Geometry
         $lon2x = cos( $distance / $rad ) - sin( $lat1 ) * sin( $lat2 );
         $lon2  = $lon1 + atan2( $lon2y, $lon2x );
 
-        return new Point( rad2deg( $lat2 ), rad2deg( $lon2 ) );
+        return new self( rad2deg( $lat2 ), rad2deg( $lon2 ) );
     }
 
     /**
@@ -196,14 +196,40 @@ class Point implements Geometry
         return new Line( $this, $point );
     }
 
+    /**
+     * @param $distance
+     * @param string $unit
+     *
+     * @return Polygon
+     * @deprecated
+     */
     public function getMbr( $distance, $unit = 'km' )
     {
-        return new Mbr( $this, $distance, $unit );
+        return $this->getBBoxByRadius( $distance, $unit );
     }
 
-    public function toSql()
+    /**
+     * @param $radius
+     * @param string $unit
+     *
+     * @return Polygon
+     */
+    public function getBBoxByRadius( $radius, $unit = 'km' )
+    {
+        return Location::getBBoxByRadius( $this, $radius, $unit );
+    }
+
+    public function toWkt()
     {
         return 'POINT(' . (string) $this . ')';
+    }
+
+    /**
+     * @return float[]
+     */
+    public function getCoordinates()
+    {
+        return [ $this->longitude, $this->latitude ];
     }
 
     /**
@@ -214,9 +240,18 @@ class Point implements Geometry
     {
         return array(
             'type' => 'Point',
-            'coordinates'
-                   => array( $this->longitude, $this->latitude )
+            'coordinates' => $this->toArray()
         );
+    }
+
+    public function toArray()
+    {
+        return [ $this->longitude, $this->latitude ];
+    }
+
+    public function getPoints()
+    {
+        return [ $this ];
     }
 
 }

@@ -19,7 +19,7 @@ class MultiPointLine implements Geometry, \SeekableIterator
 
     /**
      *
-     * @var Point[int] 
+     * @var Point[]
      */
     protected $points = array();
     protected $position = 0;
@@ -114,7 +114,8 @@ class MultiPointLine implements Geometry, \SeekableIterator
         return array('type' => 'LineString', 'coordinates' => $coordinates);
     }
 
-    public function toSql() {
+    public function toWkt()
+    {
         $retVal = 'LineString(';
         $pointArray = array();
         /** @var Point $point */
@@ -126,6 +127,11 @@ class MultiPointLine implements Geometry, \SeekableIterator
         $retVal .= ')';
 
         return $retVal;
+    }
+
+    public function getPoints()
+    {
+        return $this->points;
     }
 
 }

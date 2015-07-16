@@ -95,23 +95,25 @@ class Location
                 foreach ($coordinates as $coordinate) {
                     $points[] = new Point( $coordinate );
                 }
-                if (count( $points ) > 2) {
-                    $result = new MultiPointLine( $points );
-                } elseif (count( $points ) === 2) {
-                    $result = new Line( $points[0], $points[1] );
+                if (count( $points ) > 1) {
+                    $result = new LineString( $points );
                 } else {
                     throw new \ErrorException( 'cannot parse as Line' );
                 }
                 break;
             case 'Polygon':
-                $points = array();
-                foreach ($coordinates[0] as $coordinate) {
-                    if (is_array( $coordinate )) {
-                        $points[] = new Point( $coordinate );
+                $polygons = array();
+                foreach ($coordinates as $polygon) {
+                    $points = [ ];
+                    foreach ($polygon as $coordinate) {
+                        if (is_array( $coordinate )) {
+                            $points[] = new Point( $coordinate );
+                        }
                     }
-
-                    $result = new Polygon( $points );
+                    $polygons[] = $points;
                 }
+
+                $result = new Polygon( $polygons );
 
                 break;
 
@@ -270,5 +272,66 @@ class Location
 
         return $m * $ellipsoid->getMultiplier( $to );
 
+    }
+
+    public static function getBBoxByRadius( Point $point, $radius, $unit = 'km' )
+    {
+        $north = $point->getRelativePoint( $radius, 0, $unit );
+        $south = $point->getRelativePoint( $radius, 180, $unit );
+
+        $limits['n'] = $north->lat;
+        $limits['s'] = $south->lat;
+
+        $radDist = $radius / Location::getEllipsoid()->radius( $unit );
+        //   $minLat  = deg2rad( $limits['s'] );
+        //   $maxLat  = deg2rad( $limits['n'] );
+        $radLon = $point->longitudeToRad();
+        //if ($minLat > deg2rad(-90) && $maxLat < deg2rad(90)) {
+        $deltaLon = asin( sin( $radDist ) / cos( $point->latitudeToRad() ) );
+        $minLon   = $radLon - $deltaLon;
+        if ($minLon < deg2rad( - 180 )) {
+            $minLon += 2 * pi();
+        }
+        $maxLon = $radLon + $deltaLon;
+        if ($maxLon > deg2rad( 180 )) {
+            $maxLon -= 2 * pi();
+        }
+        //}
+
+        $limits['w'] = rad2deg( $minLon );
+        $limits['e'] = rad2deg( $maxLon );
+
+        $nw      = new Point( $limits['n'], $limits['w'] );
+        $ne      = new Point( $limits['n'], $limits['e'] );
+        $sw      = new Point( $limits['s'], $limits['w'] );
+        $se      = new Point( $limits['s'], $limits['e'] );
+        $polygon = new Polygon( [ [ $nw, $ne, $se, $sw ] ] );
+
+        return $polygon;
+    }
+
+    public static function getBBox( Geometry $geometry )
+    {
+        $maxLat = - 90;
+        $minLat = 90;
+        $maxLon = - 180;
+        $minLon = 180;
+
+        $points = $geometry->getPoints();
+
+        /** @var Point $point */
+        foreach ($points as $point) {
+            $maxLat = ( $point->getLatitude() > $maxLat ) ? $point->getLatitude() : $maxLat;
+            $minLat = ( $point->getLatitude() < $minLat ) ? $point->getLatitude() : $minLat;
+            $maxLon = ( $point->getLongitude() > $maxLon ) ? $point->getLongitude() : $maxLon;
+            $minLon = ( $point->getLongitude() < $minLon ) ? $point->getLongitude() : $minLon;
+        }
+
+        $nw = new Point( [ $minLon, $maxLat ] );
+        $ne = new Point( [ $maxLon, $maxLat ] );
+        $se = new Point( [ $maxLon, $minLat ] );
+        $sw = new Point( [ $minLon, $minLat ] );
+
+        return new Polygon( [ [ $nw, $ne, $se, $sw ] ] );
     }
 } 

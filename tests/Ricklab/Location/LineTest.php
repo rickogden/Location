@@ -59,9 +59,10 @@ class LineTest extends \PHPUnit_Framework_TestCase {
                 
     }
 
-    public function testToSql() {
-        $retVal = $this->line->toSql();
-        $this->assertEquals('LineString(53.48575 -2.27354, 53.48204 -2.23194)', $retVal);
+    public function testToWkt()
+    {
+        $retVal = $this->line->toWkt();
+        $this->assertEquals( 'LineString(-2.27354 53.48575, -2.23194 53.48204)', $retVal );
     }
 
     public function testGeoJson()
