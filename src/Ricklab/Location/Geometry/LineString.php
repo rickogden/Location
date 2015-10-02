@@ -5,10 +5,12 @@
  * Time: 13:39
  */
 
-namespace Ricklab\Location;
+namespace Ricklab\Location\Geometry;
 
 
-class LineString implements Geometry, \SeekableIterator, \ArrayAccess
+use Ricklab\Location\Location;
+
+class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
 {
 
     /**
@@ -93,13 +95,6 @@ class LineString implements Geometry, \SeekableIterator, \ArrayAccess
         return [ 'type' => 'LineString', 'coordinates' => $coordinates ];
     }
 
-    public function toWkt()
-    {
-        $retVal = 'LineString' . $this;
-
-        return $retVal;
-    }
-
     public function toArray()
     {
         $return = [ ];
@@ -110,6 +105,13 @@ class LineString implements Geometry, \SeekableIterator, \ArrayAccess
         return $return;
     }
 
+    public function toWkt()
+    {
+        $retVal = 'LineString' . $this;
+
+        return $retVal;
+    }
+
     public function seek( $position )
     {
         $this->position = $position;
@@ -117,6 +119,11 @@ class LineString implements Geometry, \SeekableIterator, \ArrayAccess
         if ( ! $this->valid()) {
             throw new \OutOfBoundsException( 'Item does not exist' );
         }
+    }
+
+    public function valid()
+    {
+        return isset( $this->points[$this->position] );
     }
 
     public function current()
@@ -137,11 +144,6 @@ class LineString implements Geometry, \SeekableIterator, \ArrayAccess
     public function rewind()
     {
         $this->position = 0;
-    }
-
-    public function valid()
-    {
-        return isset( $this->points[$this->position] );
     }
 
     /**

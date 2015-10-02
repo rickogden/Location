@@ -1,7 +1,9 @@
 <?php
 
-namespace Ricklab\Location;
+namespace Ricklab\Location\Geometry;
 
+
+use Ricklab\Location\Location;
 
 class LineStringTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,8 +27,8 @@ class LineStringTest extends \PHPUnit_Framework_TestCase
 
         $line2 = new LineString( [ $point1, $point2 ] );
 
-        $this->assertInstanceOf( '\Ricklab\Location\LineString', $line );
-        $this->assertInstanceOf( '\Ricklab\Location\LineString', $line2 );
+        $this->assertInstanceOf( '\Ricklab\Location\Geometry\LineString', $line );
+        $this->assertInstanceOf( '\Ricklab\Location\Geometry\LineString', $line2 );
 
     }
 

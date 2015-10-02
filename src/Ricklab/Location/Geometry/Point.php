@@ -11,11 +11,13 @@
  * @author rick
  */
 
-namespace Ricklab\Location;
+namespace Ricklab\Location\Geometry;
 
-require_once __DIR__ . '/Geometry.php';
+use Ricklab\Location\Location;
 
-class Point implements Geometry
+require_once __DIR__ . '/GeometryInterface.php';
+
+class Point implements GeometryInterface
 {
 
     protected $longitude, $latitude;
@@ -34,7 +36,7 @@ class Point implements Geometry
         if ($long === null) {
             if (is_array( $lat )) {
                 $long = $lat[0];
-                $lat = $lat[1];
+                $lat  = $lat[1];
             } else {
                 throw new \InvalidArgumentException( 'Arguments must be an array or two numbers.' );
             }
@@ -52,21 +54,30 @@ class Point implements Geometry
     }
 
     /**
-     * Get the latitude in Rads
-     * @return Number Latitude in Rads
+     * Create a new point from Degrees, minutes and seconds
+     *
+     * @param array $lat Latitude in the order of degress, minutes, seconds[, direction]
+     * @param array $lon Longitude in the order of degress, minutes, seconds[, direction]
+     *
+     * @return Point
      */
-    public function latitudeToRad()
+    public static function fromDms( array $lat, array $lon )
     {
-        return deg2rad( $this->latitude );
+        $decLat = Location::dmsToDecimal( $lat[0], $lat[1], $lat[2], isset( $lat[3] ) ? $lat[3] : null );
+
+        $decLon = Location::dmsToDecimal( $lon[0], $lon[1], $lon[2], isset( $lon[3] ) ? $lon[3] : null );
+
+        return new self( $decLat, $decLon );
     }
 
-    /**
-     * Get the longitude in Rads
-     * @return Number Longitude in Rads
-     */
-    public function longitudeToRad()
+    public function getLatitudeInDms()
     {
-        return deg2rad( $this->longitude );
+        return Location::decimalToDms( $this->latitude );
+    }
+
+    public function getLongitudeInDms()
+    {
+        return Location::decimalToDms( $this->longitude );
     }
 
     /**
@@ -81,11 +92,6 @@ class Point implements Geometry
     public function getLatitude()
     {
         return $this->latitude;
-    }
-
-    public function getLongitude()
-    {
-        return $this->longitude;
     }
 
     /**
@@ -125,7 +131,7 @@ class Point implements Geometry
      */
     public function getRelativePoint( $distance, $bearing, $unit = 'km' )
     {
-        $rad = Location::getEllipsoid()->radius( $unit );
+        $rad     = Location::getEllipsoid()->radius( $unit );
         $lat1    = $this->latitudeToRad();
         $lon1    = $this->longitudeToRad();
         $bearing = deg2rad( $bearing );
@@ -139,6 +145,24 @@ class Point implements Geometry
         $lon2  = $lon1 + atan2( $lon2y, $lon2x );
 
         return new self( rad2deg( $lat2 ), rad2deg( $lon2 ) );
+    }
+
+    /**
+     * Get the latitude in Rads
+     * @return Number Latitude in Rads
+     */
+    public function latitudeToRad()
+    {
+        return deg2rad( $this->latitude );
+    }
+
+    /**
+     * Get the longitude in Rads
+     * @return Number Longitude in Rads
+     */
+    public function longitudeToRad()
+    {
+        return deg2rad( $this->longitude );
     }
 
     /**
@@ -169,6 +193,27 @@ class Point implements Geometry
         }
     }
 
+    /**
+     * A GeoJSON representation of the class.
+     * @return array a geoJSON representation
+     */
+    public function jsonSerialize()
+    {
+        return array(
+            'type'        => 'Point',
+            'coordinates' => $this->toArray()
+        );
+    }
+
+    public function toArray()
+    {
+        return [ $this->longitude, $this->latitude ];
+    }
+
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
 
     public function getMidpoint( Point $point )
     {
@@ -228,23 +273,6 @@ class Point implements Geometry
      * @return float[]
      */
     public function getCoordinates()
-    {
-        return [ $this->longitude, $this->latitude ];
-    }
-
-    /**
-     * A GeoJSON representation of the class.
-     * @return array a geoJSON representation
-     */
-    public function jsonSerialize()
-    {
-        return array(
-            'type' => 'Point',
-            'coordinates' => $this->toArray()
-        );
-    }
-
-    public function toArray()
     {
         return [ $this->longitude, $this->latitude ];
     }

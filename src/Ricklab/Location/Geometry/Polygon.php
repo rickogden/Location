@@ -1,10 +1,10 @@
 <?php
 
-namespace Ricklab\Location;
+namespace Ricklab\Location\Geometry;
 
-require_once __DIR__ . '/MultiPointLine.php';
+use Ricklab\Location\Location;
 
-class Polygon implements Geometry, \ArrayAccess, \SeekableIterator
+class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
 {
 
     /**
@@ -60,11 +60,6 @@ class Polygon implements Geometry, \ArrayAccess, \SeekableIterator
         return $geo;
     }
 
-    public function getPerimeter( $unit = 'km', $formula = null )
-    {
-        return $this->lineStrings[0]->getLength( $unit, $formula );
-    }
-
     public function toArray()
     {
         $return = [ ];
@@ -74,6 +69,11 @@ class Polygon implements Geometry, \ArrayAccess, \SeekableIterator
 
         return $return;
 
+    }
+
+    public function getPerimeter( $unit = 'km', $formula = null )
+    {
+        return $this->lineStrings[0]->getLength( $unit, $formula );
     }
 
     /**
@@ -107,18 +107,6 @@ class Polygon implements Geometry, \ArrayAccess, \SeekableIterator
     public function key()
     {
         return $this->position;
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Checks if current position is valid
-     * @link http://php.net/manual/en/iterator.valid.php
-     * @return boolean The return value will be casted to boolean and then evaluated.
-     * Returns true on success or false on failure.
-     */
-    public function valid()
-    {
-        return isset( $this->lineStrings[$this->position] );
     }
 
     /**
@@ -227,6 +215,18 @@ class Polygon implements Geometry, \ArrayAccess, \SeekableIterator
         if ( ! $this->valid()) {
             throw new \OutOfBoundsException( 'Item does not exist' );
         }
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Checks if current position is valid
+     * @link http://php.net/manual/en/iterator.valid.php
+     * @return boolean The return value will be casted to boolean and then evaluated.
+     * Returns true on success or false on failure.
+     */
+    public function valid()
+    {
+        return isset( $this->lineStrings[$this->position] );
     }
 
     public function getPoints()

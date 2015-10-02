@@ -1,45 +1,46 @@
 <?php
 
-namespace Ricklab\Location\Tests;
+namespace Ricklab\Location\Geometry;
+
+use Ricklab\Location\Location;
 
 require __DIR__ . '/../../../vendor/autoload.php';
 
-use Ricklab\Location;
 
 class PolygonTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      *
-     * @var \Ricklab\Location\Polygon
+     * @var \Ricklab\Location\Geometry\Polygon
      */
     public $polygon;
 
     public function setUp()
     {
 
-        Location\Location::$useSpatialExtension = false;
-        $this->polygon = new Location\Polygon([new Location\Point(2, 3), new Location\Point(2, 4), new Location\Point(3, 4)]);
+        Location::$useSpatialExtension = false;
+        $this->polygon                 = new Polygon( [ new Point( 2, 3 ), new Point( 2, 4 ), new Point( 3, 4 ) ] );
     }
 
     public function testConstruction()
     {
-        $poly1 = new Location\Polygon( [
+        $poly1 = new Polygon( [
             [
-                new Location\Point( 2, 3 ),
-                new Location\Point( 2, 4 ),
-                new Location\Point( 3, 4 ),
-                new Location\Point( 2, 3 )
+                new Point( 2, 3 ),
+                new Point( 2, 4 ),
+                new Point( 3, 4 ),
+                new Point( 2, 3 )
             ]
         ] );
         $this->assertEquals( $this->polygon, $poly1 );
 
-        $poly2 = new Location\Polygon( [
-            new Location\LineString( [
-                new Location\Point( 2, 3 ),
-                new Location\Point( 2, 4 ),
-                new Location\Point( 3, 4 ),
-                new Location\Point( 2, 3 )
+        $poly2 = new Polygon( [
+            new LineString( [
+                new Point( 2, 3 ),
+                new Point( 2, 4 ),
+                new Point( 3, 4 ),
+                new Point( 2, 3 )
             ] )
         ] );
         $this->assertEquals( $this->polygon, $poly2 );
@@ -60,7 +61,7 @@ class PolygonTest extends \PHPUnit_Framework_TestCase
     public function testObjectIsAPolygon()
     {
 
-        $this->assertInstanceOf('Ricklab\Location\Polygon', $this->polygon);
+        $this->assertInstanceOf( 'Ricklab\Location\Geometry\Polygon', $this->polygon );
     }
 
     public function testToString()
@@ -88,12 +89,12 @@ class PolygonTest extends \PHPUnit_Framework_TestCase
 
     public function testBBox()
     {
-        $polygon = new Location\Polygon( [
+        $polygon = new Polygon( [
             [
-                new Location\Point( 3, 4 ),
-                new Location\Point( 2, 3 ),
-                new Location\Point( 2, 4 ),
-                new Location\Point( 3, 2 )
+                new Point( 3, 4 ),
+                new Point( 2, 3 ),
+                new Point( 2, 4 ),
+                new Point( 3, 2 )
             ]
         ] );
         $this->assertEquals( '{"type":"Polygon","coordinates":[[[2,3],[4,3],[4,2],[2,2],[2,3]]]}',

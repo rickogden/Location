@@ -5,10 +5,10 @@
  * Time: 16:34
  */
 
-namespace Ricklab\Location;
+namespace Ricklab\Location\Geometry;
 
 
-class MultiLineString implements Geometry
+class MultiLineString implements GeometryInterface
 {
 
     /**
@@ -33,19 +33,6 @@ class MultiLineString implements Geometry
     public function toWkt()
     {
         return 'MULTILINESTRING' . (string) $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $return = [ ];
-        foreach ($this->lineStrings as $line) {
-            $return[] = $line->toArray();
-        }
-
-        return $return;
     }
 
     /**
@@ -77,6 +64,19 @@ class MultiLineString implements Geometry
         ];
 
         return $geo;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $return = [ ];
+        foreach ($this->lineStrings as $line) {
+            $return[] = $line->toArray();
+        }
+
+        return $return;
     }
 
     public function __toString()
