@@ -1,30 +1,37 @@
 <?php
 /**
  * Author: rick
- * Date: 16/07/15
- * Time: 16:34
+ * Date: 04/10/15
+ * Time: 11:22
  */
 
 namespace Ricklab\Location\Geometry;
 
 
-class MultiLineString implements GeometryInterface
+class MultiPolygon implements GeometryInterface
 {
-
     /**
-     * @var LineString[]
+     * @var Polygon[]
      */
     protected $geometries = [];
 
-    public function __construct( array $lineStrings )
+    /**
+     * @param Polygon[] $polygons
+     */
+    public function __construct(array $polygons)
     {
-        foreach ($lineStrings as $lineString) {
-            if ( ! $lineString instanceof LineString) {
-                $lineString = new LineString($lineString);
-            }
 
-            $this->geometries[] = $lineString;
+        foreach ($polygons as $polygon) {
+            if (is_array($polygon)) {
+                $polygon = new Polygon($polygon);
+            }
+            if ( ! $polygon instanceof Polygon) {
+                throw new \InvalidArgumentException('$polygons must be an array of Polygon objects');
+            } else {
+                $this->geometries[] = $polygon;
+            }
         }
+
     }
 
     /**
@@ -32,7 +39,7 @@ class MultiLineString implements GeometryInterface
      */
     public function toWkt()
     {
-        return 'MULTILINESTRING' . (string) $this;
+        return 'MULTIPOLYGON' . (string) $this;
     }
 
     /**
@@ -40,13 +47,7 @@ class MultiLineString implements GeometryInterface
      */
     public function getPoints()
     {
-        $points = [ ];
-        foreach ($this->geometries as $line) {
-            $linePoints = $line->getPoints();
-            $points += $linePoints;
-        }
-
-        return $points;
+        // TODO: Implement getPoints() method.
     }
 
     /**
@@ -58,12 +59,12 @@ class MultiLineString implements GeometryInterface
      */
     function jsonSerialize()
     {
-        $geo = [
-            'type'        => 'MultiLineString',
+        $json = [
+            'type'        => 'MultiPolygon',
             'coordinates' => $this->toArray()
         ];
 
-        return $geo;
+        return $json;
     }
 
     /**
@@ -71,24 +72,18 @@ class MultiLineString implements GeometryInterface
      */
     public function toArray()
     {
-        $return = [];
-        foreach ($this->geometries as $line) {
-            $return[] = $line->toArray();
+        $ar = [];
+
+        foreach ($this->geometries as $polygon) {
+            $ar[] = $polygon->toArray();
         }
 
-        return $return;
-    }
-
-    /**
-     * @return LineString[] an array of the LineStrings
-     */
-    public function getGeometries()
-    {
-        return $this->geometries;
+        return $ar;
     }
 
     public function __toString()
     {
+
         return '(' . implode(',', $this->geometries) . ')';
     }
 

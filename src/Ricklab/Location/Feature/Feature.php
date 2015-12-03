@@ -11,7 +11,7 @@ namespace Ricklab\Location\Feature;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Location;
 
-class Feature implements \jsonSerializable, \ArrayAccess
+class Feature extends FeatureAbstract implements \ArrayAccess
 {
 
     protected $id = null;
@@ -24,15 +24,10 @@ class Feature implements \jsonSerializable, \ArrayAccess
     /**
      * @var array
      */
-    protected $properties = [ ];
-
-    /**
-     * @var bool
-     */
-    protected $bbox = null;
+    protected $properties = [];
 
 
-    public function __construct( array $properties = [ ], GeometryInterface $geometry = null, $bbox = false )
+    public function __construct(array $properties = [], GeometryInterface $geometry = null, $bbox = false)
     {
         $this->properties = $properties;
         $this->geometry   = $geometry;
@@ -62,7 +57,7 @@ class Feature implements \jsonSerializable, \ArrayAccess
      *
      * @return $this
      */
-    public function setGeometry( GeometryInterface $geometry )
+    public function setGeometry(GeometryInterface $geometry)
     {
         $this->geometry = $geometry;
 
@@ -87,20 +82,22 @@ class Feature implements \jsonSerializable, \ArrayAccess
     function jsonSerialize()
     {
 
-
-        $array = [
-            'type'       => 'Feature',
-            'geometry'   => $this->geometry->jsonSerialize(),
-            'properties' => $this->properties
-        ];
-
-        if ($this->bbox) {
-            $array['bbox'] = Location::getBBox( $this->geometry );
-        }
+        $array = [];
 
         if ($this->id !== null) {
             $array['id'] = $this->id;
         }
+
+        $array['type'] = 'Feature';
+
+        if ($this->bbox) {
+            $array['bbox'] = Location::getBBox($this->geometry);
+        }
+
+
+        $array['geometry']   = $this->geometry->jsonSerialize();
+        $array['properties'] = $this->properties;
+
 
         return $array;
 
@@ -120,7 +117,7 @@ class Feature implements \jsonSerializable, \ArrayAccess
      * <p>
      * The return value will be casted to boolean if non-boolean was returned.
      */
-    public function offsetExists( $offset )
+    public function offsetExists($offset)
     {
         return isset( $this->properties[$offset] );
     }
@@ -136,9 +133,9 @@ class Feature implements \jsonSerializable, \ArrayAccess
      *
      * @return mixed Can return all value types.
      */
-    public function offsetGet( $offset )
+    public function offsetGet($offset)
     {
-        return $this->getProperty( $offset );
+        return $this->getProperty($offset);
     }
 
     /**
@@ -146,7 +143,7 @@ class Feature implements \jsonSerializable, \ArrayAccess
      *
      * @return mixed the value of the property
      */
-    public function getProperty( $key )
+    public function getProperty($key)
     {
         return $this->properties[$key];
     }
@@ -165,9 +162,9 @@ class Feature implements \jsonSerializable, \ArrayAccess
      *
      * @return void
      */
-    public function offsetSet( $offset, $value )
+    public function offsetSet($offset, $value)
     {
-        $this->setProperty( $offset, $value );
+        $this->setProperty($offset, $value);
     }
 
     /**
@@ -176,7 +173,7 @@ class Feature implements \jsonSerializable, \ArrayAccess
      *
      * @return $this
      */
-    public function setProperty( $key, $value )
+    public function setProperty($key, $value)
     {
         $this->properties[$key] = $value;
 
@@ -194,12 +191,12 @@ class Feature implements \jsonSerializable, \ArrayAccess
      *
      * @return void
      */
-    public function offsetUnset( $offset )
+    public function offsetUnset($offset)
     {
-        $this->removeProperty( $offset );
+        $this->removeProperty($offset);
     }
 
-    public function removeProperty( $key )
+    public function removeProperty($key)
     {
         unset( $this->properties[$key] );
 

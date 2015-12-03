@@ -15,21 +15,23 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
     protected $position = 0;
 
     /**
+     * Pass in an array of Points to create a Polygon or multiple arrays of points for a Polygon with holes in.
      *
-     * @param array $lines
+     * @param LineString[]|Point[]|array $lines
      */
     public function __construct( array $lines )
     {
         foreach ($lines as $line) {
             if ($line instanceof LineString) {
                 $this->lineStrings[] = $line;
-            } elseif (is_array( $line )) {
-                $this->lineStrings[] = new LineString( $line );
+            } elseif (is_array($line)) {
+                $this->lineStrings[] = new LineString($line);
             } elseif ($line instanceof Point) {
-                $this->lineStrings[] = new LineString( $lines );
+                $this->lineStrings[] = new LineString($lines);
                 break;
             }
         }
+
 
         foreach ($this->lineStrings as $line) {
             if ($line->getLast() != $line->getFirst()) {

@@ -16,7 +16,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
     /**
      * @var Point[]
      */
-    protected $points = [ ];
+    protected $points = [];
 
     protected $position = 0;
 
@@ -24,22 +24,17 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
      * @param Point|array $points the points, or the starting point
      * @param Point|null $end the end point, only used if $points is not an array
      */
-    public function __construct( $points, Point $end = null )
+    public function __construct($points, Point $end = null)
     {
 
         if ($points instanceof Point && $end !== null) {
-            $this->points = [ $points, $end ];
-        } elseif (is_array( $points ) && count( $points ) > 1) {
+            $this->points = [$points, $end];
+        } elseif (is_array($points) && count($points) > 1) {
             foreach ($points as $point) {
-                if ($point instanceof Point) {
-                    $this->points[] = $point;
-
-                } else {
-                    throw new \InvalidArgumentException( 'Contents of array must consist only of Point objects.' );
-                }
+                $this[] = $point;
             }
         } else {
-            throw new \InvalidArgumentException( 'Parameters must be 2 points or an array of points.' );
+            throw new \InvalidArgumentException('Parameters must be 2 points or an array of points.');
         }
 
     }
@@ -49,15 +44,15 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
      */
     public function getInitialBearing()
     {
-        return $this->points[0]->initialBearingTo( $this->points[1] );
+        return $this->points[0]->initialBearingTo($this->points[1]);
     }
 
 
-    public function getLength( $unit = 'km', $formula = null )
+    public function getLength($unit = 'km', $formula = null)
     {
         $distance = 0;
-        for ($i = 1; $i < count( $this->points ); $i ++) {
-            $distance += $this->points[$i - 1]->distanceTo( $this->points[$i], $unit, $formula );
+        for ($i = 1; $i < count($this->points); $i ++) {
+            $distance += $this->points[$i - 1]->distanceTo($this->points[$i], $unit, $formula);
         }
 
         return $distance;
@@ -77,12 +72,12 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
      */
     public function getLast()
     {
-        return $this->points[count( $this->points ) - 1];
+        return $this->points[count($this->points) - 1];
     }
 
     public function __toString()
     {
-        $return = '(' . implode( ', ', $this->points ) . ')';
+        $return = '(' . implode(', ', $this->points) . ')';
 
         return $return;
     }
@@ -92,12 +87,12 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
     {
         $coordinates = $this->toArray();
 
-        return [ 'type' => 'LineString', 'coordinates' => $coordinates ];
+        return ['type' => 'LineString', 'coordinates' => $coordinates];
     }
 
     public function toArray()
     {
-        $return = [ ];
+        $return = [];
         foreach ($this->points as $point) {
             $return[] = $point->toArray();
         }
@@ -107,17 +102,17 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
 
     public function toWkt()
     {
-        $retVal = 'LineString' . $this;
+        $retVal = 'LINESTRING' . $this;
 
         return $retVal;
     }
 
-    public function seek( $position )
+    public function seek($position)
     {
         $this->position = $position;
 
         if ( ! $this->valid()) {
-            throw new \OutOfBoundsException( 'Item does not exist' );
+            throw new \OutOfBoundsException('Item does not exist');
         }
     }
 
@@ -160,7 +155,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
      * <p>
      * The return value will be casted to boolean if non-boolean was returned.
      */
-    public function offsetExists( $offset )
+    public function offsetExists($offset)
     {
         return isset( $this->points[$offset] );
     }
@@ -176,7 +171,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
      *
      * @return mixed Can return all value types.
      */
-    public function offsetGet( $offset )
+    public function offsetGet($offset)
     {
         return $this->points[$offset];
     }
@@ -195,16 +190,22 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
      *
      * @return void
      */
-    public function offsetSet( $offset, $value )
+    public function offsetSet($offset, $value)
     {
+        if (is_array($value)) {
+            $value = new Point($value);
+        }
+
         if ($value instanceof Point) {
-            if (is_integer( $offset )) {
+            if (is_integer($offset)) {
                 $this->points[$offset] = $value;
             } elseif ($offset === null) {
                 $this->points[] = $value;
             } else {
-                throw new \OutOfBoundsException( 'Key must be numeric.' );
+                throw new \OutOfBoundsException('Key must be numeric.');
             }
+        } else {
+            throw new \InvalidArgumentException('Value must be a point or an array');
         }
     }
 
@@ -219,9 +220,22 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
      *
      * @return void
      */
-    public function offsetUnset( $offset )
+    public function offsetUnset($offset)
     {
         unset( $this->points[$offset] );
+    }
+
+    /**
+     * @return Polygon
+     */
+    public function getBBox()
+    {
+        return Location::getBBox($this);
+    }
+
+    public function toPolygon()
+    {
+        return new Polygon($this->getPoints());
     }
 
     /**
@@ -231,14 +245,5 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
     {
         return $this->points;
     }
-
-    /**
-     * @return Polygon
-     */
-    public function getBBox()
-    {
-        return Location::getBBox( $this );
-    }
-
 
 }

@@ -10,7 +10,7 @@ namespace Ricklab\Location\Feature;
 
 use Ricklab\Location\Location;
 
-class FeatureCollection implements \JsonSerializable, \SeekableIterator
+class FeatureCollection extends FeatureAbstract implements \SeekableIterator
 {
     /**
      * @var Feature[]
@@ -21,11 +21,6 @@ class FeatureCollection implements \JsonSerializable, \SeekableIterator
      * @var int
      */
     protected $position = 0;
-
-    /**
-     * @var bool
-     */
-    protected $bbox = false;
 
     /**
      * FeatureCollection constructor.
@@ -167,14 +162,15 @@ class FeatureCollection implements \JsonSerializable, \SeekableIterator
         }
 
 
-        $return = [
-            'type'     => 'FeatureCollection',
-            'features' => $features
-        ];
+        $return         = [];
+        $return['type'] = 'FeatureCollection';
 
         if ($this->bbox) {
             $return['bbox'] = Location::getBBoxArray( $points );
         }
+
+        $return['features'] = $features;
+
 
         return $return;
     }
