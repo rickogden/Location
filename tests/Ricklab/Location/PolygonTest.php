@@ -104,4 +104,14 @@ class PolygonTest extends \PHPUnit_Framework_TestCase
             json_encode( $this->polygon->getBBox() ) );
     }
 
+    public function testFromArray()
+    {
+        $ar = [[[100.0, 0.0], [101.0, 1.0], [102.0, 2.0], [103.0, 3.0]]];
+
+        $polygon = new Polygon($ar);
+
+        $this->assertInstanceOf('Ricklab\Location\Geometry\Polygon', $polygon);
+        $this->assertEquals([100.0, 0.0], $polygon[0][0]->toArray());
+    }
+
 }

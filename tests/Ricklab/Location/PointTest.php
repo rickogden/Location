@@ -103,4 +103,21 @@ class PointTest extends \PHPUnit_Framework_TestCase
 
     }
 
+
+    public function testFractionAlongLine()
+    {
+
+        $point1 = new Point([5, 10]);
+        $point2 = new Point([15, 10]);
+
+        $fraction02 = $point1->getFractionAlongLineTo($point2, 0.2);
+        $fraction05 = $point1->getFractionAlongLineTo($point2, 0.5);
+        $midpoint   = $point1->getMidpoint($point2);
+
+        $this->assertEquals(6.9998522347268, $fraction02->getLongitude());
+        $this->assertEquals(10.023944943799, $fraction02->getLatitude());
+        $this->assertEquals($midpoint->getLatitude(), $fraction05->getLatitude());
+        $this->assertEquals($midpoint->getLongitude(), $fraction05->getLongitude());
+    }
+
 }

@@ -99,4 +99,19 @@ class LineStringTest extends \PHPUnit_Framework_TestCase
             json_encode( $this->line->getBBox() ) );
     }
 
+    public function testFromArray()
+    {
+        $line = new LineString([[- 2.27354, 53.48575], [- 2.23194, 53.48204]]);
+
+        $point1 = $line[0];
+        $point2 = $line[1];
+        $this->assertInstanceOf('\Ricklab\Location\Geometry\Point', $point1);
+        $this->assertInstanceOf('\Ricklab\Location\Geometry\Point', $point2);
+
+        $this->assertEquals(- 2.27354, $point1->getLongitude());
+        $this->assertEquals(53.48204, $point2->getLatitude());
+
+
+    }
+
 }
