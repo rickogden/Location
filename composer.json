@@ -13,8 +13,18 @@
     "require": {
         "php": ">=5.4|^7.0"
     },
+    "require-dev": {
+        "phpdocumentor/phpdocumentor": "2.*"
+    },
     "autoload": {
-        "psr-0": { "Ricklab\\Location":"src/" }
+        "psr-4": {
+            "Ricklab\\Location\\": "src/Ricklab/Location/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ricklab\\Location\\": "tests/Ricklab/Location/"
+        }
     },
     "extra": {
         "branch-alias": {

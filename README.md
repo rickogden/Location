@@ -4,14 +4,14 @@ A library for geospatial calculations in PHP.
 
 ## Installation
 
-Using composer, add to your composer.json: "ricklab/location": "dev-master"
+Using composer, run `composer require ricklab\location`
 
 ## Usage
 
 A brief example of how this library can be used:
 
-    $point = new Ricklab\Location\Point($latitude, $longitude);
-    $point2 = new Ricklab\Location\Point($lat2, $lon2);
-    $distance = $point->distanceTo($point2)->to('miles');
-    $line = new Ricklab\Location\Line($point, $point2);
+    $point = new Ricklab\Location\Geometry\Point($latitude, $longitude);
+    $point2 = new Ricklab\Location\Geometry\Point($lat2, $lon2);
+    $distance = $point->distanceTo($point2, 'miles');
+    $line = new Ricklab\Location\Geometry\LineString($point, $point2);
  

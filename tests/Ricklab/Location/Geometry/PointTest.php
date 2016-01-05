@@ -1,17 +1,15 @@
 <?php
 
-namespace Ricklab\Location\Tests;
+namespace Ricklab\Location\Geometry;
 
-require __DIR__ . '/../../../vendor/autoload.php';
-
-use Ricklab\Location;
+use Ricklab\Location\Location;
 
 class PointTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      *
-     * @var \Ricklab\Location\Point
+     * @var \Ricklab\Location\Geometry\Point
      */
     public $point;
     public $lat = 53.48575;
@@ -20,18 +18,18 @@ class PointTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
 
-        Location\Location::$useSpatialExtension = false;
-        $this->point = new Location\Point($this->lat, $this->lon);
+        Location::$useSpatialExtension = false;
+        $this->point                   = new Point( $this->lat, $this->lon );
     }
 
     public function testInstanceOfClassIsAPoint()
     {
-        $this->assertTrue($this->point instanceof Location\Point);
+        $this->assertTrue( $this->point instanceof Point );
     }
 
     public function testPointCreationAsArray()
     {
-        $point = new Location\Point([$this->lon, $this->lat]);
+        $point = new Point( [ $this->lon, $this->lat ] );
         $this->assertEquals($this->lat, $point->getLatitude());
         $this->assertEquals($this->lon, $point->getLongitude());
     }
@@ -52,12 +50,12 @@ class PointTest extends \PHPUnit_Framework_TestCase
 
     public function testToStringMethod()
     {
-        $this->assertEquals( $this->lat . ' ' . $this->lon, (string) $this->point );
+        $this->assertEquals( $this->lon . ' ' . $this->lat, (string) $this->point );
     }
 
-    public function testToSqlConversion()
+    public function testToWktConversion()
     {
-        $this->assertEquals( 'POINT(' . $this->lat . ' ' . $this->lon . ')', $this->point->toSql() );
+        $this->assertEquals( 'POINT(' . $this->lon . ' ' . $this->lat . ')', $this->point->toWkt() );
     }
 
     public function testRelativePoint()
@@ -69,11 +67,11 @@ class PointTest extends \PHPUnit_Framework_TestCase
 
     public function testDistanceTo()
     {
-        $newPoint = new Location\Point(53.48204, -2.23194);
+        $newPoint = new Point( 53.48204, - 2.23194 );
         $this->assertEquals( 1.729, round( $this->point->distanceTo( $newPoint, 'miles' ), 3 ) );
         $this->assertEquals( 2.783, round( $this->point->distanceTo( $newPoint ), 3 ) );
         $this->assertEquals( 2.792,
-            round( $this->point->distanceTo( $newPoint, 'km', Location\Location::VINCENTY ), 3 ) );
+            round( $this->point->distanceTo( $newPoint, 'km', Location::VINCENTY ), 3 ) );
     }
 
     /**
@@ -81,7 +79,7 @@ class PointTest extends \PHPUnit_Framework_TestCase
      */
     public function testDistanceToException()
     {
-        $newPoint = new Location\Point( 53.48204, - 2.23194 );
+        $newPoint = new Point( 53.48204, - 2.23194 );
         $this->point->distanceTo( $newPoint, 'foo' );
     }
 
@@ -90,6 +88,34 @@ class PointTest extends \PHPUnit_Framework_TestCase
         $geoJSON = json_encode($this->point);
         $this->assertInternalType('string', $geoJSON);
         $this->assertJsonStringEqualsJsonString('{"type":"Point", "coordinates":[-2.27354, 53.48575]}', $geoJSON);
+    }
+
+    public function testFromDms()
+    {
+        $point = Point::fromDms( [ 1, 2, 3.45 ], [ 0, 6, 9, 'S' ] );
+
+        $this->assertEquals( 1.0342916666667, $point->getLatitude() );
+
+        $this->assertEquals( - 0.1025, $point->getLongitude() );
+
+
+    }
+
+
+    public function testFractionAlongLine()
+    {
+
+        $point1 = new Point([5, 10]);
+        $point2 = new Point([15, 10]);
+
+        $fraction02 = $point1->getFractionAlongLineTo($point2, 0.2);
+        $fraction05 = $point1->getFractionAlongLineTo($point2, 0.5);
+        $midpoint   = $point1->getMidpoint($point2);
+
+        $this->assertEquals(6.9998522347268, $fraction02->getLongitude());
+        $this->assertEquals(10.023944943799, $fraction02->getLatitude());
+        $this->assertEquals($midpoint->getLatitude(), $fraction05->getLatitude());
+        $this->assertEquals($midpoint->getLongitude(), $fraction05->getLongitude());
     }
 
 }

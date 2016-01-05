@@ -1,0 +1,249 @@
+<?php
+/**
+ * Author: rick
+ * Date: 14/07/15
+ * Time: 13:39
+ */
+
+namespace Ricklab\Location\Geometry;
+
+
+use Ricklab\Location\Location;
+
+class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
+{
+
+    /**
+     * @var Point[]
+     */
+    protected $points = [];
+
+    protected $position = 0;
+
+    /**
+     * @param Point|Point[] $points the points, or the starting point
+     * @param Point|null $end the end point, only used if $points is not an array
+     */
+    public function __construct($points, Point $end = null)
+    {
+
+        if ($points instanceof Point && $end !== null) {
+            $this->points = [$points, $end];
+        } elseif (is_array($points) && count($points) > 1) {
+            foreach ($points as $point) {
+                $this[] = $point;
+            }
+        } else {
+            throw new \InvalidArgumentException('Parameters must be 2 points or an array of points.');
+        }
+
+    }
+
+    /**
+     * @return float The initial bearing from the first to second point
+     */
+    public function getInitialBearing()
+    {
+        return $this->points[0]->initialBearingTo($this->points[1]);
+    }
+
+
+    public function getLength($unit = 'km', $formula = null)
+    {
+        $distance = 0;
+        for ($i = 1; $i < count($this->points); $i ++) {
+            $distance += $this->points[$i - 1]->distanceTo($this->points[$i], $unit, $formula);
+        }
+
+        return $distance;
+    }
+
+
+    /**
+     * @return Point the first point
+     */
+    public function getFirst()
+    {
+        return $this->points[0];
+    }
+
+    /**
+     * @return Point the last point
+     */
+    public function getLast()
+    {
+        return $this->points[count($this->points) - 1];
+    }
+
+    public function __toString()
+    {
+        $return = '(' . implode(', ', $this->points) . ')';
+
+        return $return;
+    }
+
+
+    public function jsonSerialize()
+    {
+        $coordinates = $this->toArray();
+
+        return ['type' => 'LineString', 'coordinates' => $coordinates];
+    }
+
+    public function toArray()
+    {
+        $return = [];
+        foreach ($this->points as $point) {
+            $return[] = $point->toArray();
+        }
+
+        return $return;
+    }
+
+    public function toWkt()
+    {
+        $retVal = 'LINESTRING' . $this;
+
+        return $retVal;
+    }
+
+    public function seek($position)
+    {
+        $this->position = $position;
+
+        if ( ! $this->valid()) {
+            throw new \OutOfBoundsException('Item does not exist');
+        }
+    }
+
+    public function valid()
+    {
+        return isset( $this->points[$this->position] );
+    }
+
+    public function current()
+    {
+        return $this->points[$this->position];
+    }
+
+    public function key()
+    {
+        return $this->position;
+    }
+
+    public function next()
+    {
+        $this->position ++;
+    }
+
+    public function rewind()
+    {
+        $this->position = 0;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Whether a offset exists
+     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+     *
+     * @param mixed $offset <p>
+     * An offset to check for.
+     * </p>
+     *
+     * @return boolean true on success or false on failure.
+     * </p>
+     * <p>
+     * The return value will be casted to boolean if non-boolean was returned.
+     */
+    public function offsetExists($offset)
+    {
+        return isset( $this->points[$offset] );
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to retrieve
+     * @link http://php.net/manual/en/arrayaccess.offsetget.php
+     *
+     * @param mixed $offset <p>
+     * The offset to retrieve.
+     * </p>
+     *
+     * @return mixed Can return all value types.
+     */
+    public function offsetGet($offset)
+    {
+        return $this->points[$offset];
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to set
+     * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     *
+     * @param mixed $offset <p>
+     * The offset to assign the value to.
+     * </p>
+     * @param mixed $value <p>
+     * The value to set.
+     * </p>
+     *
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        if (is_array($value)) {
+            $value = new Point($value);
+        }
+
+        if ($value instanceof Point) {
+            if (is_integer($offset)) {
+                $this->points[$offset] = $value;
+            } elseif ($offset === null) {
+                $this->points[] = $value;
+            } else {
+                throw new \OutOfBoundsException('Key must be numeric.');
+            }
+        } else {
+            throw new \InvalidArgumentException('Value must be a point or an array');
+        }
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to unset
+     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+     *
+     * @param mixed $offset <p>
+     * The offset to unset.
+     * </p>
+     *
+     * @return void
+     */
+    public function offsetUnset($offset)
+    {
+        unset( $this->points[$offset] );
+    }
+
+    /**
+     * @return Polygon
+     */
+    public function getBBox()
+    {
+        return Location::getBBox($this);
+    }
+
+    public function toPolygon()
+    {
+        return new Polygon($this->getPoints());
+    }
+
+    /**
+     * @return Point[]
+     */
+    public function getPoints()
+    {
+        return $this->points;
+    }
+
+}

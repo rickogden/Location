@@ -5,22 +5,22 @@
  * Time: 10:07
  */
 
-namespace Ricklab\Location;
+namespace Ricklab\Location\Ellipsoid;
 
 
-abstract class Planet
+abstract class Ellipsoid
 {
 
     /**
      * @var array Unit multipliers relative to km
      */
     protected $multipliers = [
-        'km'             => 1,
-        'miles'          => 0.62137119,
-        'metres'         => 1000,
-        'feet'           => 3280.8399,
-        'yards'          => 1093.6133,
-        'nautical miles' => 0.5399568
+        'km'             => 0.001,
+        'miles'          => 0.00062137119,
+        'metres'         => 1,
+        'feet'           => 3.2808399,
+        'yards'          => 1.0936133,
+        'nautical miles' => 0.0005399568
     ];
 
     /**
@@ -45,22 +45,22 @@ abstract class Planet
 
 
     /**
-     * @var float radius in kilometres (for use in Haversine)
+     * @var float radius in metres (for use in Haversine)
      */
     protected $radius;
 
     /**
-     * @var float The radius at the equator in metres (for use in vincenty)
+     * @var float The radius at the equator in metres (for use in Vincenty)
      */
     protected $majorSemiAxis;
 
     /**
-     * @var float The radius at the poles in metres (for use in vincenty)
+     * @var float The radius at the poles in metres (for use in Vincenty)
      */
     protected $minorSemiAxis;
 
     /**
-     * Returns the average radius of the planet in specified units.
+     * Returns the average radius of the ellipsoid in specified units.
      *
      * @param string $unit can be 'km', 'miles', 'metres', 'feet', 'yards', 'nautical miles'
      *
