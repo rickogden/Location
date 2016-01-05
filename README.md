@@ -12,6 +12,6 @@ A brief example of how this library can be used:
 
     $point = new Ricklab\Location\Geometry\Point($latitude, $longitude);
     $point2 = new Ricklab\Location\Geometry\Point($lat2, $lon2);
-    $distance = $point->distanceTo($point2)->to('miles');
+    $distance = $point->distanceTo($point2, 'miles');
     $line = new Ricklab\Location\Geometry\LineString($point, $point2);
  
