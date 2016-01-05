@@ -5,12 +5,9 @@
  * Time: 11:17
  */
 
-namespace Ricklab\Location;
+namespace Ricklab\Location\Geometry;
 
 
-use Ricklab\Location\Geometry\LineString;
-use Ricklab\Location\Geometry\MultiLineString;
-use Ricklab\Location\Geometry\Point;
 
 class MultiLineStringTest extends \PHPUnit_Framework_TestCase
 {

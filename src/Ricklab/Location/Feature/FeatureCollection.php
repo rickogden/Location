@@ -28,7 +28,7 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
      * @param Feature[] $features
      * @param bool $bbox
      */
-    public function __construct( array $features, $bbox = false )
+    public function __construct(array $features = [], $bbox = false)
     {
         $this->setFeatures( $features );
         $this->bbox = (bool) $bbox;

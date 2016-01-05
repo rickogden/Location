@@ -5,11 +5,7 @@
  * Time: 11:15
  */
 
-namespace Ricklab\Location;
-
-
-use Ricklab\Location\Geometry\MultiPolygon;
-use Ricklab\Location\Geometry\Polygon;
+namespace Ricklab\Location\Geometry;
 
 class MultiPolygonTest extends \PHPUnit_Framework_TestCase
 {

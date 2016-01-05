@@ -8,7 +8,7 @@
 namespace Ricklab\Location\Geometry;
 
 
-class MultiPolygon implements GeometryInterface
+class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
 {
     /**
      * @var Polygon[]
@@ -47,7 +47,48 @@ class MultiPolygon implements GeometryInterface
      */
     public function getPoints()
     {
-        // TODO: Implement getPoints() method.
+        $points = [];
+        foreach ($this->geometries as $polygon) {
+            $points = $polygon->getPoints();
+        }
+
+        return $points;
+    }
+
+    /**
+     * @return Polygon[]
+     */
+    public function getGeometries()
+    {
+        return $this->geometries;
+    }
+
+    /**
+     * @param Polygon $polygon
+     *
+     * @return $this
+     */
+    public function addGeometry(Polygon $polygon)
+    {
+        $this->geometries[] = $polygon;
+
+        return $this;
+    }
+
+    /**
+     * @param Polygon $polygon
+     *
+     * @return $this
+     */
+    public function removeGeometry(Polygon $polygon)
+    {
+        foreach ($this->geometries as $index => $geom) {
+            if ($polygon === $geom) {
+                unset( $this->geometries[$index] );
+            }
+        }
+
+        return $this;
     }
 
     /**

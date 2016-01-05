@@ -15,8 +15,6 @@ namespace Ricklab\Location\Geometry;
 
 use Ricklab\Location\Location;
 
-require_once __DIR__ . '/GeometryInterface.php';
-
 class Point implements GeometryInterface
 {
 
@@ -208,28 +206,74 @@ class Point implements GeometryInterface
         );
     }
 
+    /**
+     * The point as an array in the order of longitude, latitude.
+     * @return float[]
+     */
     public function toArray()
     {
         return [$this->longitude, $this->latitude];
     }
 
+    /**
+     * The longitude
+     * @return float
+     */
     public function getLongitude()
     {
         return $this->longitude;
     }
 
+    /**
+     * Finds the mid point between two points.
+     *
+     * @param Point $point
+     *
+     * @return Point the mid point.
+     */
     public function getMidpoint(Point $point)
     {
-        $bx   = cos($point->latitudeToRad()) * cos(deg2rad($point->getLongitude() - $this->getLongitude()));
-        $by   = cos($point->latitudeToRad()) * sin(deg2rad($point->getLongitude() - $this->getLongitude()));
-        $mLat = atan2(
-            sin($this->latitudeToRad()) + sin($point->latitudeToRad()),
-            sqrt(pow(cos($this->latitudeToRad()) + $bx, 2) + pow($by, 2))
-        );
+        return $this->getFractionAlongLineTo($point, 0.5);
+    }
 
-        $mLon = $this->longitudeToRad() + atan2($by, cos($this->latitudeToRad()) + $bx);
+    /**
+     * Returns the point which is a fraction along the line between 0 and 1.
+     *
+     * @param Point $point
+     * @param float $fraction between 0 and 1
+     *
+     * @throw \InvalidArgumentException
+     * @return Point
+     */
+    public function getFractionAlongLineTo(Point $point, $fraction)
+    {
+        if ($fraction < 0 || $fraction > 1) {
+            throw new \InvalidArgumentException('$fraction must be between 0 and 1');
+        }
+        if (function_exists('fraction_along_gc_line')) {
+            $result = fraction_along_gc_line($this->jsonSerialize(), $point->jsonSerialize(), $fraction);
 
-        return new self(rad2deg($mLat), rad2deg($mLon));
+            return new self($result['coordinates']);
+        } else {
+            $distance = Location::haversine($this, $point);
+
+            $lat1 = $this->latitudeToRad();
+            $lat2 = $point->latitudeToRad();
+            $lon1 = $this->longitudeToRad();
+            $lon2 = $point->longitudeToRad();
+
+            $a        = sin(( 1 - $fraction ) * $distance) / sin($distance);
+            $b        = sin($fraction * $distance) / sin($distance);
+            $x        = $a * cos($lat1) * cos($lon1) +
+                        $b * cos($lat2) * cos($lon2);
+            $y        = $a * cos($lat1) * sin($lon1) +
+                        $b * cos($lat2) * sin($lon2);
+            $z        = $a * sin($lat1) + $b * sin($lat2);
+            $res_lat  = atan2($z, sqrt(pow($x, 2) + pow($y, 2)));
+            $res_long = atan2($y, $x);
+
+            return new self(rad2deg($res_lat), rad2deg($res_long));
+        }
     }
 
     /**
@@ -267,12 +311,17 @@ class Point implements GeometryInterface
         return Location::getBBoxByRadius($this, $radius, $unit);
     }
 
+    /**
+     * Converts point to Well-Known Text
+     * @return string
+     */
     public function toWkt()
     {
         return 'POINT(' . (string) $this . ')';
     }
 
     /**
+     * The coordinates in the order of [longitude, latitude]
      * @return float[]
      */
     public function getCoordinates()
@@ -280,34 +329,12 @@ class Point implements GeometryInterface
         return [$this->longitude, $this->latitude];
     }
 
+    /**
+     * This point in an array
+     * @return Point[]
+     */
     public function getPoints()
     {
         return [$this];
-    }
-
-    public function getFractionAlongLineTo(Point $point, $fraction)
-    {
-        $distance = Location::haversine($this, $point);
-
-        $a        = sin(( 1 - $fraction ) * $distance) / sin($distance);
-        $b        = sin($fraction * $distance) / sin($distance);
-        $x        = $a * cos($this->latitudeToRad()) * cos($this->longitudeToRad()) +
-                    $b * cos($point->latitudeToRad()) * cos($point->longitudeToRad());
-        $y        = $a * cos($this->latitudeToRad()) * sin($this->longitudeToRad()) +
-                    $b * cos($point->latitudeToRad()) * sin($point->longitudeToRad());
-        $z        = $a * sin($this->latitudeToRad()) + $b * sin($point->latitudeToRad());
-        $res_lat  = atan2($z, sqrt(pow($x, 2) + pow($y, 2)));
-        $res_long = atan2($y, $x);
-
-        return new self(rad2deg($res_lat), rad2deg($res_long));
-    }
-
-    public function toKml()
-    {
-        $pointEl     = new \DOMElement('Point');
-        $coordinates = new \DOMElement('coordinates', implode(', ', $this->toArray()));
-        $pointEl->appendChild($coordinates);
-
-        return $pointEl;
     }
 }

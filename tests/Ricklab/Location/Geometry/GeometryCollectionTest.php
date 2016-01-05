@@ -63,8 +63,8 @@ class GeometryCollectionTest extends \PHPUnit_Framework_TestCase
         $geomCollection = Location::fromGeoJson($json);
 
         $this->assertTrue($geomCollection instanceof GeometryCollection);
-        $this->assertEquals([100.0, 0.0], $geomCollection[0]->toArray());
-        $this->assertEquals([[101.0, 0.0], [102.0, 1.0]], $geomCollection[1]->toArray());
+        $this->assertEquals([100.0, 0.0], $geomCollection->getGeometries()[0]->toArray());
+        $this->assertEquals([[101.0, 0.0], [102.0, 1.0]], $geomCollection->getGeometries()[1]->toArray());
     }
 
     public function testFromWkt()
@@ -74,8 +74,8 @@ class GeometryCollectionTest extends \PHPUnit_Framework_TestCase
         $geomCollection = Location::fromWkt($wkt);
 
         $this->assertTrue($geomCollection instanceof GeometryCollection);
-        $this->assertEquals([4, 6], $geomCollection[0]->toArray());
-        $this->assertEquals([[4, 6], [7, 10]], $geomCollection[1]->toArray());
+        $this->assertEquals([4, 6], $geomCollection->getGeometries()[0]->toArray());
+        $this->assertEquals([[4, 6], [7, 10]], $geomCollection->getGeometries()[1]->toArray());
     }
 
 

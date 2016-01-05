@@ -10,7 +10,7 @@ namespace Ricklab\Location\Geometry;
 
 use Ricklab\Location\Location;
 
-class MultiPoint implements GeometryInterface, \SeekableIterator, \ArrayAccess
+class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \SeekableIterator, \ArrayAccess
 {
 
     /**
@@ -34,7 +34,7 @@ class MultiPoint implements GeometryInterface, \SeekableIterator, \ArrayAccess
      */
     public function toWkt()
     {
-        $retVal = 'MultiPoint' . $this;
+        $retVal = 'MULTIPOINT' . $this;
 
         return $retVal;
     }
@@ -53,6 +53,34 @@ class MultiPoint implements GeometryInterface, \SeekableIterator, \ArrayAccess
     public function getPoints()
     {
         return $this->geometries;
+    }
+
+    /**
+     * @param Point $point
+     *
+     * @return $this
+     */
+    public function addGeometry(Point $point)
+    {
+        $this->geometries[] = $point;
+
+        return $this;
+    }
+
+    /**
+     * @param Point $point
+     *
+     * @return $this
+     */
+    public function removeGeometry(Point $point)
+    {
+        foreach ($this->geometries as $index => $geom) {
+            if ($point === $geom) {
+                unset( $this->geometries[$index] );
+            }
+        }
+
+        return $this;
     }
 
     public function __toString()

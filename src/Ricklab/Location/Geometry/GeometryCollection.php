@@ -7,8 +7,13 @@
 
 namespace Ricklab\Location\Geometry;
 
-
-class GeometryCollection implements GeometryInterface, \ArrayAccess
+/**
+ * Class GeometryCollection
+ * @package Ricklab\Location\Geometry
+ *
+ * A collection of any combination of geometries.
+ */
+class GeometryCollection implements GeometryInterface, GeometryCollectionInterface
 {
     /**
      * @var GeometryInterface[]
@@ -39,11 +44,13 @@ class GeometryCollection implements GeometryInterface, \ArrayAccess
     }
 
     /**
-     * @return array
+     * All the geometries contained as an array.
+     *
+     * @return GeometryInterface[]
      */
     public function toArray()
     {
-        // TODO: Implement toArray() method.
+        return $this->geometries;
     }
 
     /**
@@ -51,7 +58,15 @@ class GeometryCollection implements GeometryInterface, \ArrayAccess
      */
     public function getPoints()
     {
-        // TODO: Implement getPoints() method.
+        $points = [];
+        foreach ($this->geometries as $geometry) {
+
+            $geomPoints = $geometry->getPoints();
+            $points += $geomPoints;
+
+        }
+
+        return $points;
     }
 
     /**
@@ -86,82 +101,44 @@ class GeometryCollection implements GeometryInterface, \ArrayAccess
     }
 
     /**
-     * Whether a offset exists
-     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
-     *
-     * @param mixed $offset <p>
-     * An offset to check for.
-     * </p>
-     *
-     * @return boolean true on success or false on failure.
-     * </p>
-     * <p>
-     * The return value will be casted to boolean if non-boolean was returned.
-     * @since 5.0.0
+     * All the geometries in the collection
+     * @return array|GeometryInterface[]
      */
-    public function offsetExists($offset)
+    public function getGeometries()
     {
-        return isset( $this->geometries[$offset] );
+        return $this->geometries;
     }
 
     /**
-     * Offset to retrieve
-     * @link http://php.net/manual/en/arrayaccess.offsetget.php
+     * Adds a geometry to the collection
      *
-     * @param mixed $offset <p>
-     * The offset to retrieve.
-     * </p>
+     * @param GeometryInterface $geometry
      *
-     * @return GeometryInterface
-     * @since 5.0.0
+     * @return $this
      */
-    public function offsetGet($offset)
+    public function addGeometry(GeometryInterface $geometry)
     {
-        return $this->geometries[$offset];
+        $this->geometries[] = $geometry;
+
+        return $this;
     }
 
     /**
-     * Offset to set
-     * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     * Removes a geometry from the collection
      *
-     * @param mixed $offset <p>
-     * The offset to assign the value to.
-     * </p>
-     * @param mixed $value <p>
-     * The value to set.
-     * </p>
+     * @param GeometryInterface $geometry
      *
-     * @return void
-     * @since 5.0.0
+     * @return $this
      */
-    public function offsetSet($offset, $value)
+    public function removeGeometry(GeometryInterface $geometry)
     {
-        if ( ! $value instanceof GeometryInterface) {
-            throw new \InvalidArgumentException('Must be a Geometry');
+
+        foreach ($this->geometries as $index => $geom) {
+            if ($geom === $geometry) {
+                unset( $this->geometries[$index] );
+            }
         }
 
-        if ($offset === null) {
-            $this->geometries[] = $value;
-        } else {
-            $this->geometries[$offset] = $value;
-        }
+        return $this;
     }
-
-    /**
-     * Offset to unset
-     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @param mixed $offset <p>
-     * The offset to unset.
-     * </p>
-     *
-     * @return void
-     * @since 5.0.0
-     */
-    public function offsetUnset($offset)
-    {
-        unset( $this->geometries[$offset] );
-    }
-
-
 }

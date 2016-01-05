@@ -4,8 +4,6 @@ namespace Ricklab\Location\Geometry;
 
 use Ricklab\Location\Location;
 
-require __DIR__ . '/../../../vendor/autoload.php';
-
 class PointTest extends \PHPUnit_Framework_TestCase
 {
 

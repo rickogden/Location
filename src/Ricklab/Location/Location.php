@@ -9,6 +9,9 @@ namespace Ricklab\Location;
 
 use Ricklab\Location\Ellipsoid\Earth;
 use Ricklab\Location\Ellipsoid\Ellipsoid;
+use Ricklab\Location\Feature\Feature;
+use Ricklab\Location\Feature\FeatureAbstract;
+use Ricklab\Location\Feature\FeatureCollection;
 use Ricklab\Location\Geometry\GeometryCollection;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\LineString;
@@ -21,19 +24,20 @@ use Ricklab\Location\Geometry\Polygon;
 class Location
 {
 
-
     const HAVERSINE = 1;
 
     const VINCENTY = 2;
+
     /**
      * @var bool Set to false if you have the pecl geospatial extension installed but do not want to use it
      */
     public static $useSpatialExtension = true;
+
     /**
-     * @var bool Set to true to use Vincenty as distance calculator, set to either Location::HAVERSINE or
-     * Location::VICENTY
+     * @var int Set to either Location::HAVERSINE or Location::VICENTY. Defaults to Location::HAVERSINE
      */
     public static $defaultFormula = self::HAVERSINE;
+
     /**
      * @var Ellipsoid
      */
@@ -46,7 +50,7 @@ class Location
      * @param string|array|object $geojson the GeoJSON object either in a JSON string or a pre-parsed array/object
      *
      * @throws \ErrorException
-     * @return GeometryInterface
+     * @return GeometryInterface|FeatureAbstract
      */
     public static function fromGeoJson($geojson)
     {
@@ -68,6 +72,24 @@ class Location
 
             $geometry = self::createGeometry($type, $geometries);
 
+
+        } elseif (strtolower($type) === 'feature') {
+
+            $geometry = new Feature();
+            if (isset( $geojson['geometry'] )) {
+                $geometry->setGeometry(self::fromGeoJson($geojson['geometry']));
+            }
+            if (isset( $geojson['properties'] )) {
+                $geometry->setProperties($geojson['properties']);
+            }
+        } elseif (strtolower($type) === 'featurecollection') {
+
+            $geometry = new FeatureCollection();
+
+            foreach ($geojson['features'] as $feature) {
+                /** @noinspection PhpParamsInspection */
+                $geometry->addFeature(self::fromGeoJson($feature));
+            }
 
         } else {
 
@@ -123,8 +145,8 @@ class Location
     public static function fromWkt($wkt)
     {
 
-        $type = substr($wkt, 0, strpos($wkt, '('));
-        $wkt  = str_replace($type, '', $wkt);
+        $type = trim(substr($wkt, 0, strpos($wkt, '(')));
+        $wkt  = trim(str_replace($type, '', $wkt));
 
         if (strtolower($type) === 'geometrycollection') {
             $geocol = preg_replace('/,?\s*([A-Za-z]+\()/', ':$1', $wkt);
@@ -153,6 +175,14 @@ class Location
                 $wkt = preg_replace('/(-?\d+\.?\d*) (-?\d+\.?\d*)/', '[$1, $2]', $wkt);
             }
             $arrays = json_decode($wkt, true);
+
+            if (strtolower($type) === 'multipoint') {
+                foreach ($arrays as $index => $points) {
+                    if (is_array($points[0])) {
+                        $arrays[$index] = $points[0];
+                    }
+                }
+            }
         }
 
         return self::createGeometry($type, $arrays);
@@ -329,11 +359,16 @@ class Location
 
             $radDistance = haversine($from, $to, 1);
         } else {
-            $distanceLat  = $point1->latitudeToRad() - $point2->latitudeToRad();
-            $distanceLong = $point1->longitudeToRad() - $point2->longitudeToRad();
+            $lat1 = $point1->latitudeToRad();
+            $lon1 = $point1->longitudeToRad();
+            $lat2 = $point2->latitudeToRad();
+            $lon2 = $point2->longitudeToRad();
+
+            $distanceLat  = $lat1 - $lat2;
+            $distanceLong = $lon1 - $lon2;
 
             $radDistance = sin($distanceLat / 2) * sin($distanceLat / 2) +
-                           cos($point1->latitudeToRad()) * cos($point2->latitudeToRad()) *
+                           cos($lat1) * cos($lat2) *
                            sin($distanceLong / 2) * sin($distanceLong / 2);
             $radDistance = 2 * atan2(sqrt($radDistance), sqrt(1 - $radDistance));
         }

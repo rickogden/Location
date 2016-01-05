@@ -3,7 +3,12 @@
 
 namespace Ricklab\Location\Geometry;
 
-
+/**
+ * The interface for all the Geomtry objects.
+ *
+ * Interface GeometryInterface
+ * @package Ricklab\Location\Geometry
+ */
 interface GeometryInterface extends \JsonSerializable
 {
     /**

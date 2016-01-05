@@ -73,6 +73,20 @@ class Feature extends FeatureAbstract implements \ArrayAccess
     }
 
     /**
+     * Overwrites all properties.
+     *
+     * @param array $properties
+     *
+     * @return $this
+     */
+    public function setProperties(array $properties)
+    {
+        $this->properties = $properties;
+
+        return $this;
+    }
+
+    /**
      * (PHP 5 &gt;= 5.4.0)<br/>
      * Specify data which should be serialized to JSON
      * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
@@ -91,11 +105,17 @@ class Feature extends FeatureAbstract implements \ArrayAccess
         $array['type'] = 'Feature';
 
         if ($this->bbox) {
-            $array['bbox'] = Location::getBBox($this->geometry);
+            $array['bbox'] = Location::getBBoxArray($this->geometry);
         }
 
 
-        $array['geometry']   = $this->geometry->jsonSerialize();
+        if ($this->geometry instanceof GeometryInterface) {
+            $array['geometry'] = $this->geometry->jsonSerialize();
+        } else {
+            $array['geometry'] = null;
+        }
+
+
         $array['properties'] = $this->properties;
 
 

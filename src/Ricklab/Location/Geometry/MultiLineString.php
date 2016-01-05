@@ -8,7 +8,7 @@
 namespace Ricklab\Location\Geometry;
 
 
-class MultiLineString implements GeometryInterface
+class MultiLineString implements GeometryInterface, GeometryCollectionInterface
 {
 
     /**
@@ -87,10 +87,41 @@ class MultiLineString implements GeometryInterface
         return $this->geometries;
     }
 
+    /**
+     * Adds a new LineString to the collection.
+     *
+     * @param LineString $lineString
+     *
+     * @return $this
+     */
+    public function addGeometry(LineString $lineString)
+    {
+        $this->geometries[] = $lineString;
+
+        return $this;
+    }
+
+    /**
+     * Removes a LineString from the collection
+     *
+     * @param LineString $lineString
+     *
+     * @return $this
+     */
+    public function removeGeometry(LineString $lineString)
+    {
+        foreach ($this->geometries as $index => $geom) {
+            if ($lineString === $geom) {
+                unset( $this->geometries[$index] );
+            }
+        }
+
+        return $this;
+    }
+
     public function __toString()
     {
         return '(' . implode(',', $this->geometries) . ')';
     }
-
 
 }

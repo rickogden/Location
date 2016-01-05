@@ -21,7 +21,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
     protected $position = 0;
 
     /**
-     * @param Point|array $points the points, or the starting point
+     * @param Point|Point[] $points the points, or the starting point
      * @param Point|null $end the end point, only used if $points is not an array
      */
     public function __construct($points, Point $end = null)

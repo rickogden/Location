@@ -2,8 +2,6 @@
 
 namespace Ricklab\Location;
 
-require __DIR__ . '/../../../vendor/autoload.php';
-
 use Ricklab\Location\Geometry;
 
 class LocationTest extends \PHPUnit_Framework_TestCase
@@ -98,11 +96,15 @@ class LocationTest extends \PHPUnit_Framework_TestCase
     {
         $multipolywkt = 'MULTIPOLYGON(((1.432 -1.543, 5 1, 5 5, 1 5, 1.432 -1.543),(2 2, 3 2, 3 3, 2 3, 2 2)),((3 3, 6 2, 6 4, 3 3)))';
         $multilinewkt = 'MULTILINESTRING((3 4, 10 50, 20 25),(-5 -8, -10 -8, -15 -4))';
+        $pointwkt     = 'POINT(4 5)';
         $multipoly    = Location::fromWkt($multipolywkt);
         $multiline    = Location::fromWkt($multilinewkt);
+        $point        = Location::fromWkt($pointwkt);
 
+        $this->assertTrue($point instanceof Geometry\Point);
         $this->assertTrue($multipoly instanceof Geometry\MultiPolygon);
         $this->assertTrue($multiline instanceof Geometry\MultiLineString);
+        $this->assertEquals([4, 5], $point->toArray());
         $this->assertEquals($multipolywkt, $multipoly->toWkt());
         $this->assertEquals($multilinewkt, $multiline->toWkt());
     }
