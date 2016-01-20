@@ -103,6 +103,12 @@ class Location
 
     }
 
+    /**
+     * @param $type string the geometry type to create
+     * @param $coordinates array the coordinates for the geometry type
+     *
+     * @return GeometryInterface
+     */
     protected static function createGeometry($type, $coordinates)
     {
         switch (strtolower($type)) {
@@ -240,15 +246,16 @@ class Location
         } else {
             $ellipsoid = self::getEllipsoid();
 
-            $U1        = atan(( 1.0 - $ellipsoid->getFlattening() ) * tan($point1->latitudeToRad()));
-            $U2        = atan(( 1.0 - $ellipsoid->getFlattening() ) * tan($point2->latitudeToRad()));
-            $L         = $point2->longitudeToRad() - $point1->longitudeToRad();
-            $sinU1     = sin($U1);
-            $cosU1     = cos($U1);
-            $sinU2     = sin($U2);
-            $cosU2     = cos($U2);
-            $lambda    = $L;
-            $looplimit = 100;
+            $flattening = $ellipsoid->getFlattening();
+            $U1         = atan(( 1.0 - $flattening ) * tan($point1->latitudeToRad()));
+            $U2         = atan(( 1.0 - $flattening ) * tan($point2->latitudeToRad()));
+            $L          = $point2->longitudeToRad() - $point1->longitudeToRad();
+            $sinU1      = sin($U1);
+            $cosU1      = cos($U1);
+            $sinU2      = sin($U2);
+            $cosU2      = cos($U2);
+            $lambda     = $L;
+            $looplimit  = 100;
 
             do {
                 $sinLambda   = sin($lambda);
@@ -263,10 +270,10 @@ class Location
                 if ( ! is_numeric($cosof2sigma)) {
                     $cosof2sigma = 0;
                 }
-                $C       = $ellipsoid->getFlattening() / 16 * $cos2Alpha *
-                           ( 4 + $ellipsoid->getFlattening() * ( 4 - 3 * $cos2Alpha ) );
+                $C       = $flattening / 16 * $cos2Alpha *
+                           ( 4 + $flattening * ( 4 - 3 * $cos2Alpha ) );
                 $lambdaP = $lambda;
-                $lambda  = $L + ( 1 - $C ) * $ellipsoid->getFlattening() * $sinAlpha *
+                $lambda  = $L + ( 1 - $C ) * $flattening * $sinAlpha *
                                 ( $sigma + $C * $sinSigma * ( $cosof2sigma + $C * $cosSigma * ( - 1 + 2 * pow(
                                                 $cosof2sigma,
                                                 2

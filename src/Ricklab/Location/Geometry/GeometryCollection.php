@@ -54,7 +54,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     }
 
     /**
-     * @return Point[] gets all the points in a geometry. Note, order is not necessarily representative.
+     * @inheritdoc
      */
     public function getPoints()
     {
@@ -70,11 +70,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     }
 
     /**
-     * (PHP 5 &gt;= 5.4.0)<br/>
-     * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializabl2e.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
+     * @inheritdoc
      */
     function jsonSerialize()
     {
@@ -86,6 +82,9 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
         return $json;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function __toString()
     {
         $collection = [];
@@ -102,7 +101,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
 
     /**
      * All the geometries in the collection
-     * @return array|GeometryInterface[]
+     * @return GeometryInterface[]
      */
     public function getGeometries()
     {

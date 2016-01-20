@@ -10,6 +10,12 @@ namespace Ricklab\Location\Geometry;
 
 use Ricklab\Location\Location;
 
+/**
+ * Class LineString
+ * @package Ricklab\Location\Geometry
+ *
+ * A one dimensional set of points in an order which creates a line.
+ */
 class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
 {
 
@@ -18,6 +24,9 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
      */
     protected $points = [];
 
+    /**
+     * @var int
+     */
     protected $position = 0;
 
     /**
@@ -75,6 +84,9 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
         return $this->points[count($this->points) - 1];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function __toString()
     {
         $return = '(' . implode(', ', $this->points) . ')';
@@ -83,6 +95,9 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
     }
 
 
+    /**
+     * @inheritdoc
+     */
     public function jsonSerialize()
     {
         $coordinates = $this->toArray();
@@ -90,6 +105,9 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
         return ['type' => 'LineString', 'coordinates' => $coordinates];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function toArray()
     {
         $return = [];
@@ -100,6 +118,9 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
         return $return;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function toWkt()
     {
         $retVal = 'LINESTRING' . $this;
@@ -169,7 +190,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
      * The offset to retrieve.
      * </p>
      *
-     * @return mixed Can return all value types.
+     * @return Point
      */
     public function offsetGet($offset)
     {
@@ -181,10 +202,10 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
      * Offset to set
      * @link http://php.net/manual/en/arrayaccess.offsetset.php
      *
-     * @param mixed $offset <p>
+     * @param int $offset <p>
      * The offset to assign the value to.
      * </p>
-     * @param mixed $value <p>
+     * @param Point $value <p>
      * The value to set.
      * </p>
      *
@@ -214,7 +235,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
      * Offset to unset
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
      *
-     * @param mixed $offset <p>
+     * @param int $offset <p>
      * The offset to unset.
      * </p>
      *
@@ -226,6 +247,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
     }
 
     /**
+     * Gets the bounding box which will contain the entire geometry.
      * @return Polygon
      */
     public function getBBox()
@@ -233,13 +255,17 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
         return Location::getBBox($this);
     }
 
+    /**
+     * Converts LineString into a Polygon
+     * @return Polygon
+     */
     public function toPolygon()
     {
         return new Polygon($this->getPoints());
     }
 
     /**
-     * @return Point[]
+     * @inheritdoc
      */
     public function getPoints()
     {

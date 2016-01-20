@@ -7,7 +7,12 @@
 
 namespace Ricklab\Location\Geometry;
 
-
+/**
+ * Class MultiLineString
+ * @package Ricklab\Location\Geometry
+ *
+ * A collection of LineString geometries.
+ */
 class MultiLineString implements GeometryInterface, GeometryCollectionInterface
 {
 
@@ -28,7 +33,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * @return string the Well-Known Text representation of the geometry
+     * @inheritdoc
      */
     public function toWkt()
     {
@@ -36,7 +41,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * @return Point[] gets all the points in a geometry. Note, order is not necessarily representative.
+     * @inheritdoc
      */
     public function getPoints()
     {
@@ -50,11 +55,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * (PHP 5 &gt;= 5.4.0)<br/>
-     * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
+     * @inheritdoc
      */
     function jsonSerialize()
     {
@@ -67,7 +68,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function toArray()
     {
@@ -119,6 +120,9 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
         return $this;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function __toString()
     {
         return '(' . implode(',', $this->geometries) . ')';

@@ -40,11 +40,17 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function __toString()
     {
         return '(' . implode( ',', $this->lineStrings ) . ')';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function toWkt()
     {
         $text = 'POLYGON' . $this;
@@ -52,6 +58,9 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
         return $text;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function jsonSerialize()
     {
         $geo = [
@@ -62,6 +71,9 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
         return $geo;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function toArray()
     {
         $return = [ ];
@@ -73,6 +85,14 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
 
     }
 
+    /**
+     * The length of the perimeter of the outer-most polygon in unit specified.
+     *
+     * @param string $unit
+     * @param null|int $formula defaults to Location::$defaultFormula
+     *
+     * @return float
+     */
     public function getPerimeter( $unit = 'km', $formula = null )
     {
         return $this->lineStrings[0]->getLength( $unit, $formula );

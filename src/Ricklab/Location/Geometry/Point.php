@@ -69,11 +69,19 @@ class Point implements GeometryInterface
         return new self($decLat, $decLon);
     }
 
+    /**
+     * Latitude in an array of [degrees, minutes, seconds]
+     * @return array
+     */
     public function getLatitudeInDms()
     {
         return Location::decimalToDms($this->latitude);
     }
 
+    /**
+     * Latitude in an array of [degrees, minutes, seconds]
+     * @return array
+     */
     public function getLongitudeInDms()
     {
         return Location::decimalToDms($this->longitude);
@@ -81,13 +89,17 @@ class Point implements GeometryInterface
 
     /**
      *
-     * @return String
+     * @inheritdoc
      */
     public function __toString()
     {
         return $this->longitude . ' ' . $this->latitude;
     }
 
+    /**
+     * The latitude
+     * @return float
+     */
     public function getLatitude()
     {
         return $this->latitude;
@@ -195,8 +207,7 @@ class Point implements GeometryInterface
     }
 
     /**
-     * A GeoJSON representation of the class.
-     * @return array a geoJSON representation
+     * @inheritdoc
      */
     public function jsonSerialize()
     {

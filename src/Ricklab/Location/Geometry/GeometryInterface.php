@@ -12,20 +12,34 @@ namespace Ricklab\Location\Geometry;
 interface GeometryInterface extends \JsonSerializable
 {
     /**
-     * @return string the Well-Known Text representation of the geometry
+     * Representation of the geometry in Well-Known Text.
+     * @return string
      */
     public function toWkt();
 
     /**
+     * The geometry in an embedded array format.
      * @return array
      */
     public function toArray();
 
     /**
-     * @return Point[] gets all the points in a geometry. Note, order is not necessarily representative.
+     * Gets all the points in a geometry. Note, order is not necessarily representative.
+     * @return Point[]
      */
     public function getPoints();
 
+    /**
+     * Returns a string representive of the geometry using spaces to separate lon, lat pairs, commas to separate
+     * coordinates, and brackets to separate coordinate groups. E.g. (2 4, 3 5)
+     * @return string
+     */
     public function __toString();
+
+    /**
+     * Returns a GeoJSON representation of the geometry.
+     * @return array
+     */
+    public function jsonSerialize();
 
 } 

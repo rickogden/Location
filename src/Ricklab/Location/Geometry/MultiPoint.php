@@ -30,7 +30,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     }
 
     /**
-     * @return string the Well-Known Text representation of the geometry
+     * @inheritdoc
      */
     public function toWkt()
     {
@@ -40,6 +40,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     }
 
     /**
+     * {@inheritdoc}
      * @return Point[]
      */
     public function getGeometries()
@@ -48,7 +49,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     }
 
     /**
-     * @return Point[] gets all the points in a geometry. Note, order is not necessarily representative.
+     * @inheritdoc
      */
     public function getPoints()
     {
@@ -83,6 +84,9 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
         return $this;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function __toString()
     {
         $return = '(' . implode(', ', $this->geometries) . ')';
@@ -91,11 +95,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     }
 
     /**
-     * (PHP 5 &gt;= 5.4.0)<br/>
-     * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
+     * @inheritdoc
      */
     function jsonSerialize()
     {
@@ -105,7 +105,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function toArray()
     {
