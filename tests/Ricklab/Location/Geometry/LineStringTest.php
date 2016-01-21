@@ -114,4 +114,14 @@ class LineStringTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testReverse()
+    {
+        $original = [[- 2.27354, 53.48575], [- 2.23194, 53.48204]];
+
+        $lineString = new LineString($original);
+        $lineString->reverse();
+        $this->assertEquals($original[0], $lineString->toArray()[1]);
+        $this->assertEquals($original[1], $lineString->toArray()[0]);
+    }
+
 }

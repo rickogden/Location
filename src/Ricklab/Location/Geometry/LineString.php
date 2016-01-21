@@ -272,4 +272,15 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
         return $this->points;
     }
 
+    /**
+     * Reverses the direction of the line.
+     * @return $this
+     */
+    public function reverse()
+    {
+        $this->points = array_reverse($this->points);
+
+        return $this;
+    }
+
 }
