@@ -1,4 +1,4 @@
-# PHP Location Library
+# PHP Location Library [![Build Status](https://travis-ci.org/rickogden/Location.svg?branch=master)](https://travis-ci.org/rickogden/Location)
 
 A library for geospatial calculations in PHP.
 
