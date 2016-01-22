@@ -32,10 +32,5 @@
         "psr-4": {
             "Ricklab\\Location\\": "tests/Ricklab/Location/"
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "3.0-dev"
-        }
     }
 }
