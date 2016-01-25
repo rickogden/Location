@@ -7,7 +7,12 @@ php:
   - 7.0
   - hhvm
 before_script:
-  - pecl install geospatial
+  - git clone git@github.com:php-geospatial/geospatial.git
+  - cd geospatial
+  - phpize
+  - ./configure --enable-geospatial
+  - make
+  - sudo make install
   - echo "extension=geospatial.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 install:
   - composer install
