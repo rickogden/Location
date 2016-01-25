@@ -6,7 +6,9 @@ php:
   - 5.6
   - 7.0
   - hhvm
-
+before_script:
+  - pecl install geospatial
+  - echo "extension=geospatial.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 install:
   - composer install
 script: phpunit --coverage-text

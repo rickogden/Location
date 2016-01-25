@@ -70,7 +70,10 @@ class LineStringTest extends \PHPUnit_Framework_TestCase
 
     public function testInitialBearing()
     {
+        Location::$useSpatialExtension = false;
         $this->assertEquals( 98.50702, round( $this->line->getInitialBearing(), 5 ) );
+        Location::$useSpatialExtension = true;
+        $this->assertEquals(98.50702, round($this->line->getInitialBearing(), 5));
     }
 
     public function testGeoJson()

@@ -261,7 +261,7 @@ class Point implements GeometryInterface
         if ($fraction < 0 || $fraction > 1) {
             throw new \InvalidArgumentException('$fraction must be between 0 and 1');
         }
-        if (function_exists('fraction_along_gc_line')) {
+        if (function_exists('fraction_along_gc_line') && Location::$useSpatialExtension) {
             $result = fraction_along_gc_line($this->jsonSerialize(), $point->jsonSerialize(), $fraction);
 
             return new self($result['coordinates']);

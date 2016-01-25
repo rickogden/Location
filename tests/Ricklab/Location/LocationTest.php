@@ -10,7 +10,6 @@ class LocationTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
 
-        Location::$useSpatialExtension = false;
     }
 
 
@@ -70,7 +69,12 @@ class LocationTest extends \PHPUnit_Framework_TestCase
 
         $buninyond = new Geometry\Point( - 37.65282113888889, 143.92649552777777 );
 
+        Location::$useSpatialExtension = true;
         $this->assertEquals( 54972.271, Location::vincenty( $flinders, $buninyond ) );
+
+        Location::$useSpatialExtension = false;
+        $this->assertEquals(54972.271, Location::vincenty($flinders, $buninyond));
+        Location::$useSpatialExtension = true;
     }
 
 

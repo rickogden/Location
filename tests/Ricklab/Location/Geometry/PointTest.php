@@ -17,8 +17,6 @@ class PointTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-
-        Location::$useSpatialExtension = false;
         $this->point                   = new Point( $this->lat, $this->lon );
     }
 
@@ -105,6 +103,16 @@ class PointTest extends \PHPUnit_Framework_TestCase
     public function testFractionAlongLine()
     {
 
+        Location::$useSpatialExtension = false;
+        $this->fractionAlongLine();
+        Location::$useSpatialExtension = true;
+        $this->fractionAlongLine();
+
+
+    }
+
+    private function fractionAlongLine()
+    {
         $point1 = new Point([5, 10]);
         $point2 = new Point([15, 10]);
 
