@@ -4,7 +4,7 @@ A library for geospatial calculations in PHP.
 
 ## Installation
 
-Using composer, run `composer require ricklab\location`
+Using composer, run `composer require ricklab/location`
 
 ## Usage
 
