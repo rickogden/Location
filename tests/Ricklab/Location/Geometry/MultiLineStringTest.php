@@ -52,4 +52,30 @@ class MultiLineStringTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($wkt, $multiLineString->toWkt());
     }
 
+    public function testAddAndRemoveGeometries()
+    {
+        $lineString = new LineString([
+            new Point([3, 4]),
+            new Point([10, 50]),
+            new Point([20, 25])
+        ]);
+
+        $multiLineString = new MultiLineString([$lineString]);
+
+        $lineString2 = new LineString([
+            new Point([- 5, - 8]),
+            new Point([- 10, - 8]),
+            new Point([- 15, - 4])
+        ]);
+
+        $multiLineString->addGeometry($lineString2);
+        $this->assertTrue(in_array($lineString, $multiLineString->getGeometries()));
+        $this->assertTrue(in_array($lineString2, $multiLineString->getGeometries()));
+        $multiLineString->removeGeometry($lineString);
+        $this->assertEquals(1, count($multiLineString->getGeometries()));
+        $this->assertFalse(in_array($lineString, $multiLineString->getGeometries()));
+
+
+    }
+
 }
