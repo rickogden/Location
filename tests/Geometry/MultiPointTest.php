@@ -8,9 +8,10 @@
 namespace Ricklab\Location\Geometry;
 
 
+use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Location;
 
-class MultiPointTest extends \PHPUnit_Framework_TestCase
+class MultiPointTest extends TestCase
 {
 
     public function testGeoJson()

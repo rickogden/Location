@@ -16,7 +16,7 @@ use Ricklab\Location\Location;
  *
  * A one dimensional set of points in an order which creates a line.
  */
-class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
+class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, \Countable
 {
 
     /**
@@ -283,4 +283,17 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess
         return $this;
     }
 
+    /**
+     * Count elements of an object
+     * @link https://php.net/manual/en/countable.count.php
+     * @return int The custom count as an integer.
+     * </p>
+     * <p>
+     * The return value is cast to an integer.
+     * @since 5.1.0
+     */
+    public function count()
+    {
+        return \count($this->points);
+    }
 }

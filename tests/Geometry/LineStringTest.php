@@ -3,9 +3,10 @@
 namespace Ricklab\Location\Geometry;
 
 
+use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Location;
 
-class LineStringTest extends \PHPUnit_Framework_TestCase
+class LineStringTest extends TestCase
 {
     /**
      * @var LineString

@@ -8,9 +8,10 @@
 namespace Ricklab\Location\Feature;
 
 
+use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Location;
 
-class FeatureCollectionTest extends \PHPUnit_Framework_TestCase
+class FeatureCollectionTest extends TestCase
 {
 
     public function testFromGeoJson()

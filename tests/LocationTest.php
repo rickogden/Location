@@ -2,9 +2,10 @@
 
 namespace Ricklab\Location;
 
+use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Geometry;
 
-class LocationTest extends \PHPUnit_Framework_TestCase
+class LocationTest extends TestCase
 {
 
     public function setUp()

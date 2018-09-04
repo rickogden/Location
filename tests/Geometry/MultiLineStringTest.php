@@ -9,7 +9,9 @@ namespace Ricklab\Location\Geometry;
 
 
 
-class MultiLineStringTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class MultiLineStringTest extends TestCase
 {
 
 

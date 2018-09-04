@@ -2,9 +2,10 @@
 
 namespace Ricklab\Location\Geometry;
 
+use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Location;
 
-class PolygonTest extends \PHPUnit_Framework_TestCase
+class PolygonTest extends TestCase
 {
 
     /**
@@ -46,8 +47,8 @@ class PolygonTest extends \PHPUnit_Framework_TestCase
     public function testLastPointIsTheSameAsFirstPoint()
     {
         $a = $this->polygon;
-        $this->assertEquals( $a[0][0]->getLatitude(), $a[0][count( $a ) - 1]->getLatitude() );
-        $this->assertEquals( $a[0][0]->getLongitude(), $a[0][count( $a ) - 1]->getLongitude() );
+        $this->assertEquals( $a[0][0]->getLatitude(), $a[0][count( $a[0] ) - 1]->getLatitude() );
+        $this->assertEquals( $a[0][0]->getLongitude(), $a[0][count( $a[0] ) - 1]->getLongitude() );
     }
 
     public function testToArrayReturnsAnArray()

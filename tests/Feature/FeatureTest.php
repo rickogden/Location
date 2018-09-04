@@ -8,11 +8,12 @@
 namespace Ricklab\Location\Feature;
 
 
+use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Geometry\LineString;
 use Ricklab\Location\Geometry\Polygon;
 use Ricklab\Location\Location;
 
-class FeatureTest extends \PHPUnit_Framework_TestCase
+class FeatureTest extends TestCase
 {
 
     public function testBBox()

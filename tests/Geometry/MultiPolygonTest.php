@@ -7,7 +7,9 @@
 
 namespace Ricklab\Location\Geometry;
 
-class MultiPolygonTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class MultiPolygonTest extends TestCase
 {
 
 
