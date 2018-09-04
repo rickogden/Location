@@ -13,37 +13,29 @@ interface GeometryInterface extends \JsonSerializable
 {
     /**
      * Representation of the geometry in Well-Known Text.
-     *
-     * @return string
      */
-    public function toWkt();
+    public function toWkt(): string;
 
     /**
      * The geometry in an embedded array format.
-     *
-     * @return array
      */
-    public function toArray();
+    public function toArray(): array;
 
     /**
      * Gets all the points in a geometry. Note, order is not necessarily representative.
      *
      * @return Point[]
      */
-    public function getPoints();
+    public function getPoints(): array;
 
     /**
      * Returns a string representive of the geometry using spaces to separate lon, lat pairs, commas to separate
      * coordinates, and brackets to separate coordinate groups. E.g. (2 4, 3 5).
-     *
-     * @return string
      */
-    public function __toString();
+    public function __toString(): string;
 
     /**
      * Returns a GeoJSON representation of the geometry.
-     *
-     * @return array
      */
-    public function jsonSerialize();
+    public function jsonSerialize(): array;
 }

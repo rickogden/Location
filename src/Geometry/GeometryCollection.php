@@ -37,7 +37,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     /**
      * @return string the Well-Known Text representation of the geometry
      */
-    public function toWkt()
+    public function toWkt(): string
     {
         return 'GEOMETRYCOLLECTION'.$this;
     }
@@ -47,7 +47,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
      *
      * @return GeometryInterface[]
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->geometries;
     }
@@ -55,7 +55,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     /**
      * {@inheritdoc}
      */
-    public function getPoints()
+    public function getPoints(): array
     {
         $points = [];
         foreach ($this->geometries as $geometry) {
@@ -69,7 +69,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $json['type'] = 'GeometryCollection';
         foreach ($this->geometries as $geometry) {
@@ -82,7 +82,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         $collection = [];
         foreach ($this->geometries as $geometry) {
@@ -97,7 +97,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
      *
      * @return GeometryInterface[]
      */
-    public function getGeometries()
+    public function getGeometries(): array
     {
         return $this->geometries;
     }

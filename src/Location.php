@@ -25,9 +25,9 @@ use Ricklab\Location\Geometry\Polygon;
 
 class Location
 {
-    const HAVERSINE = 1;
+    public const HAVERSINE = 1;
 
-    const VINCENTY = 2;
+    public const VINCENTY = 2;
 
     /**
      * @var bool Set to false if you have the pecl geospatial extension installed but do not want to use it

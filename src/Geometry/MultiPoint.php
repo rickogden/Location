@@ -30,7 +30,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     /**
      * {@inheritdoc}
      */
-    public function toWkt()
+    public function toWkt(): string
     {
         return 'MULTIPOINT'.$this;
     }
@@ -40,7 +40,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
      *
      * @return Point[]
      */
-    public function getGeometries()
+    public function getGeometries(): array
     {
         return $this->getPoints();
     }
@@ -48,7 +48,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     /**
      * {@inheritdoc}
      */
-    public function getPoints()
+    public function getPoints(): array
     {
         return $this->geometries;
     }
@@ -56,7 +56,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     /**
      * @return $this
      */
-    public function addGeometry(Point $point)
+    public function addGeometry(Point $point): self
     {
         $this->geometries[] = $point;
 
@@ -66,7 +66,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     /**
      * @return $this
      */
-    public function removeGeometry(Point $point)
+    public function removeGeometry(Point $point): self
     {
         foreach ($this->geometries as $index => $geom) {
             if ($point === $geom) {
@@ -80,7 +80,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         return '('.\implode(', ', $this->geometries).')';
     }
@@ -88,7 +88,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $coordinates = $this->toArray();
 
@@ -98,7 +98,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     /**
      * {@inheritdoc}
      */
-    public function toArray()
+    public function toArray(): array
     {
         $return = [];
         foreach ($this->geometries as $point) {
@@ -108,7 +108,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
         return $return;
     }
 
-    public function seek($position)
+    public function seek($position): void
     {
         $this->position = $position;
 
@@ -117,48 +117,48 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
         }
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->geometries[$this->position]);
     }
 
-    public function current()
+    public function current(): Point
     {
         return $this->geometries[$this->position];
     }
 
-    public function key()
+    public function key(): int
     {
         return $this->position;
     }
 
-    public function next()
+    public function next(): void
     {
-        ++$this->position ;
+        ++$this->position;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->geometries[$offset]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): Point
     {
         return $this->geometries[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if (!$value instanceof Point) {
             $value = new Point($value);
         }
 
-        if (\is_integer($offset)) {
+        if (\is_int($offset)) {
             $this->geometries[$offset] = $value;
         } elseif (null === $offset) {
             $this->geometries[] = $value;
@@ -167,13 +167,12 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
         }
     }
 
-    public function offsetUnset(
-        $offset
-    ) {
+    public function offsetUnset($offset): void
+    {
         unset($this->geometries[$offset]);
     }
 
-    public function getBBox()
+    public function getBBox(): Polygon
     {
         return Location::getBBox($this);
     }

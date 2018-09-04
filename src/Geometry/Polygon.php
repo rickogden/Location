@@ -43,7 +43,7 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         return '('.\implode(',', $this->lineStrings).')';
     }
@@ -51,7 +51,7 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
     /**
      * {@inheritdoc}
      */
-    public function toWkt()
+    public function toWkt(): string
     {
         return 'POLYGON'.$this;
     }
@@ -59,7 +59,7 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'type' => 'Polygon',
@@ -70,7 +70,7 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
     /**
      * {@inheritdoc}
      */
-    public function toArray()
+    public function toArray(): array
     {
         $return = [];
         foreach ($this->lineStrings as $line) {
@@ -252,7 +252,7 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
         return isset($this->lineStrings[$this->position]);
     }
 
-    public function getPoints()
+    public function getPoints(): array
     {
         $points = [];
         foreach ($this->lineStrings as $line) {

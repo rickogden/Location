@@ -38,7 +38,7 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
     /**
      * @param Feature[] $features
      */
-    public function setFeatures(array $features)
+    public function setFeatures(array $features): void
     {
         foreach ($features as $feature) {
             if (!$feature instanceof Feature) {
@@ -48,22 +48,22 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
         $this->features = $features;
     }
 
-    public function enableBBox()
+    public function enableBBox(): void
     {
         $this->bbox = true;
     }
 
-    public function disableBBox()
+    public function disableBBox(): void
     {
         $this->bbox = false;
     }
 
-    public function addFeature(Feature $feature)
+    public function addFeature(Feature $feature): void
     {
         $this->features[] = $feature;
     }
 
-    public function removeFeature(Feature $feature)
+    public function removeFeature(Feature $feature): void
     {
         foreach ($this->features as $i => $f) {
             if ($f === $feature) {
@@ -158,7 +158,7 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
      * @return mixed data which can be serialized by <b>json_encode</b>,
      *               which is a value of any type other than a resource
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $features = [];
         $points = [];

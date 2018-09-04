@@ -21,5 +21,5 @@ interface GeometryCollectionInterface
      *
      * @return GeometryInterface[]
      */
-    public function getGeometries();
+    public function getGeometries(): array;
 }

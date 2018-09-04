@@ -26,11 +26,11 @@ class Feature extends FeatureAbstract implements \ArrayAccess
      */
     protected $properties = [];
 
-    public function __construct(array $properties = [], GeometryInterface $geometry = null, $bbox = false)
+    public function __construct(array $properties = [], ?GeometryInterface $geometry = null, bool $bbox = false)
     {
         $this->properties = $properties;
         $this->geometry = $geometry;
-        $this->bbox = (bool) $bbox;
+        $this->bbox = $bbox;
     }
 
     public function enableBBox()
@@ -40,12 +40,13 @@ class Feature extends FeatureAbstract implements \ArrayAccess
 
     public function disableBBox()
     {
+        $this->bbox = false;
     }
 
     /**
      * @return GeometryInterface
      */
-    public function getGeometry()
+    public function getGeometry(): GeometryInterface
     {
         return $this->geometry;
     }
@@ -53,7 +54,7 @@ class Feature extends FeatureAbstract implements \ArrayAccess
     /**
      * @return $this
      */
-    public function setGeometry(GeometryInterface $geometry)
+    public function setGeometry(GeometryInterface $geometry): self
     {
         $this->geometry = $geometry;
 
@@ -63,7 +64,7 @@ class Feature extends FeatureAbstract implements \ArrayAccess
     /**
      * @return array all the properties
      */
-    public function getProperties()
+    public function getProperties(): array
     {
         return $this->properties;
     }
@@ -74,7 +75,7 @@ class Feature extends FeatureAbstract implements \ArrayAccess
      *
      * @return $this
      */
-    public function setProperties(array $properties)
+    public function setProperties(array $properties): self
     {
         $this->properties = $properties;
 
@@ -90,7 +91,7 @@ class Feature extends FeatureAbstract implements \ArrayAccess
      * @return mixed data which can be serialized by <b>json_encode</b>,
      *               which is a value of any type other than a resource
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $array = [];
 
@@ -186,7 +187,7 @@ class Feature extends FeatureAbstract implements \ArrayAccess
      *
      * @return $this
      */
-    public function setProperty($key, $value)
+    public function setProperty($key, $value): self
     {
         $this->properties[$key] = $value;
 

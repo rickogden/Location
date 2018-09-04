@@ -35,8 +35,7 @@ class Point implements GeometryInterface
     {
         if (null === $long) {
             if (\is_array($lat)) {
-                $long = $lat[0];
-                $lat = $lat[1];
+                [$long, $lat] = $lat;
             } else {
                 throw new \InvalidArgumentException('Arguments must be an array or two numbers.');
             }
@@ -62,7 +61,7 @@ class Point implements GeometryInterface
      *
      * @return Point
      */
-    public static function fromDms(array $lat, array $lon)
+    public static function fromDms(array $lat, array $lon): self
     {
         $decLat = Location::dmsToDecimal($lat[0], $lat[1], $lat[2], isset($lat[3]) ? $lat[3] : null);
 
@@ -73,20 +72,16 @@ class Point implements GeometryInterface
 
     /**
      * Latitude in an array of [degrees, minutes, seconds].
-     *
-     * @return array
      */
-    public function getLatitudeInDms()
+    public function getLatitudeInDms(): array
     {
         return Location::decimalToDms($this->latitude);
     }
 
     /**
      * Latitude in an array of [degrees, minutes, seconds].
-     *
-     * @return array
      */
-    public function getLongitudeInDms()
+    public function getLongitudeInDms(): array
     {
         return Location::decimalToDms($this->longitude);
     }
@@ -94,17 +89,15 @@ class Point implements GeometryInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->longitude.' '.$this->latitude;
     }
 
     /**
      * The latitude.
-     *
-     * @return float
      */
-    public function getLatitude()
+    public function getLatitude(): float
     {
         return $this->latitude;
     }
@@ -118,7 +111,7 @@ class Point implements GeometryInterface
      *
      * @return float the distance
      */
-    public function distanceTo(Point $point2, $unit = 'km', $formula = null)
+    public function distanceTo(Point $point2, $unit = 'km', $formula = null): float
     {
         return Location::calculateDistance($this, $point2, $unit, $formula);
     }
@@ -144,10 +137,8 @@ class Point implements GeometryInterface
      * @param Number $distance distance to other point
      * @param Number $bearing  initial bearing to other point
      * @param string $unit     The unit the distance is in
-     *
-     * @return Point
      */
-    public function getRelativePoint($distance, $bearing, $unit = 'km')
+    public function getRelativePoint(float $distance, float $bearing, string $unit = 'km'): Point
     {
         $rad = Location::getEllipsoid()->radius($unit);
         $lat1 = $this->latitudeToRad();
@@ -191,7 +182,7 @@ class Point implements GeometryInterface
      *
      * @return float bearing
      */
-    public function initialBearingTo(Point $point2)
+    public function initialBearingTo(Point $point2): float
     {
         if (\function_exists('initial_bearing') && Location::$useSpatialExtension) {
             return initial_bearing($this->jsonSerialize(), $point2->jsonSerialize());
@@ -214,7 +205,7 @@ class Point implements GeometryInterface
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'type' => 'Point',
@@ -227,17 +218,15 @@ class Point implements GeometryInterface
      *
      * @return float[]
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [$this->longitude, $this->latitude];
     }
 
     /**
      * The longitude.
-     *
-     * @return float
      */
-    public function getLongitude()
+    public function getLongitude(): float
     {
         return $this->longitude;
     }
@@ -248,7 +237,7 @@ class Point implements GeometryInterface
      *
      * @return Point the mid point
      */
-    public function getMidpoint(Point $point)
+    public function getMidpoint(Point $point): Point
     {
         return $this->getFractionAlongLineTo($point, 0.5);
     }
@@ -259,10 +248,8 @@ class Point implements GeometryInterface
      * @param float $fraction between 0 and 1
      *
      * @throw \InvalidArgumentException
-     *
-     * @return Point
      */
-    public function getFractionAlongLineTo(Point $point, $fraction)
+    public function getFractionAlongLineTo(Point $point, $fraction): Point
     {
         if ($fraction < 0 || $fraction > 1) {
             throw new \InvalidArgumentException('$fraction must be between 0 and 1');
@@ -295,11 +282,8 @@ class Point implements GeometryInterface
 
     /**
      * Create a line between this point and another point.
-     *
-     *
-     * @return LineString
      */
-    public function lineTo(Point $point)
+    public function lineTo(Point $point): LineString
     {
         return new LineString($this, $point);
     }
@@ -308,11 +292,9 @@ class Point implements GeometryInterface
      * @param $distance
      * @param string $unit
      *
-     * @return Polygon
-     *
      * @deprecated
      */
-    public function getMbr($distance, $unit = 'km')
+    public function getMbr($distance, $unit = 'km'): Polygon
     {
         return $this->getBBoxByRadius($distance, $unit);
     }
@@ -320,20 +302,16 @@ class Point implements GeometryInterface
     /**
      * @param $radius
      * @param string $unit
-     *
-     * @return Polygon
      */
-    public function getBBoxByRadius($radius, $unit = 'km')
+    public function getBBoxByRadius($radius, $unit = 'km'): Polygon
     {
         return Location::getBBoxByRadius($this, $radius, $unit);
     }
 
     /**
      * Converts point to Well-Known Text.
-     *
-     * @return string
      */
-    public function toWkt()
+    public function toWkt(): string
     {
         return 'POINT('.(string) $this.')';
     }
@@ -343,7 +321,7 @@ class Point implements GeometryInterface
      *
      * @return float[]
      */
-    public function getCoordinates()
+    public function getCoordinates(): array
     {
         return [$this->longitude, $this->latitude];
     }
@@ -353,7 +331,7 @@ class Point implements GeometryInterface
      *
      * @return Point[]
      */
-    public function getPoints()
+    public function getPoints(): array
     {
         return [$this];
     }

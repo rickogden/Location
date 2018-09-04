@@ -46,7 +46,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     /**
      * @return float The initial bearing from the first to second point
      */
-    public function getInitialBearing()
+    public function getInitialBearing(): float
     {
         return $this->points[0]->initialBearingTo($this->points[1]);
     }
@@ -55,7 +55,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     {
         $distance = 0;
 
-        for ($i = 1; $i < \count($this->points); ++$i ) {
+        for ($i = 1, $iMax = \count($this->points); $i < $iMax; ++$i) {
             $distance += $this->points[$i - 1]->distanceTo($this->points[$i], $unit, $formula);
         }
 
@@ -65,7 +65,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     /**
      * @return Point the first point
      */
-    public function getFirst()
+    public function getFirst(): Point
     {
         return $this->points[0];
     }
@@ -73,7 +73,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     /**
      * @return Point the last point
      */
-    public function getLast()
+    public function getLast(): Point
     {
         return $this->points[\count($this->points) - 1];
     }
@@ -81,7 +81,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         return '('.\implode(', ', $this->points).')';
     }
@@ -89,7 +89,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $coordinates = $this->toArray();
 
@@ -99,7 +99,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     /**
      * {@inheritdoc}
      */
-    public function toArray()
+    public function toArray(): array
     {
         $return = [];
         foreach ($this->points as $point) {
@@ -112,7 +112,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     /**
      * {@inheritdoc}
      */
-    public function toWkt()
+    public function toWkt(): string
     {
         return 'LINESTRING'.$this;
     }
@@ -237,20 +237,16 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
 
     /**
      * Gets the bounding box which will contain the entire geometry.
-     *
-     * @return Polygon
      */
-    public function getBBox()
+    public function getBBox(): Polygon
     {
         return Location::getBBox($this);
     }
 
     /**
      * Converts LineString into a Polygon.
-     *
-     * @return Polygon
      */
-    public function toPolygon()
+    public function toPolygon(): Polygon
     {
         return new Polygon($this->getPoints());
     }
@@ -258,7 +254,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     /**
      * {@inheritdoc}
      */
-    public function getPoints()
+    public function getPoints(): array
     {
         return $this->points;
     }
@@ -268,7 +264,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
      *
      * @return $this
      */
-    public function reverse()
+    public function reverse(): self
     {
         $this->points = \array_reverse($this->points);
 

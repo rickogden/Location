@@ -16,7 +16,7 @@ abstract class FeatureAbstract implements \JsonSerializable
     /**
      * @param bool|true $bbox
      */
-    public function withBbox($bbox = true)
+    public function withBbox($bbox = true): void
     {
         $this->bbox = (bool) $bbox;
     }

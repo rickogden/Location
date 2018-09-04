@@ -33,7 +33,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function toWkt()
+    public function toWkt(): string
     {
         return 'MULTILINESTRING'.(string) $this;
     }
@@ -41,7 +41,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getPoints()
+    public function getPoints(): array
     {
         $points = [];
         foreach ($this->geometries as $line) {
@@ -55,7 +55,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'type' => 'MultiLineString',
@@ -66,7 +66,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function toArray()
+    public function toArray(): array
     {
         $return = [];
         foreach ($this->geometries as $line) {
@@ -79,7 +79,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     /**
      * @return LineString[] an array of the LineStrings
      */
-    public function getGeometries()
+    public function getGeometries(): array
     {
         return $this->geometries;
     }
@@ -117,7 +117,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         return '('.\implode(',', $this->geometries).')';
     }

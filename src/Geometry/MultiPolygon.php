@@ -36,7 +36,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     /**
      * @return string the Well-Known Text representation of the geometry
      */
-    public function toWkt()
+    public function toWkt(): string
     {
         return 'MULTIPOLYGON'.(string) $this;
     }
@@ -44,7 +44,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     /**
      * @return Point[] gets all the points in a geometry. Note, order is not necessarily representative.
      */
-    public function getPoints()
+    public function getPoints(): array
     {
         $points = [];
         foreach ($this->geometries as $polygon) {
@@ -57,7 +57,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     /**
      * @return Polygon[]
      */
-    public function getGeometries()
+    public function getGeometries(): array
     {
         return $this->geometries;
     }
@@ -89,7 +89,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'type' => 'MultiPolygon',
@@ -100,7 +100,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function toArray()
+    public function toArray(): array
     {
         $ar = [];
 
@@ -114,7 +114,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         return '('.\implode(',', $this->geometries).')';
     }
