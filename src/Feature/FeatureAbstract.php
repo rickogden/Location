@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Author: rick
  * Date: 05/11/2015
- * Time: 15:26
+ * Time: 15:26.
  */
 
 namespace Ricklab\Location\Feature;

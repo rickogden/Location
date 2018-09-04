@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Ricklab\Location\Ellipsoid;
 
 class Mars extends Ellipsoid

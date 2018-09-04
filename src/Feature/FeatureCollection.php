@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Author: rick
  * Date: 17/07/15
- * Time: 16:47
+ * Time: 16:47.
  */
 
 namespace Ricklab\Location\Feature;
@@ -14,7 +16,7 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
     /**
      * @var Feature[]
      */
-    protected $features = [ ];
+    protected $features = [];
 
     /**
      * @var int
@@ -25,7 +27,7 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
      * FeatureCollection constructor.
      *
      * @param Feature[] $features
-     * @param bool $bbox
+     * @param bool      $bbox
      */
     public function __construct(array $features = [], $bbox = false)
     {
@@ -39,7 +41,7 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
     public function setFeatures(array $features)
     {
         foreach ($features as $feature) {
-            if (! $feature instanceof Feature) {
+            if (!$feature instanceof Feature) {
                 throw new \InvalidArgumentException('Only instances of Feature can be passed in the array.');
             }
         }
@@ -72,9 +74,11 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
 
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
-     * Return the current element
-     * @link http://php.net/manual/en/iterator.current.php
-     * @return mixed Can return any type.
+     * Return the current element.
+     *
+     * @see http://php.net/manual/en/iterator.current.php
+     *
+     * @return mixed can return any type
      */
     public function current()
     {
@@ -83,20 +87,22 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
 
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
-     * Move forward to next element
-     * @link http://php.net/manual/en/iterator.next.php
-     * @return void Any returned value is ignored.
+     * Move forward to next element.
+     *
+     * @see http://php.net/manual/en/iterator.next.php
      */
     public function next()
     {
-        $this->position ++;
+        ++$this->position ;
     }
 
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
-     * Return the key of the current element
-     * @link http://php.net/manual/en/iterator.key.php
-     * @return mixed scalar on success, or null on failure.
+     * Return the key of the current element.
+     *
+     * @see http://php.net/manual/en/iterator.key.php
+     *
+     * @return mixed scalar on success, or null on failure
      */
     public function key()
     {
@@ -105,10 +111,12 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
 
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
-     * Checks if current position is valid
-     * @link http://php.net/manual/en/iterator.valid.php
-     * @return boolean The return value will be casted to boolean and then evaluated.
-     * Returns true on success or false on failure.
+     * Checks if current position is valid.
+     *
+     * @see http://php.net/manual/en/iterator.valid.php
+     *
+     * @return bool the return value will be casted to boolean and then evaluated.
+     *              Returns true on success or false on failure
      */
     public function valid()
     {
@@ -117,9 +125,9 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
 
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
-     * Rewind the Iterator to the first element
-     * @link http://php.net/manual/en/iterator.rewind.php
-     * @return void Any returned value is ignored.
+     * Rewind the Iterator to the first element.
+     *
+     * @see http://php.net/manual/en/iterator.rewind.php
      */
     public function rewind()
     {
@@ -128,14 +136,13 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
 
     /**
      * (PHP 5 &gt;= 5.1.0)<br/>
-     * Seeks to a position
-     * @link http://php.net/manual/en/seekableiterator.seek.php
+     * Seeks to a position.
+     *
+     * @see http://php.net/manual/en/seekableiterator.seek.php
      *
      * @param int $position <p>
-     * The position to seek to.
-     * </p>
-     *
-     * @return void
+     *                      The position to seek to.
+     *                      </p>
      */
     public function seek($position)
     {
@@ -144,24 +151,26 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
 
     /**
      * (PHP 5 &gt;= 5.4.0)<br/>
-     * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * Specify data which should be serialized to JSON.
+     *
+     * @see http://php.net/manual/en/jsonserializable.jsonserialize.php
+     *
      * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
+     *               which is a value of any type other than a resource
      */
     public function jsonSerialize()
     {
-        $features = [ ];
-        $points   = [ ];
+        $features = [];
+        $points = [];
         foreach ($this->features as $feature) {
             $features[] = $feature->jsonSerialize();
+
             if ($this->bbox) {
                 $points += $feature->getGeometry()->getPoints();
             }
         }
 
-
-        $return         = [];
+        $return = [];
         $return['type'] = 'FeatureCollection';
 
         if ($this->bbox) {
@@ -169,7 +178,6 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
         }
 
         $return['features'] = $features;
-
 
         return $return;
     }

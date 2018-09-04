@@ -1,21 +1,19 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Author: rick
  * Date: 16/07/15
- * Time: 16:34
+ * Time: 16:34.
  */
 
 namespace Ricklab\Location\Geometry;
 
 /**
- * Class MultiLineString
- * @package Ricklab\Location\Geometry
- *
- * A collection of LineString geometries.
+ * Class MultiLineString.
  */
 class MultiLineString implements GeometryInterface, GeometryCollectionInterface
 {
-
     /**
      * @var LineString[]
      */
@@ -24,7 +22,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     public function __construct(array $lineStrings)
     {
         foreach ($lineStrings as $lineString) {
-            if (! $lineString instanceof LineString) {
+            if (!$lineString instanceof LineString) {
                 $lineString = new LineString($lineString);
             }
 
@@ -33,19 +31,19 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function toWkt()
     {
-        return 'MULTILINESTRING' . (string) $this;
+        return 'MULTILINESTRING'.(string) $this;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getPoints()
     {
-        $points = [ ];
+        $points = [];
         foreach ($this->geometries as $line) {
             $linePoints = $line->getPoints();
             $points += $linePoints;
@@ -55,20 +53,18 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function jsonSerialize()
     {
-        $geo = [
-            'type'        => 'MultiLineString',
-            'coordinates' => $this->toArray()
+        return [
+            'type' => 'MultiLineString',
+            'coordinates' => $this->toArray(),
         ];
-
-        return $geo;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function toArray()
     {
@@ -91,7 +87,6 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     /**
      * Adds a new LineString to the collection.
      *
-     * @param LineString $lineString
      *
      * @return $this
      */
@@ -103,9 +98,8 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * Removes a LineString from the collection
+     * Removes a LineString from the collection.
      *
-     * @param LineString $lineString
      *
      * @return $this
      */
@@ -121,10 +115,10 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __toString()
     {
-        return '(' . implode(',', $this->geometries) . ')';
+        return '('.\implode(',', $this->geometries).')';
     }
 }

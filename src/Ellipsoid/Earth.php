@@ -1,7 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 /**
- * The radius of the Earth
+ * The radius of the Earth.
  *
  * @author rick
  */

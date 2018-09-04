@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Author: rick
  * Date: 04/10/15
- * Time: 11:24
+ * Time: 11:24.
  */
 
 namespace Ricklab\Location\Geometry;
@@ -11,7 +13,6 @@ use Ricklab\Location\Location;
 
 class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \SeekableIterator, \ArrayAccess
 {
-
     /**
      * @var Point[]
      */
@@ -27,17 +28,16 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function toWkt()
     {
-        $retVal = 'MULTIPOINT' . $this;
-
-        return $retVal;
+        return 'MULTIPOINT'.$this;
     }
 
     /**
      * {@inheritdoc}
+     *
      * @return Point[]
      */
     public function getGeometries()
@@ -46,7 +46,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getPoints()
     {
@@ -54,8 +54,6 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     }
 
     /**
-     * @param Point $point
-     *
      * @return $this
      */
     public function addGeometry(Point $point)
@@ -66,8 +64,6 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     }
 
     /**
-     * @param Point $point
-     *
      * @return $this
      */
     public function removeGeometry(Point $point)
@@ -82,17 +78,15 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __toString()
     {
-        $return = '(' . implode(', ', $this->geometries) . ')';
-
-        return $return;
+        return '('.\implode(', ', $this->geometries).')';
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function jsonSerialize()
     {
@@ -102,7 +96,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function toArray()
     {
@@ -118,7 +112,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     {
         $this->position = $position;
 
-        if (! $this->valid()) {
+        if (!$this->valid()) {
             throw new \OutOfBoundsException('Item does not exist');
         }
     }
@@ -140,7 +134,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
 
     public function next()
     {
-        $this->position ++;
+        ++$this->position ;
     }
 
     public function rewind()
@@ -153,22 +147,20 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
         return isset($this->geometries[$offset]);
     }
 
-
     public function offsetGet($offset)
     {
         return $this->geometries[$offset];
     }
 
-
     public function offsetSet($offset, $value)
     {
-        if (! $value instanceof Point) {
+        if (!$value instanceof Point) {
             $value = new Point($value);
         }
 
-        if (is_integer($offset)) {
+        if (\is_integer($offset)) {
             $this->geometries[$offset] = $value;
-        } elseif ($offset === null) {
+        } elseif (null === $offset) {
             $this->geometries[] = $value;
         } else {
             throw new \OutOfBoundsException('Key must be numeric.');

@@ -1,0 +1,55 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->in(['src', 'tests'])
+;
+
+return PhpCsFixer\Config::create()
+    ->setRules([
+        '@PSR2' => true,
+        '@Symfony' => true,
+        'align_multiline_comment' => ['comment_type' => 'phpdocs_only'],
+        'array_indentation' => true,
+        'array_syntax' => ['syntax' => 'short'],
+        'blank_line_before_statement' => [
+            'statements' => ['continue', 'declare', 'return', 'throw', 'try', 'if', 'while', 'for'],
+        ],
+        'comment_to_phpdoc' => true,
+        'compact_nullable_typehint' => true,
+        'declare_strict_types' => true,
+        'fully_qualified_strict_types' => true,
+        'function_to_constant' => [
+            'functions' => ['get_class', 'get_called_class', 'php_sapi_name', 'phpversion', 'pi'],
+        ],
+        'heredoc_to_nowdoc' => true,
+        'is_null' => true,
+        'linebreak_after_opening_tag' => true,
+        'list_syntax' => ['syntax' => 'short'],
+        'mb_str_functions' => true,
+        'method_argument_space' => ['on_multiline' => 'ensure_fully_multiline'],
+        'native_constant_invocation' => true,
+        'native_function_invocation' => ['scope' => 'namespaced'],
+        'no_alternative_syntax' => true,
+        'no_binary_string' => true,
+        'no_null_property_initialization' => true,
+        'no_short_echo_tag' => true,
+        'no_singleline_whitespace_before_semicolons' => false,
+        'no_superfluous_elseif' => true,
+        'no_superfluous_phpdoc_tags' => true,
+        'no_unneeded_final_method' => true,
+        'no_unreachable_default_argument_value' => true,
+        'no_unset_on_property' => true,
+        'no_useless_else' => true,
+        'ordered_imports' => true,
+        'php_unit_dedicate_assert' => true,
+        'php_unit_mock' => true,
+        'php_unit_namespaced' => true,
+        'php_unit_set_up_tear_down_visibility' => true,
+        'php_unit_test_case_static_method_calls' => ['call_type' => 'this'],
+        'phpdoc_order' => true,
+        'return_assignment' => true,
+        'set_type_to_cast' => true,
+    ])
+    ->setRiskyAllowed(true)
+    ->setFinder($finder)
+;

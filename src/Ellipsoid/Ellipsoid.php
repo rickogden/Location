@@ -1,47 +1,47 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Author: rick
  * Date: 18/08/14
- * Time: 10:07
+ * Time: 10:07.
  */
 
 namespace Ricklab\Location\Ellipsoid;
 
 abstract class Ellipsoid
 {
-
     /**
      * @var array Unit multipliers relative to km
      */
     protected $multipliers = [
-        'km'             => 0.001,
-        'miles'          => 0.00062137119,
-        'metres'         => 1,
-        'feet'           => 3.2808399,
-        'yards'          => 1.0936133,
-        'nautical miles' => 0.0005399568
+        'km' => 0.001,
+        'miles' => 0.00062137119,
+        'metres' => 1,
+        'feet' => 3.2808399,
+        'yards' => 1.0936133,
+        'nautical miles' => 0.0005399568,
     ];
 
     /**
      * @var array Key translations for multipliers
      */
     protected $keys = [
-        'km'             => 'km',
-        'kilometres'     => 'km',
-        'kilometers'     => 'km',
-        'miles'          => 'miles',
-        'metres'         => 'metres',
-        'meters'         => 'metres',
-        'm'              => 'metres',
-        'feet'           => 'feet',
-        'ft'             => 'feet',
-        'foot'           => 'feet',
-        'yards'          => 'yards',
-        'yds'            => 'yards',
+        'km' => 'km',
+        'kilometres' => 'km',
+        'kilometers' => 'km',
+        'miles' => 'miles',
+        'metres' => 'metres',
+        'meters' => 'metres',
+        'm' => 'metres',
+        'feet' => 'feet',
+        'ft' => 'feet',
+        'foot' => 'feet',
+        'yards' => 'yards',
+        'yds' => 'yards',
         'nautical miles' => 'nautical miles',
-        'nm'             => 'nautical miles'
+        'nm' => 'nautical miles',
     ];
-
 
     /**
      * @var float radius in metres (for use in Haversine)
@@ -62,8 +62,6 @@ abstract class Ellipsoid
      * Returns the average radius of the ellipsoid in specified units.
      *
      * @param string $unit can be 'km', 'miles', 'metres', 'feet', 'yards', 'nautical miles'
-     *
-     * @return mixed
      */
     public function radius($unit = 'km')
     {
@@ -78,9 +76,9 @@ abstract class Ellipsoid
     public function getMultiplier($unit)
     {
         try {
-            return $this->multipliers[$this->keys[strtolower($unit)]];
+            return $this->multipliers[$this->keys[\mb_strtolower($unit)]];
         } catch (\Exception $e) {
-            throw new \InvalidArgumentException('Unit ' . $unit . ' is not a recognised unit.');
+            throw new \InvalidArgumentException('Unit '.$unit.' is not a recognised unit.');
         }
     }
 
@@ -102,7 +100,7 @@ abstract class Ellipsoid
      */
     public function getMajorSemiAxis($unit = 'm')
     {
-        if ($unit !== 'm') {
+        if ('m' !== $unit) {
             return $this->unitConversion($this->majorSemiAxis / 1000, $unit);
         }
 
@@ -116,7 +114,7 @@ abstract class Ellipsoid
      */
     public function getMinorSemiAxis($unit = 'm')
     {
-        if ($unit !== 'm') {
+        if ('m' !== $unit) {
             return $this->unitConversion($this->minorSemiAxis / 1000, $unit);
         }
 

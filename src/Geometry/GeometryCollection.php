@@ -1,24 +1,23 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Author: rick
  * Date: 17/07/15
- * Time: 17:18
+ * Time: 17:18.
  */
 
 namespace Ricklab\Location\Geometry;
 
 /**
- * Class GeometryCollection
- * @package Ricklab\Location\Geometry
- *
- * A collection of any combination of geometries.
+ * Class GeometryCollection.
  */
 class GeometryCollection implements GeometryInterface, GeometryCollectionInterface
 {
     /**
      * @var GeometryInterface[]
      */
-    protected $geometries = [ ];
+    protected $geometries = [];
 
     /**
      * GeometryCollection constructor.
@@ -28,7 +27,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     public function __construct(array $geometries)
     {
         foreach ($geometries as $geometry) {
-            if (! $geometry instanceof GeometryInterface) {
+            if (!$geometry instanceof GeometryInterface) {
                 throw new \InvalidArgumentException('Array must contain geometries only');
             }
         }
@@ -40,7 +39,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
      */
     public function toWkt()
     {
-        return 'GEOMETRYCOLLECTION' . $this;
+        return 'GEOMETRYCOLLECTION'.$this;
     }
 
     /**
@@ -54,7 +53,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getPoints()
     {
@@ -68,7 +67,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function jsonSerialize()
     {
@@ -81,7 +80,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __toString()
     {
@@ -90,13 +89,12 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
             $collection[] = $geometry->toWkt();
         }
 
-        $string = '(' . implode(',', $collection) . ')';
-
-        return $string;
+        return '('.\implode(',', $collection).')';
     }
 
     /**
-     * All the geometries in the collection
+     * All the geometries in the collection.
+     *
      * @return GeometryInterface[]
      */
     public function getGeometries()
@@ -105,9 +103,8 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     }
 
     /**
-     * Adds a geometry to the collection
+     * Adds a geometry to the collection.
      *
-     * @param GeometryInterface $geometry
      *
      * @return $this
      */
@@ -119,9 +116,8 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     }
 
     /**
-     * Removes a geometry from the collection
+     * Removes a geometry from the collection.
      *
-     * @param GeometryInterface $geometry
      *
      * @return $this
      */

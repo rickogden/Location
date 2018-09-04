@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Author: rick
  * Date: 10/12/2015
- * Time: 09:03
+ * Time: 09:03.
  */
 
 namespace Ricklab\Location\Geometry;
@@ -25,16 +27,15 @@ class MultiPointTest extends TestCase
         $this->assertEquals([100.0, 0.0], $multipoint->getGeometries()[0]->toArray());
         $this->assertEquals([101.0, 1.0], $multipoint->getGeometries()[1]->toArray());
 
-        $geojson = json_encode(json_decode($geojson));
+        $geojson = \json_encode(\json_decode($geojson));
 
-        $this->assertEquals($geojson, json_encode($multipoint));
+        $this->assertEquals($geojson, \json_encode($multipoint));
     }
 
     public function testWkt()
     {
         $wktv1 = 'MULTIPOINT ((10 40), (40 30), (20 20), (30 10))';
         $wktv2 = 'MULTIPOINT(10 40, 40 30, 20 20, 30 10)';
-
 
         $mp1 = Location::fromWkt($wktv1);
         $mp2 = Location::fromWkt($wktv2);

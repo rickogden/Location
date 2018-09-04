@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Author: rick
  * Date: 05/01/2016
- * Time: 15:40
+ * Time: 15:40.
  */
 
 namespace Ricklab\Location\Feature;
@@ -33,6 +35,6 @@ class FeatureCollectionTest extends TestCase
         $featureCollection = Location::fromGeoJson($initialjson);
 
         $this->assertTrue($featureCollection instanceof FeatureCollection);
-        $this->assertEquals(json_encode(json_decode($initialjson)), json_encode($featureCollection));
+        $this->assertEquals(\json_encode(\json_decode($initialjson)), \json_encode($featureCollection));
     }
 }

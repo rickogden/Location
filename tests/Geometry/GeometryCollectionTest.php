@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Author: rick
  * Date: 03/12/2015
- * Time: 11:10
+ * Time: 11:10.
  */
 
 namespace Ricklab\Location\Geometry;
@@ -14,7 +16,7 @@ class GeometryCollectionTest extends TestCase
 {
     public function testToGeoJson()
     {
-        $json    = '{ "type": "GeometryCollection",
+        $json = '{ "type": "GeometryCollection",
     "geometries": [
       { "type": "Point",
         "coordinates": [100.0, 0.0]
@@ -24,21 +26,21 @@ class GeometryCollectionTest extends TestCase
         }
     ]
   }';
-        $geojson = json_encode(json_decode($json, true));
+        $geojson = \json_encode(\json_decode($json, true));
 
-        $point      = new Point([100.0, 0.0]);
+        $point = new Point([100.0, 0.0]);
         $lineString = new LineString([[101.0, 0.0], [102.0, 1.0]]);
 
         $geometryCollection = new GeometryCollection([$point, $lineString]);
 
-        $this->assertEquals($geojson, json_encode($geometryCollection));
+        $this->assertEquals($geojson, \json_encode($geometryCollection));
     }
 
     public function testToWkt()
     {
         $wkt = 'GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6, 7 10))';
 
-        $point      = new Point([4, 6]);
+        $point = new Point([4, 6]);
         $lineString = new LineString([[4, 6], [7, 10]]);
 
         $geometryCollection = new GeometryCollection([$point, $lineString]);

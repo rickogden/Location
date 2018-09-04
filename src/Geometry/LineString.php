@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Author: rick
  * Date: 14/07/15
- * Time: 13:39
+ * Time: 13:39.
  */
 
 namespace Ricklab\Location\Geometry;
@@ -10,14 +12,10 @@ namespace Ricklab\Location\Geometry;
 use Ricklab\Location\Location;
 
 /**
- * Class LineString
- * @package Ricklab\Location\Geometry
- *
- * A one dimensional set of points in an order which creates a line.
+ * Class LineString.
  */
 class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, \Countable
 {
-
     /**
      * @var Point[]
      */
@@ -30,13 +28,13 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
 
     /**
      * @param Point|Point[] $points the points, or the starting point
-     * @param Point|null $end the end point, only used if $points is not an array
+     * @param Point|null    $end    the end point, only used if $points is not an array
      */
     public function __construct($points, Point $end = null)
     {
-        if ($points instanceof Point && $end !== null) {
+        if ($points instanceof Point && null !== $end) {
             $this->points = [$points, $end];
-        } elseif (is_array($points) && count($points) > 1) {
+        } elseif (\is_array($points) && \count($points) > 1) {
             foreach ($points as $point) {
                 $this[] = $point;
             }
@@ -53,17 +51,16 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
         return $this->points[0]->initialBearingTo($this->points[1]);
     }
 
-
     public function getLength($unit = 'km', $formula = null)
     {
         $distance = 0;
-        for ($i = 1; $i < count($this->points); $i ++) {
+
+        for ($i = 1; $i < \count($this->points); ++$i ) {
             $distance += $this->points[$i - 1]->distanceTo($this->points[$i], $unit, $formula);
         }
 
         return $distance;
     }
-
 
     /**
      * @return Point the first point
@@ -78,22 +75,19 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
      */
     public function getLast()
     {
-        return $this->points[count($this->points) - 1];
+        return $this->points[\count($this->points) - 1];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __toString()
     {
-        $return = '(' . implode(', ', $this->points) . ')';
-
-        return $return;
+        return '('.\implode(', ', $this->points).')';
     }
 
-
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function jsonSerialize()
     {
@@ -103,7 +97,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function toArray()
     {
@@ -116,20 +110,18 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function toWkt()
     {
-        $retVal = 'LINESTRING' . $this;
-
-        return $retVal;
+        return 'LINESTRING'.$this;
     }
 
     public function seek($position)
     {
         $this->position = $position;
 
-        if (! $this->valid()) {
+        if (!$this->valid()) {
             throw new \OutOfBoundsException('Item does not exist');
         }
     }
@@ -151,7 +143,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
 
     public function next()
     {
-        $this->position ++;
+        ++$this->position ;
     }
 
     public function rewind()
@@ -161,17 +153,18 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
 
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
-     * Whether a offset exists
-     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+     * Whether a offset exists.
+     *
+     * @see http://php.net/manual/en/arrayaccess.offsetexists.php
      *
      * @param mixed $offset <p>
-     * An offset to check for.
-     * </p>
+     *                      An offset to check for.
+     *                      </p>
      *
-     * @return boolean true on success or false on failure.
-     * </p>
-     * <p>
-     * The return value will be casted to boolean if non-boolean was returned.
+     * @return bool true on success or false on failure.
+     *              </p>
+     *              <p>
+     *              The return value will be casted to boolean if non-boolean was returned
      */
     public function offsetExists($offset)
     {
@@ -180,12 +173,13 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
 
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to retrieve
-     * @link http://php.net/manual/en/arrayaccess.offsetget.php
+     * Offset to retrieve.
+     *
+     * @see http://php.net/manual/en/arrayaccess.offsetget.php
      *
      * @param mixed $offset <p>
-     * The offset to retrieve.
-     * </p>
+     *                      The offset to retrieve.
+     *                      </p>
      *
      * @return Point
      */
@@ -196,28 +190,27 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
 
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to set
-     * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     * Offset to set.
      *
-     * @param int $offset <p>
-     * The offset to assign the value to.
-     * </p>
-     * @param Point $value <p>
-     * The value to set.
-     * </p>
+     * @see http://php.net/manual/en/arrayaccess.offsetset.php
      *
-     * @return void
+     * @param int   $offset <p>
+     *                      The offset to assign the value to.
+     *                      </p>
+     * @param point $value  <p>
+     *                      The value to set.
+     *                      </p>
      */
     public function offsetSet($offset, $value)
     {
-        if (is_array($value)) {
+        if (\is_array($value)) {
             $value = new Point($value);
         }
 
         if ($value instanceof Point) {
-            if (is_integer($offset)) {
+            if (\is_integer($offset)) {
                 $this->points[$offset] = $value;
-            } elseif ($offset === null) {
+            } elseif (null === $offset) {
                 $this->points[] = $value;
             } else {
                 throw new \OutOfBoundsException('Key must be numeric.');
@@ -229,14 +222,13 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
 
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to unset
-     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+     * Offset to unset.
+     *
+     * @see http://php.net/manual/en/arrayaccess.offsetunset.php
      *
      * @param int $offset <p>
-     * The offset to unset.
-     * </p>
-     *
-     * @return void
+     *                    The offset to unset.
+     *                    </p>
      */
     public function offsetUnset($offset)
     {
@@ -245,6 +237,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
 
     /**
      * Gets the bounding box which will contain the entire geometry.
+     *
      * @return Polygon
      */
     public function getBBox()
@@ -253,7 +246,8 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     }
 
     /**
-     * Converts LineString into a Polygon
+     * Converts LineString into a Polygon.
+     *
      * @return Polygon
      */
     public function toPolygon()
@@ -262,7 +256,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getPoints()
     {
@@ -271,22 +265,26 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
 
     /**
      * Reverses the direction of the line.
+     *
      * @return $this
      */
     public function reverse()
     {
-        $this->points = array_reverse($this->points);
+        $this->points = \array_reverse($this->points);
 
         return $this;
     }
 
     /**
-     * Count elements of an object
-     * @link https://php.net/manual/en/countable.count.php
-     * @return int The custom count as an integer.
-     * </p>
-     * <p>
-     * The return value is cast to an integer.
+     * Count elements of an object.
+     *
+     * @see https://php.net/manual/en/countable.count.php
+     *
+     * @return int the custom count as an integer.
+     *             </p>
+     *             <p>
+     *             The return value is cast to an integer
+     *
      * @since 5.1.0
      */
     public function count()

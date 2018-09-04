@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Author: rick
  * Date: 04/10/15
- * Time: 11:22
+ * Time: 11:22.
  */
 
 namespace Ricklab\Location\Geometry;
@@ -20,14 +22,14 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     public function __construct(array $polygons)
     {
         foreach ($polygons as $polygon) {
-            if (is_array($polygon)) {
+            if (\is_array($polygon)) {
                 $polygon = new Polygon($polygon);
             }
-            if (! $polygon instanceof Polygon) {
+
+            if (!$polygon instanceof Polygon) {
                 throw new \InvalidArgumentException('$polygons must be an array of Polygon objects');
-            } else {
-                $this->geometries[] = $polygon;
             }
+            $this->geometries[] = $polygon;
         }
     }
 
@@ -36,7 +38,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
      */
     public function toWkt()
     {
-        return 'MULTIPOLYGON' . (string) $this;
+        return 'MULTIPOLYGON'.(string) $this;
     }
 
     /**
@@ -61,8 +63,6 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * @param Polygon $polygon
-     *
      * @return $this
      */
     public function addGeometry(Polygon $polygon)
@@ -73,8 +73,6 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * @param Polygon $polygon
-     *
      * @return $this
      */
     public function removeGeometry(Polygon $polygon)
@@ -89,20 +87,18 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function jsonSerialize()
     {
-        $json = [
-            'type'        => 'MultiPolygon',
-            'coordinates' => $this->toArray()
+        return [
+            'type' => 'MultiPolygon',
+            'coordinates' => $this->toArray(),
         ];
-
-        return $json;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function toArray()
     {
@@ -116,10 +112,10 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __toString()
     {
-        return '(' . implode(',', $this->geometries) . ')';
+        return '('.\implode(',', $this->geometries).')';
     }
 }

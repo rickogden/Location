@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Author: rick
  * Date: 05/01/2016
- * Time: 14:55
+ * Time: 14:55.
  */
 
 namespace Ricklab\Location\Feature;
@@ -16,13 +18,13 @@ class FeatureTest extends TestCase
 {
     public function testBBox()
     {
-        $line    = new LineString([[2, 3], [4, 5]]);
+        $line = new LineString([[2, 3], [4, 5]]);
         $feature = new Feature();
         $feature->setGeometry($line);
         $feature->enableBBox();
 
         $json = $feature->jsonSerialize();
-        $this->assertTrue(is_array($json['bbox']));
+        $this->assertInternalType('array', $json['bbox']);
     }
 
     public function testGeoJson()
@@ -47,6 +49,6 @@ class FeatureTest extends TestCase
         $this->assertTrue($feature->getGeometry() instanceof Polygon);
         $this->assertEquals('bar', $feature['foo']);
 
-        $this->assertEquals(json_encode(json_decode($initialjson)), json_encode($feature));
+        $this->assertEquals(\json_encode(\json_decode($initialjson)), \json_encode($feature));
     }
 }
