@@ -7,14 +7,10 @@
 
 namespace Ricklab\Location\Geometry;
 
-
-
 use PHPUnit\Framework\TestCase;
 
 class MultiLineStringTest extends TestCase
 {
-
-
     public function testToGeoJson()
     {
         $geojson = '{ "type": "MultiLineString",
@@ -76,8 +72,5 @@ class MultiLineStringTest extends TestCase
         $multiLineString->removeGeometry($lineString);
         $this->assertEquals(1, count($multiLineString->getGeometries()));
         $this->assertFalse(in_array($lineString, $multiLineString->getGeometries()));
-
-
     }
-
 }

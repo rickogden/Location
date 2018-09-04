@@ -7,7 +7,6 @@
 
 namespace Ricklab\Location\Geometry;
 
-
 class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
 {
     /**
@@ -20,18 +19,16 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
      */
     public function __construct(array $polygons)
     {
-
         foreach ($polygons as $polygon) {
             if (is_array($polygon)) {
                 $polygon = new Polygon($polygon);
             }
-            if ( ! $polygon instanceof Polygon) {
+            if (! $polygon instanceof Polygon) {
                 throw new \InvalidArgumentException('$polygons must be an array of Polygon objects');
             } else {
                 $this->geometries[] = $polygon;
             }
         }
-
     }
 
     /**
@@ -84,7 +81,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     {
         foreach ($this->geometries as $index => $geom) {
             if ($polygon === $geom) {
-                unset( $this->geometries[$index] );
+                unset($this->geometries[$index]);
             }
         }
 
@@ -94,7 +91,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     /**
      * @inheritdoc
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         $json = [
             'type'        => 'MultiPolygon',
@@ -123,9 +120,6 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
      */
     public function __toString()
     {
-
         return '(' . implode(',', $this->geometries) . ')';
     }
-
-
 }

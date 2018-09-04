@@ -16,39 +16,38 @@ class PolygonTest extends TestCase
 
     public function setUp()
     {
-
         Location::$useSpatialExtension = false;
-        $this->polygon                 = new Polygon( [ new Point( 2, 3 ), new Point( 2, 4 ), new Point( 3, 4 ) ] );
+        $this->polygon                 = new Polygon([ new Point(2, 3), new Point(2, 4), new Point(3, 4) ]);
     }
 
     public function testConstruction()
     {
-        $poly1 = new Polygon( [
+        $poly1 = new Polygon([
             [
-                new Point( 2, 3 ),
-                new Point( 2, 4 ),
-                new Point( 3, 4 ),
-                new Point( 2, 3 )
+                new Point(2, 3),
+                new Point(2, 4),
+                new Point(3, 4),
+                new Point(2, 3)
             ]
-        ] );
-        $this->assertEquals( $this->polygon, $poly1 );
+        ]);
+        $this->assertEquals($this->polygon, $poly1);
 
-        $poly2 = new Polygon( [
-            new LineString( [
-                new Point( 2, 3 ),
-                new Point( 2, 4 ),
-                new Point( 3, 4 ),
-                new Point( 2, 3 )
-            ] )
-        ] );
-        $this->assertEquals( $this->polygon, $poly2 );
+        $poly2 = new Polygon([
+            new LineString([
+                new Point(2, 3),
+                new Point(2, 4),
+                new Point(3, 4),
+                new Point(2, 3)
+            ])
+        ]);
+        $this->assertEquals($this->polygon, $poly2);
     }
 
     public function testLastPointIsTheSameAsFirstPoint()
     {
         $a = $this->polygon;
-        $this->assertEquals( $a[0][0]->getLatitude(), $a[0][count( $a[0] ) - 1]->getLatitude() );
-        $this->assertEquals( $a[0][0]->getLongitude(), $a[0][count( $a[0] ) - 1]->getLongitude() );
+        $this->assertEquals($a[0][0]->getLatitude(), $a[0][count($a[0]) - 1]->getLatitude());
+        $this->assertEquals($a[0][0]->getLongitude(), $a[0][count($a[0]) - 1]->getLongitude());
     }
 
     public function testToArrayReturnsAnArray()
@@ -58,20 +57,19 @@ class PolygonTest extends TestCase
 
     public function testObjectIsAPolygon()
     {
-
-        $this->assertInstanceOf( 'Ricklab\Location\Geometry\Polygon', $this->polygon );
+        $this->assertInstanceOf('Ricklab\Location\Geometry\Polygon', $this->polygon);
     }
 
     public function testToString()
     {
         $retval = '((3 2, 4 2, 4 3, 3 2))';
-        $this->assertEquals( $retval, (string) $this->polygon );
+        $this->assertEquals($retval, (string) $this->polygon);
     }
 
     public function testToWkt()
     {
         $retVal = $this->polygon->toWkt();
-        $this->assertEquals( 'POLYGON((3 2, 4 2, 4 3, 3 2))', $retVal );
+        $this->assertEquals('POLYGON((3 2, 4 2, 4 3, 3 2))', $retVal);
     }
 
     public function tearDown()
@@ -87,19 +85,23 @@ class PolygonTest extends TestCase
 
     public function testBBox()
     {
-        $polygon = new Polygon( [
+        $polygon = new Polygon([
             [
-                new Point( 3, 4 ),
-                new Point( 2, 3 ),
-                new Point( 2, 4 ),
-                new Point( 3, 2 )
+                new Point(3, 4),
+                new Point(2, 3),
+                new Point(2, 4),
+                new Point(3, 2)
             ]
-        ] );
-        $this->assertEquals( '{"type":"Polygon","coordinates":[[[2,3],[4,3],[4,2],[2,2],[2,3]]]}',
-            json_encode( $polygon->getBBox() ) );
+        ]);
+        $this->assertEquals(
+            '{"type":"Polygon","coordinates":[[[2,3],[4,3],[4,2],[2,2],[2,3]]]}',
+            json_encode($polygon->getBBox())
+        );
 
-        $this->assertEquals( '{"type":"Polygon","coordinates":[[[3,3],[4,3],[4,2],[3,2],[3,3]]]}',
-            json_encode( $this->polygon->getBBox() ) );
+        $this->assertEquals(
+            '{"type":"Polygon","coordinates":[[[3,3],[4,3],[4,2],[3,2],[3,3]]]}',
+            json_encode($this->polygon->getBBox())
+        );
     }
 
     public function testFromArray()
@@ -111,5 +113,4 @@ class PolygonTest extends TestCase
         $this->assertInstanceOf('Ricklab\Location\Geometry\Polygon', $polygon);
         $this->assertEquals([100.0, 0.0], $polygon[0][0]->toArray());
     }
-
 }

@@ -11,8 +11,6 @@ use PHPUnit\Framework\TestCase;
 
 class MultiPolygonTest extends TestCase
 {
-
-
     public function testToWkt()
     {
         $wkt = 'MULTIPOLYGON(((1 1, 5 1, 5 5, 1 5, 1 1),(2 2, 3 2, 3 3, 2 3, 2 2)),((3 3, 6 2, 6 4, 3 3)))';
@@ -27,5 +25,4 @@ class MultiPolygonTest extends TestCase
 
         $this->assertEquals($wkt, $multipolygone->toWkt());
     }
-
 }

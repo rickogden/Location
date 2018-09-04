@@ -7,7 +7,6 @@
 
 namespace Ricklab\Location\Feature;
 
-
 use Ricklab\Location\Location;
 
 class FeatureCollection extends FeatureAbstract implements \SeekableIterator
@@ -30,18 +29,18 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
      */
     public function __construct(array $features = [], $bbox = false)
     {
-        $this->setFeatures( $features );
+        $this->setFeatures($features);
         $this->bbox = (bool) $bbox;
     }
 
     /**
      * @param Feature[] $features
      */
-    public function setFeatures( array $features )
+    public function setFeatures(array $features)
     {
         foreach ($features as $feature) {
-            if ( ! $feature instanceof Feature) {
-                throw new \InvalidArgumentException( 'Only instances of Feature can be passed in the array.' );
+            if (! $feature instanceof Feature) {
+                throw new \InvalidArgumentException('Only instances of Feature can be passed in the array.');
             }
         }
         $this->features = $features;
@@ -57,16 +56,16 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
         $this->bbox = false;
     }
 
-    public function addFeature( Feature $feature )
+    public function addFeature(Feature $feature)
     {
         $this->features[] = $feature;
     }
 
-    public function removeFeature( Feature $feature )
+    public function removeFeature(Feature $feature)
     {
         foreach ($this->features as $i => $f) {
             if ($f === $feature) {
-                unset( $this->features[$i] );
+                unset($this->features[$i]);
             }
         }
     }
@@ -113,7 +112,7 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
      */
     public function valid()
     {
-        return isset( $this->features[$this->position] );
+        return isset($this->features[$this->position]);
     }
 
     /**
@@ -138,7 +137,7 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
      *
      * @return void
      */
-    public function seek( $position )
+    public function seek($position)
     {
         $this->position = $position;
     }
@@ -150,7 +149,7 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
      * @return mixed data which can be serialized by <b>json_encode</b>,
      * which is a value of any type other than a resource.
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         $features = [ ];
         $points   = [ ];
@@ -166,7 +165,7 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
         $return['type'] = 'FeatureCollection';
 
         if ($this->bbox) {
-            $return['bbox'] = Location::getBBoxArray( $points );
+            $return['bbox'] = Location::getBBoxArray($points);
         }
 
         $return['features'] = $features;
@@ -174,6 +173,4 @@ class FeatureCollection extends FeatureAbstract implements \SeekableIterator
 
         return $return;
     }
-
-
 }

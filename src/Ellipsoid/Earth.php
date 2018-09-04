@@ -10,7 +10,6 @@ namespace Ricklab\Location\Ellipsoid;
 
 class Earth extends Ellipsoid
 {
-
     protected $radius = 6371009;
 
     protected $majorSemiAxis = 6378137;

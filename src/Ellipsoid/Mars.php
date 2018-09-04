@@ -8,5 +8,4 @@ class Mars extends Ellipsoid
     protected $majorSemiAxis = 3396200;
 
     protected $minorSemiAxis = 3376200;
-
 }

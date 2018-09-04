@@ -7,16 +7,13 @@
 
 namespace Ricklab\Location\Geometry;
 
-
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Location;
 
 class MultiPointTest extends TestCase
 {
-
     public function testGeoJson()
     {
-
         $geojson = '{ "type": "MultiPoint",
     "coordinates": [ [100.0, 0.0], [101.0, 1.0] ]
     }';
@@ -31,8 +28,6 @@ class MultiPointTest extends TestCase
         $geojson = json_encode(json_decode($geojson));
 
         $this->assertEquals($geojson, json_encode($multipoint));
-
-
     }
 
     public function testWkt()
@@ -51,7 +46,5 @@ class MultiPointTest extends TestCase
         $this->assertEquals([10, 40], $mp2->getGeometries()[0]->toArray());
 
         $this->assertEquals($wktv2, $mp2->toWkt());
-
     }
-
 }

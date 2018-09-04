@@ -21,10 +21,10 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
      */
     protected $geometries = [];
 
-    public function __construct( array $lineStrings )
+    public function __construct(array $lineStrings)
     {
         foreach ($lineStrings as $lineString) {
-            if ( ! $lineString instanceof LineString) {
+            if (! $lineString instanceof LineString) {
                 $lineString = new LineString($lineString);
             }
 
@@ -57,7 +57,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     /**
      * @inheritdoc
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         $geo = [
             'type'        => 'MultiLineString',
@@ -113,7 +113,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     {
         foreach ($this->geometries as $index => $geom) {
             if ($lineString === $geom) {
-                unset( $this->geometries[$index] );
+                unset($this->geometries[$index]);
             }
         }
 
@@ -127,5 +127,4 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     {
         return '(' . implode(',', $this->geometries) . ')';
     }
-
 }

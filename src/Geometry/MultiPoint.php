@@ -7,7 +7,6 @@
 
 namespace Ricklab\Location\Geometry;
 
-
 use Ricklab\Location\Location;
 
 class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \SeekableIterator, \ArrayAccess
@@ -20,13 +19,11 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
 
     protected $position = 0;
 
-    function __construct(array $points)
+    public function __construct(array $points)
     {
         foreach ($points as $point) {
-
             $this[] = $point;
         }
-
     }
 
     /**
@@ -77,7 +74,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     {
         foreach ($this->geometries as $index => $geom) {
             if ($point === $geom) {
-                unset( $this->geometries[$index] );
+                unset($this->geometries[$index]);
             }
         }
 
@@ -97,7 +94,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     /**
      * @inheritdoc
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         $coordinates = $this->toArray();
 
@@ -121,14 +118,14 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     {
         $this->position = $position;
 
-        if ( ! $this->valid()) {
+        if (! $this->valid()) {
             throw new \OutOfBoundsException('Item does not exist');
         }
     }
 
     public function valid()
     {
-        return isset( $this->geometries[$this->position] );
+        return isset($this->geometries[$this->position]);
     }
 
     public function current()
@@ -153,7 +150,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
 
     public function offsetExists($offset)
     {
-        return isset( $this->geometries[$offset] );
+        return isset($this->geometries[$offset]);
     }
 
 
@@ -165,7 +162,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
 
     public function offsetSet($offset, $value)
     {
-        if ( ! $value instanceof Point) {
+        if (! $value instanceof Point) {
             $value = new Point($value);
         }
 
@@ -181,12 +178,11 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
     public function offsetUnset(
         $offset
     ) {
-        unset( $this->geometries[$offset] );
+        unset($this->geometries[$offset]);
     }
 
     public function getBBox()
     {
         return Location::getBBox($this);
     }
-
 }

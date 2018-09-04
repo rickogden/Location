@@ -7,7 +7,6 @@
 
 namespace Ricklab\Location\Feature;
 
-
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Geometry\LineString;
 use Ricklab\Location\Geometry\Polygon;
@@ -15,7 +14,6 @@ use Ricklab\Location\Location;
 
 class FeatureTest extends TestCase
 {
-
     public function testBBox()
     {
         $line    = new LineString([[2, 3], [4, 5]]);
@@ -50,8 +48,5 @@ class FeatureTest extends TestCase
         $this->assertEquals('bar', $feature['foo']);
 
         $this->assertEquals(json_encode(json_decode($initialjson)), json_encode($feature));
-
-
     }
-
 }

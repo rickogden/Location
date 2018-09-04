@@ -23,7 +23,6 @@ use Ricklab\Location\Geometry\Polygon;
 
 class Location
 {
-
     const HAVERSINE = 1;
 
     const VINCENTY = 2;
@@ -71,36 +70,28 @@ class Location
             }
 
             $geometry = self::createGeometry($type, $geometries);
-
-
         } elseif (strtolower($type) === 'feature') {
-
             $geometry = new Feature();
-            if (isset( $geojson['geometry'] )) {
+            if (isset($geojson['geometry'])) {
                 $geometry->setGeometry(self::fromGeoJson($geojson['geometry']));
             }
-            if (isset( $geojson['properties'] )) {
+            if (isset($geojson['properties'])) {
                 $geometry->setProperties($geojson['properties']);
             }
         } elseif (strtolower($type) === 'featurecollection') {
-
             $geometry = new FeatureCollection();
 
             foreach ($geojson['features'] as $feature) {
                 /** @noinspection PhpParamsInspection */
                 $geometry->addFeature(self::fromGeoJson($feature));
             }
-
         } else {
-
             $coordinates = $geojson['coordinates'];
             $geometry    = self::createGeometry($type, $coordinates);
         }
 
 
         return $geometry;
-
-
     }
 
     /**
@@ -150,7 +141,6 @@ class Location
      */
     public static function fromWkt($wkt)
     {
-
         $type = trim(substr($wkt, 0, strpos($wkt, '(')));
         $wkt  = trim(str_replace($type, '', $wkt));
 
@@ -166,10 +156,7 @@ class Location
                     $arrays[] = self::fromWkt($subwkt);
                 }
             }
-
-
         } else {
-
             $wkt = str_replace(', ', ',', $wkt);
             $wkt = str_replace(' ,', ',', $wkt);
             $wkt = str_replace('(', '[', $wkt);
@@ -192,8 +179,6 @@ class Location
         }
 
         return self::createGeometry($type, $arrays);
-
-
     }
 
     /**
@@ -242,13 +227,12 @@ class Location
             $distance = vincenty($from, $to);
 
             return $distance;
-
         } else {
             $ellipsoid = self::getEllipsoid();
 
             $flattening = $ellipsoid->getFlattening();
-            $U1         = atan(( 1.0 - $flattening ) * tan($point1->latitudeToRad()));
-            $U2         = atan(( 1.0 - $flattening ) * tan($point2->latitudeToRad()));
+            $U1         = atan((1.0 - $flattening) * tan($point1->latitudeToRad()));
+            $U2         = atan((1.0 - $flattening) * tan($point2->latitudeToRad()));
             $L          = $point2->longitudeToRad() - $point1->longitudeToRad();
             $sinU1      = sin($U1);
             $cosU1      = cos($U1);
@@ -267,38 +251,37 @@ class Location
                 $sinAlpha    = $cosU1 * $cosU2 * $sinLambda / $sinSigma;
                 $cos2Alpha   = 1 - pow($sinAlpha, 2);
                 $cosof2sigma = $cosSigma - 2 * $sinU1 * $sinU2 / $cos2Alpha;
-                if ( ! is_numeric($cosof2sigma)) {
+                if (! is_numeric($cosof2sigma)) {
                     $cosof2sigma = 0;
                 }
                 $C       = $flattening / 16 * $cos2Alpha *
-                           ( 4 + $flattening * ( 4 - 3 * $cos2Alpha ) );
+                           (4 + $flattening * (4 - 3 * $cos2Alpha));
                 $lambdaP = $lambda;
-                $lambda  = $L + ( 1 - $C ) * $flattening * $sinAlpha *
-                                ( $sigma + $C * $sinSigma * ( $cosof2sigma + $C * $cosSigma * ( - 1 + 2 * pow(
+                $lambda  = $L + (1 - $C) * $flattening * $sinAlpha *
+                                ($sigma + $C * $sinSigma * ($cosof2sigma + $C * $cosSigma * (- 1 + 2 * pow(
                                                 $cosof2sigma,
                                                 2
-                                            ) ) ) );
-
+                                            ))));
             } while (abs($lambda - $lambdaP) > 1e-12 && -- $looplimit > 0);
 
-            $uSq        = $cos2Alpha * ( pow($ellipsoid->getMajorSemiAxis(), 2) - pow(
+            $uSq        = $cos2Alpha * (pow($ellipsoid->getMajorSemiAxis(), 2) - pow(
                         $ellipsoid->getMinorSemiAxis(),
                         2
-                    ) ) / pow($ellipsoid->getMinorSemiAxis(), 2);
-            $A          = 1 + $uSq / 16384 * ( 4096 + $uSq * ( - 768 + $uSq * ( 320 - 175 * $uSq ) ) );
-            $B          = $uSq / 1024 * ( 256 + $uSq * ( - 128 + $uSq * ( 74 - 47 * $uSq ) ) );
-            $deltaSigma = $B * $sinSigma * ( $cosof2sigma + $B / 4 * ( $cosSigma * ( - 1 + 2 * pow(
+                    )) / pow($ellipsoid->getMinorSemiAxis(), 2);
+            $A          = 1 + $uSq / 16384 * (4096 + $uSq * (- 768 + $uSq * (320 - 175 * $uSq)));
+            $B          = $uSq / 1024 * (256 + $uSq * (- 128 + $uSq * (74 - 47 * $uSq)));
+            $deltaSigma = $B * $sinSigma * ($cosof2sigma + $B / 4 * ($cosSigma * (- 1 + 2 * pow(
                                 $cosof2sigma,
                                 2
-                            ) ) -
-                                                                       $B / 6 * $cosof2sigma * ( - 3 + 4 * pow(
+                            )) -
+                                                                       $B / 6 * $cosof2sigma * (- 3 + 4 * pow(
                                                                                $sinSigma,
                                                                                2
-                                                                           ) ) * ( - 3 + 4 * pow(
+                                                                           )) * (- 3 + 4 * pow(
                                                                                $cosof2sigma,
                                                                                2
-                                                                           ) ) ) );
-            $s          = $ellipsoid->getMinorSemiAxis() * $A * ( $sigma - $deltaSigma );
+                                                                           ))));
+            $s          = $ellipsoid->getMinorSemiAxis() * $A * ($sigma - $deltaSigma);
             $s          = floor($s * 1000) / 1000;
 
             return $s;
@@ -324,9 +307,7 @@ class Location
      */
     public static function setEllipsoid(Ellipsoid $ellipsoid)
     {
-
         self::$ellipsoid = $ellipsoid;
-
     }
 
     /**
@@ -340,13 +321,11 @@ class Location
      */
     public static function convert($distance, $from, $to)
     {
-
         $ellipsoid = self::getEllipsoid();
 
         $m = $distance / $ellipsoid->getMultiplier($from);
 
         return $m * $ellipsoid->getMultiplier($to);
-
     }
 
     /**
@@ -359,7 +338,6 @@ class Location
      */
     public static function haversine(Point $point1, Point $point2)
     {
-
         if (function_exists('haversine') && self::$useSpatialExtension) {
             $from = $point1->jsonSerialize();
             $to   = $point2->jsonSerialize();
@@ -381,7 +359,6 @@ class Location
         }
 
         return $radDistance;
-
     }
 
     /**
@@ -435,8 +412,7 @@ class Location
      */
     public static function getBBox($geometry)
     {
-
-        list( $minLon, $minLat, $maxLon, $maxLat ) = self::getBBoxArray($geometry);
+        list($minLon, $minLat, $maxLon, $maxLat) = self::getBBoxArray($geometry);
 
 
         $nw = new Point([$minLon, $maxLat]);
@@ -461,7 +437,7 @@ class Location
 
         if (is_array($geometry)) {
             foreach ($geometry as $geom) {
-                if ( ! $geom instanceof GeometryInterface) {
+                if (! $geom instanceof GeometryInterface) {
                     throw new \InvalidArgumentException('Array must contain GeometryInterface objects.');
                 }
             }
@@ -475,10 +451,10 @@ class Location
 
         /** @var Point $point */
         foreach ($points as $point) {
-            $maxLat = ( $point->getLatitude() > $maxLat ) ? $point->getLatitude() : $maxLat;
-            $minLat = ( $point->getLatitude() < $minLat ) ? $point->getLatitude() : $minLat;
-            $maxLon = ( $point->getLongitude() > $maxLon ) ? $point->getLongitude() : $maxLon;
-            $minLon = ( $point->getLongitude() < $minLon ) ? $point->getLongitude() : $minLon;
+            $maxLat = ($point->getLatitude() > $maxLat) ? $point->getLatitude() : $maxLat;
+            $minLat = ($point->getLatitude() < $minLat) ? $point->getLatitude() : $minLat;
+            $maxLon = ($point->getLongitude() > $maxLon) ? $point->getLongitude() : $maxLon;
+            $minLon = ($point->getLongitude() < $minLon) ? $point->getLongitude() : $minLon;
         }
 
         return [$minLon, $minLat, $maxLon, $maxLat];
@@ -494,14 +470,13 @@ class Location
      */
     public static function dmsToDecimal($degrees, $minutes, $seconds, $direction = null)
     {
-        $decimal = $degrees + ( $minutes / 60 ) + ( $seconds / 3600 );
+        $decimal = $degrees + ($minutes / 60) + ($seconds / 3600);
 
         if ($direction === 'S' || $direction === 'W') {
             $decimal *= - 1;
         }
 
         return $decimal;
-
     }
 
     /**
@@ -512,8 +487,8 @@ class Location
     public static function decimalToDms($decimal)
     {
         $deg = floor($decimal);
-        $min = floor(( $decimal - $deg ) * 60);
-        $sec = ( $decimal - $deg - $min / 60 ) * 3600;
+        $min = floor(($decimal - $deg) * 60);
+        $sec = ($decimal - $deg - $min / 60) * 3600;
 
         return [$deg, $min, $sec];
     }

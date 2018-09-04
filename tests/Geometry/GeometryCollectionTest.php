@@ -7,13 +7,11 @@
 
 namespace Ricklab\Location\Geometry;
 
-
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Location;
 
 class GeometryCollectionTest extends TestCase
 {
-
     public function testToGeoJson()
     {
         $json    = '{ "type": "GeometryCollection",
@@ -78,6 +76,4 @@ class GeometryCollectionTest extends TestCase
         $this->assertEquals([4, 6], $geomCollection->getGeometries()[0]->toArray());
         $this->assertEquals([[4, 6], [7, 10]], $geomCollection->getGeometries()[1]->toArray());
     }
-
-
 }

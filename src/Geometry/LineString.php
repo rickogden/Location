@@ -7,7 +7,6 @@
 
 namespace Ricklab\Location\Geometry;
 
-
 use Ricklab\Location\Location;
 
 /**
@@ -35,7 +34,6 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
      */
     public function __construct($points, Point $end = null)
     {
-
         if ($points instanceof Point && $end !== null) {
             $this->points = [$points, $end];
         } elseif (is_array($points) && count($points) > 1) {
@@ -45,7 +43,6 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
         } else {
             throw new \InvalidArgumentException('Parameters must be 2 points or an array of points.');
         }
-
     }
 
     /**
@@ -132,14 +129,14 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     {
         $this->position = $position;
 
-        if ( ! $this->valid()) {
+        if (! $this->valid()) {
             throw new \OutOfBoundsException('Item does not exist');
         }
     }
 
     public function valid()
     {
-        return isset( $this->points[$this->position] );
+        return isset($this->points[$this->position]);
     }
 
     public function current()
@@ -178,7 +175,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
      */
     public function offsetExists($offset)
     {
-        return isset( $this->points[$offset] );
+        return isset($this->points[$offset]);
     }
 
     /**
@@ -243,7 +240,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
      */
     public function offsetUnset($offset)
     {
-        unset( $this->points[$offset] );
+        unset($this->points[$offset]);
     }
 
     /**

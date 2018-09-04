@@ -7,10 +7,8 @@
 
 namespace Ricklab\Location\Feature;
 
-
 abstract class FeatureAbstract implements \JsonSerializable
 {
-
     protected $bbox = false;
 
     /**
@@ -20,5 +18,4 @@ abstract class FeatureAbstract implements \JsonSerializable
     {
         $this->bbox = (bool) $bbox;
     }
-
 }

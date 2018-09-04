@@ -7,7 +7,6 @@
 
 namespace Ricklab\Location\Ellipsoid;
 
-
 abstract class Ellipsoid
 {
 
@@ -66,9 +65,9 @@ abstract class Ellipsoid
      *
      * @return mixed
      */
-    public function radius( $unit = 'km' )
+    public function radius($unit = 'km')
     {
-        return $this->unitConversion( $this->radius, $unit );
+        return $this->unitConversion($this->radius, $unit);
     }
 
     /**
@@ -76,12 +75,12 @@ abstract class Ellipsoid
      *
      * @return float The multiplier
      */
-    public function getMultiplier( $unit )
+    public function getMultiplier($unit)
     {
         try {
-            return $this->multipliers[$this->keys[strtolower( $unit )]];
-        } catch ( \Exception $e ) {
-            throw new \InvalidArgumentException( 'Unit ' . $unit . ' is not a recognised unit.' );
+            return $this->multipliers[$this->keys[strtolower($unit)]];
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException('Unit ' . $unit . ' is not a recognised unit.');
         }
     }
 
@@ -91,10 +90,9 @@ abstract class Ellipsoid
      *
      * @return float the distance in the new unit
      */
-    protected function unitConversion( $distance, $unit )
+    protected function unitConversion($distance, $unit)
     {
-
-        return $distance * $this->getMultiplier( $unit );
+        return $distance * $this->getMultiplier($unit);
     }
 
     /**
@@ -102,10 +100,10 @@ abstract class Ellipsoid
      *
      * @return float
      */
-    public function getMajorSemiAxis( $unit = 'm' )
+    public function getMajorSemiAxis($unit = 'm')
     {
         if ($unit !== 'm') {
-            return $this->unitConversion( $this->majorSemiAxis / 1000, $unit );
+            return $this->unitConversion($this->majorSemiAxis / 1000, $unit);
         }
 
         return $this->majorSemiAxis;
@@ -116,10 +114,10 @@ abstract class Ellipsoid
      *
      * @return float
      */
-    public function getMinorSemiAxis( $unit = 'm' )
+    public function getMinorSemiAxis($unit = 'm')
     {
         if ($unit !== 'm') {
-            return $this->unitConversion( $this->minorSemiAxis / 1000, $unit );
+            return $this->unitConversion($this->minorSemiAxis / 1000, $unit);
         }
 
         return $this->minorSemiAxis;
@@ -130,8 +128,6 @@ abstract class Ellipsoid
      */
     public function getFlattening()
     {
-        return ( $this->getMajorSemiAxis() - $this->getMinorSemiAxis() ) / $this->getMajorSemiAxis();
+        return ($this->getMajorSemiAxis() - $this->getMinorSemiAxis()) / $this->getMajorSemiAxis();
     }
-
-
-} 
+}

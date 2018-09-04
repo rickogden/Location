@@ -25,11 +25,11 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
      *
      * @param GeometryInterface[] $geometries
      */
-    public function __construct( array $geometries )
+    public function __construct(array $geometries)
     {
         foreach ($geometries as $geometry) {
-            if ( ! $geometry instanceof GeometryInterface) {
-                throw new \InvalidArgumentException( 'Array must contain geometries only' );
+            if (! $geometry instanceof GeometryInterface) {
+                throw new \InvalidArgumentException('Array must contain geometries only');
             }
         }
         $this->geometries = $geometries;
@@ -60,10 +60,8 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     {
         $points = [];
         foreach ($this->geometries as $geometry) {
-
             $geomPoints = $geometry->getPoints();
             $points += $geomPoints;
-
         }
 
         return $points;
@@ -72,7 +70,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     /**
      * @inheritdoc
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         $json['type'] = 'GeometryCollection';
         foreach ($this->geometries as $geometry) {
@@ -89,9 +87,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     {
         $collection = [];
         foreach ($this->geometries as $geometry) {
-
             $collection[] = $geometry->toWkt();
-
         }
 
         $string = '(' . implode(',', $collection) . ')';
@@ -131,10 +127,9 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
      */
     public function removeGeometry(GeometryInterface $geometry)
     {
-
         foreach ($this->geometries as $index => $geom) {
             if ($geom === $geometry) {
-                unset( $this->geometries[$index] );
+                unset($this->geometries[$index]);
             }
         }
 

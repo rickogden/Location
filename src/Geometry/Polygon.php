@@ -19,7 +19,7 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
      *
      * @param LineString[]|Point[]|array $lines
      */
-    public function __construct( array $lines )
+    public function __construct(array $lines)
     {
         foreach ($lines as $line) {
             if ($line instanceof LineString) {
@@ -45,7 +45,7 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
      */
     public function __toString()
     {
-        return '(' . implode( ',', $this->lineStrings ) . ')';
+        return '(' . implode(',', $this->lineStrings) . ')';
     }
 
     /**
@@ -82,7 +82,6 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
         }
 
         return $return;
-
     }
 
     /**
@@ -93,9 +92,9 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
      *
      * @return float
      */
-    public function getPerimeter( $unit = 'km', $formula = null )
+    public function getPerimeter($unit = 'km', $formula = null)
     {
-        return $this->lineStrings[0]->getLength( $unit, $formula );
+        return $this->lineStrings[0]->getLength($unit, $formula);
     }
 
     /**
@@ -156,9 +155,9 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
      * <p>
      * The return value will be casted to boolean if non-boolean was returned.
      */
-    public function offsetExists( $offset )
+    public function offsetExists($offset)
     {
-        return isset( $this->lineStrings[$offset] );
+        return isset($this->lineStrings[$offset]);
     }
 
     /**
@@ -172,7 +171,7 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
      *
      * @return LineString
      */
-    public function offsetGet( $offset )
+    public function offsetGet($offset)
     {
         return $this->lineStrings[$offset];
     }
@@ -191,15 +190,15 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
      *
      * @return void
      */
-    public function offsetSet( $offset, $value )
+    public function offsetSet($offset, $value)
     {
         if ($value instanceof LineString) {
             if ($offset === null) {
                 $this->lineStrings[] = $value;
-            } elseif (is_integer( $offset )) {
+            } elseif (is_integer($offset)) {
                 $this->lineStrings[$offset] = $value;
             } else {
-                throw new \OutOfBoundsException( 'Key must be numeric.' );
+                throw new \OutOfBoundsException('Key must be numeric.');
             }
         }
     }
@@ -215,9 +214,9 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
      *
      * @return void
      */
-    public function offsetUnset( $offset )
+    public function offsetUnset($offset)
     {
-        unset( $this->lineStrings[$offset] );
+        unset($this->lineStrings[$offset]);
     }
 
     /**
@@ -231,11 +230,11 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
      *
      * @return void
      */
-    public function seek( $position )
+    public function seek($position)
     {
         $this->position = $position;
-        if ( ! $this->valid()) {
-            throw new \OutOfBoundsException( 'Item does not exist' );
+        if (! $this->valid()) {
+            throw new \OutOfBoundsException('Item does not exist');
         }
     }
 
@@ -248,7 +247,7 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
      */
     public function valid()
     {
-        return isset( $this->lineStrings[$this->position] );
+        return isset($this->lineStrings[$this->position]);
     }
 
     public function getPoints()
@@ -264,10 +263,6 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
 
     public function getBBox()
     {
-        return Location::getBBox( $this );
+        return Location::getBBox($this);
     }
-
-
-
-
 }

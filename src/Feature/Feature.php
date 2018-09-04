@@ -7,13 +7,11 @@
 
 namespace Ricklab\Location\Feature;
 
-
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Location;
 
 class Feature extends FeatureAbstract implements \ArrayAccess
 {
-
     protected $id = null;
 
     /**
@@ -41,7 +39,6 @@ class Feature extends FeatureAbstract implements \ArrayAccess
 
     public function disableBBox()
     {
-
     }
 
     /**
@@ -93,9 +90,8 @@ class Feature extends FeatureAbstract implements \ArrayAccess
      * @return mixed data which can be serialized by <b>json_encode</b>,
      * which is a value of any type other than a resource.
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
-
         $array = [];
 
         if ($this->id !== null) {
@@ -120,7 +116,6 @@ class Feature extends FeatureAbstract implements \ArrayAccess
 
 
         return $array;
-
     }
 
     /**
@@ -139,7 +134,7 @@ class Feature extends FeatureAbstract implements \ArrayAccess
      */
     public function offsetExists($offset)
     {
-        return isset( $this->properties[$offset] );
+        return isset($this->properties[$offset]);
     }
 
     /**
@@ -218,10 +213,8 @@ class Feature extends FeatureAbstract implements \ArrayAccess
 
     public function removeProperty($key)
     {
-        unset( $this->properties[$key] );
+        unset($this->properties[$key]);
 
         return $this;
     }
-
-
 }

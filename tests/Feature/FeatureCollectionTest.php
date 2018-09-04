@@ -7,13 +7,11 @@
 
 namespace Ricklab\Location\Feature;
 
-
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Location;
 
 class FeatureCollectionTest extends TestCase
 {
-
     public function testFromGeoJson()
     {
         $initialjson = '{ "type": "FeatureCollection",
@@ -37,5 +35,4 @@ class FeatureCollectionTest extends TestCase
         $this->assertTrue($featureCollection instanceof FeatureCollection);
         $this->assertEquals(json_encode(json_decode($initialjson)), json_encode($featureCollection));
     }
-
 }

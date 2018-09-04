@@ -17,7 +17,6 @@ use Ricklab\Location\Location;
 
 class Point implements GeometryInterface
 {
-
     protected $longitude;
     protected $latitude;
 
@@ -40,11 +39,11 @@ class Point implements GeometryInterface
                 throw new \InvalidArgumentException('Arguments must be an array or two numbers.');
             }
         }
-        if ( ! is_numeric($long) || $long > 180 || $long < - 180) {
+        if (! is_numeric($long) || $long > 180 || $long < - 180) {
             throw new \InvalidArgumentException('longitude must be a valid number between -180 and 180.');
         }
 
-        if ( ! is_numeric($lat) || $lat > 90 || $lat < - 90) {
+        if (! is_numeric($lat) || $lat > 90 || $lat < - 90) {
             throw new \InvalidArgumentException('latitude must be a valid number between -90 and 90.');
         }
 
@@ -62,9 +61,9 @@ class Point implements GeometryInterface
      */
     public static function fromDms(array $lat, array $lon)
     {
-        $decLat = Location::dmsToDecimal($lat[0], $lat[1], $lat[2], isset( $lat[3] ) ? $lat[3] : null);
+        $decLat = Location::dmsToDecimal($lat[0], $lat[1], $lat[2], isset($lat[3]) ? $lat[3] : null);
 
-        $decLon = Location::dmsToDecimal($lon[0], $lon[1], $lon[2], isset( $lon[3] ) ? $lon[3] : null);
+        $decLon = Location::dmsToDecimal($lon[0], $lon[1], $lon[2], isset($lon[3]) ? $lon[3] : null);
 
         return new self($decLat, $decLon);
     }
@@ -186,7 +185,6 @@ class Point implements GeometryInterface
      */
     public function initialBearingTo(Point $point2)
     {
-
         if (function_exists('initial_bearing') && Location::$useSpatialExtension) {
             return initial_bearing($this->jsonSerialize(), $point2->jsonSerialize());
         } else {
@@ -273,7 +271,7 @@ class Point implements GeometryInterface
             $lon1 = $this->longitudeToRad();
             $lon2 = $point->longitudeToRad();
 
-            $a        = sin(( 1 - $fraction ) * $distance) / sin($distance);
+            $a        = sin((1 - $fraction) * $distance) / sin($distance);
             $b        = sin($fraction * $distance) / sin($distance);
             $x        = $a * cos($lat1) * cos($lon1) +
                         $b * cos($lat2) * cos($lon2);

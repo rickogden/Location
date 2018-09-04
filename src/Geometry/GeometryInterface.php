@@ -41,5 +41,4 @@ interface GeometryInterface extends \JsonSerializable
      * @return array
      */
     public function jsonSerialize();
-
-} 
+}
