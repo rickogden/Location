@@ -2,11 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of Point.
  *
@@ -122,21 +117,6 @@ class Point implements GeometryInterface
     public function distanceTo(Point $point2, $unit = 'km', $formula = null): float
     {
         return Location::calculateDistance($this, $point2, $unit, $formula);
-    }
-
-    public function __get($request)
-    {
-        $request = \mb_strtolower($request);
-
-        if (\in_array($request, ['x', 'lon', 'long', 'longitude'])) {
-            return $this->longitude;
-        }
-
-        if (\in_array($request, ['y', 'lat', 'latitude'])) {
-            return $this->latitude;
-        }
-
-        throw new \InvalidArgumentException('Unexpected value for retrieval');
     }
 
     /**
@@ -266,7 +246,7 @@ class Point implements GeometryInterface
         if (Location::$useSpatialExtension && \function_exists('fraction_along_gc_line')) {
             $result = fraction_along_gc_line($this->jsonSerialize(), $point->jsonSerialize(), $fraction);
 
-            return new self($result['coordinates']);
+            return self::fromArray($result['coordinates']);
         }
         $distance = Location::haversine($this, $point);
 
@@ -293,7 +273,7 @@ class Point implements GeometryInterface
      */
     public function lineTo(Point $point): LineString
     {
-        return new LineString($this, $point);
+        return new LineString([$this, $point]);
     }
 
     /**

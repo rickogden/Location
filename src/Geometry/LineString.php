@@ -188,17 +188,15 @@ class LineString implements GeometryInterface, \SeekableIterator, \Countable
     /**
      * Reverses the direction of the line.
      */
-    public function reverse(): self
+    public function reverse(): void
     {
         $this->points = \array_reverse($this->points);
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         return \count($this->points);
     }

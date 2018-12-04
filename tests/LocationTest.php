@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location;
 
 use PHPUnit\Framework\TestCase;
+use Ricklab\Location\Geometry\Point;
 
 class LocationTest extends TestCase
 {
@@ -16,9 +17,9 @@ class LocationTest extends TestCase
     {
         $point = Location::fromGeoJson('{"type":"Point","coordinates":[-2.27354,53.48575]}');
 
-        $this->assertInstanceOf('Ricklab\Location\Geometry\Point', $point);
-        $this->assertEquals(-2.27354, $point->lon);
-        $this->assertEquals(53.48575, $point->lat);
+        $this->assertInstanceOf(Point::class, $point);
+        $this->assertEquals(-2.27354, $point->getLongitude());
+        $this->assertEquals(53.48575, $point->getLatitude());
     }
 
     public function testCreateLineString()

@@ -36,15 +36,11 @@ class PointTest extends TestCase
     public function testLatitudeRetrieval()
     {
         $this->assertEquals($this->point->getLatitude(), $this->lat);
-        $this->assertEquals($this->point->lat, $this->lat);
-        $this->assertEquals($this->point->latitude, $this->lat);
     }
 
     public function testLongitudeRetrieval()
     {
-        $this->assertEquals($this->point->getLongitude(), $this->lon);
-        $this->assertEquals($this->point->lon, $this->lon);
-        $this->assertEquals($this->point->longitude, $this->lon);
+        $this->assertEquals($this->lon, $this->point->getLongitude());
     }
 
     public function testToStringMethod()
@@ -60,8 +56,8 @@ class PointTest extends TestCase
     public function testRelativePoint()
     {
         $newPoint = $this->point->getRelativePoint(2.783, 98.50833, 'km');
-        $this->assertEquals(53.48204, \round($newPoint->lat, 5));
-        $this->assertEquals(-2.23194, \round($newPoint->lon, 5));
+        $this->assertEquals(53.48204, \round($newPoint->getLatitude(), 5));
+        $this->assertEquals(-2.23194, \round($newPoint->getLongitude(), 5));
     }
 
     public function testDistanceTo()
