@@ -6,5 +6,4 @@ namespace Ricklab\Location\Geometry\Traits;
 
 trait GeometriesCollectionTrait
 {
-
 }

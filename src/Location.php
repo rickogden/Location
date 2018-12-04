@@ -100,8 +100,6 @@ class Location
     /**
      * @param $type string the geometry type to create
      * @param $coordinates array the coordinates for the geometry type
-     *
-     * @return GeometryInterface
      */
     protected static function createGeometry($type, $coordinates): GeometryInterface
     {
@@ -138,8 +136,6 @@ class Location
      * Creates a geometry object from Well-Known Text.
      *
      * @param string $wkt The WKT to create the geometry from
-     *
-     * @return GeometryInterface
      */
     public static function fromWkt($wkt): GeometryInterface
     {
@@ -189,8 +185,6 @@ class Location
      * @param string   $unit    of measurement in which to return the result
      * @param null|int $formula formula to use, either Location::VINCENTY or Location::HAVERSINE. Defaults to
      *                          Location::$defaultFormula
-     *
-     * @return float
      */
     public static function calculateDistance(Point $point1, Point $point2, $unit, $formula = null): float
     {
@@ -400,8 +394,6 @@ class Location
 
     /**
      * @param GeometryInterface|array $geometry either a geometry interface or an array of Geometries
-     *
-     * @return Polygon
      */
     public static function getBBox($geometry): Polygon
     {
@@ -456,8 +448,6 @@ class Location
      * @param int         $minutes
      * @param float       $seconds
      * @param null|string $direction use "S" for south and "W" for west. Defaults to East/North.
-     *
-     * @return float
      */
     public static function dmsToDecimal($degrees, $minutes, $seconds, $direction = null): float
     {

@@ -6,7 +6,6 @@ namespace Ricklab\Location\Geometry;
 
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Location;
-use Ricklab\Location\Geometry\Polygon;
 
 class PolygonTest extends TestCase
 {
@@ -33,7 +32,7 @@ class PolygonTest extends TestCase
         ]);
         $this->assertEquals($this->polygon->toArray(), $poly1->toArray());
 
-        $poly2 = Polygon::fromArray([[[3, 2],[4, 2],[4, 3],[3, 2]]]);
+        $poly2 = Polygon::fromArray([[[3, 2], [4, 2], [4, 3], [3, 2]]]);
         $this->assertEquals($this->polygon->toArray(), $poly2->toArray());
     }
 

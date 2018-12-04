@@ -43,9 +43,6 @@ class Feature extends FeatureAbstract implements \ArrayAccess
         $this->bbox = false;
     }
 
-    /**
-     * @return GeometryInterface
-     */
     public function getGeometry(): GeometryInterface
     {
         return $this->geometry;

@@ -23,7 +23,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
             if ($polygon instanceof Polygon) {
                 $result[] = $polygon;
             } else {
-                $result[] = Point::fromArray($polygon);
+                $result[] = Polygon::fromArray($polygon);
             }
         }
 

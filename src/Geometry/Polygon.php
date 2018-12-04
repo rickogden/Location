@@ -15,7 +15,6 @@ class Polygon implements GeometryInterface, \SeekableIterator
 
     protected $position = 0;
 
-
     public static function fromArray(array $geometries): self
     {
         $result = [];
@@ -42,7 +41,7 @@ class Polygon implements GeometryInterface, \SeekableIterator
      */
     public function __construct(array $lines)
     {
-        $this->lineStrings = (function(LineString ...$lineStrings) {
+        $this->lineStrings = (function (LineString ...$lineStrings) {
             return $lineStrings;
         })(...$lines);
 

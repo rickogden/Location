@@ -36,7 +36,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
 
     public function __construct(array $points)
     {
-        $this->geometries = (function(Point ...$points) {
+        $this->geometries = (function (Point ...$points) {
             return $points;
         })(...$points);
     }

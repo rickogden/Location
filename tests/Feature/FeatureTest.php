@@ -18,7 +18,7 @@ class FeatureTest extends TestCase
 {
     public function testBBox()
     {
-        $line = new LineString([[2, 3], [4, 5]]);
+        $line = LineString::fromArray([[2, 3], [4, 5]]);
         $feature = new Feature();
         $feature->setGeometry($line);
         $feature->enableBBox();
@@ -45,8 +45,8 @@ class FeatureTest extends TestCase
         $feature = Location::fromGeoJson($initialjson);
         $feature->enableBBox();
 
-        $this->assertTrue($feature instanceof Feature);
-        $this->assertTrue($feature->getGeometry() instanceof Polygon);
+        $this->assertInstanceOf(Feature::class, $feature);
+        $this->assertInstanceOf(Polygon::class, $feature->getGeometry());
         $this->assertEquals('bar', $feature['foo']);
 
         $this->assertEquals(\json_encode(\json_decode($initialjson)), \json_encode($feature));

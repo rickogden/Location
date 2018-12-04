@@ -26,7 +26,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
             if ($lineString instanceof LineString) {
                 $result[] = $lineString;
             } else {
-                $result[] = Point::fromArray($lineString);
+                $result[] = LineString::fromArray($lineString);
             }
         }
 

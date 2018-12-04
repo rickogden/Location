@@ -70,7 +70,7 @@ class Point implements GeometryInterface
             throw new \InvalidArgumentException('longitude must be a valid number between -180 and 180.');
         }
 
-        if ( $lat > 90 || $lat < -90) {
+        if ($lat > 90 || $lat < -90) {
             throw new \InvalidArgumentException('latitude must be a valid number between -90 and 90.');
         }
 
