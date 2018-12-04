@@ -19,6 +19,20 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
      */
     protected $geometries = [];
 
+    public static function fromArray(array $geometries): self
+    {
+        $result = [];
+        foreach ($geometries as $lineString) {
+            if ($lineString instanceof LineString) {
+                $result[] = $lineString;
+            } else {
+                $result[] = Point::fromArray($lineString);
+            }
+        }
+
+        return new self($result);
+    }
+
     public function __construct(array $lineStrings)
     {
         foreach ($lineStrings as $lineString) {

@@ -17,14 +17,14 @@ class MultiPolygonTest extends TestCase
     {
         $wkt = 'MULTIPOLYGON(((1 1, 5 1, 5 5, 1 5, 1 1),(2 2, 3 2, 3 3, 2 3, 2 2)),((3 3, 6 2, 6 4, 3 3)))';
 
-        $multipolygone = new MultiPolygon([
-            new Polygon([
+        $multipolygon = MultiPolygon::fromArray([
+            Polygon::fromArray([
                 [[1, 1], [5, 1], [5, 5], [1, 5], [1, 1]],
                 [[2, 2], [3, 2], [3, 3], [2, 3], [2, 2]],
             ]),
-            new Polygon([[[3, 3], [6, 2], [6, 4], [3, 3]]]),
+            Polygon::fromArray([[[3, 3], [6, 2], [6, 4], [3, 3]]]),
         ]);
 
-        $this->assertEquals($wkt, $multipolygone->toWkt());
+        $this->assertEquals($wkt, $multipolygon->toWkt());
     }
 }

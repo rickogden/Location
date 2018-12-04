@@ -28,7 +28,7 @@ class PointTest extends TestCase
 
     public function testPointCreationAsArray()
     {
-        $point = new Point([$this->lon, $this->lat]);
+        $point = Point::fromArray([$this->lon, $this->lat]);
         $this->assertEquals($this->lat, $point->getLatitude());
         $this->assertEquals($this->lon, $point->getLongitude());
     }
@@ -110,8 +110,8 @@ class PointTest extends TestCase
 
     private function fractionAlongLine()
     {
-        $point1 = new Point([5, 10]);
-        $point2 = new Point([15, 10]);
+        $point1 = Point::fromArray([5, 10]);
+        $point2 = Point::fromArray([15, 10]);
 
         $fraction02 = $point1->getFractionAlongLineTo($point2, 0.2);
         $fraction05 = $point1->getFractionAlongLineTo($point2, 0.5);

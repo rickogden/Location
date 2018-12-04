@@ -19,38 +19,23 @@ use Ricklab\Location\Location;
 
 class Point implements GeometryInterface
 {
+    /**
+     * @var float
+     */
     protected $longitude;
-    protected $latitude;
 
     /**
-     * Create a new Point from Longitude and latitude.
-     *
-     * Usage: new Point(latitude, longitude);
-     * or new Point([longitude, latitude]);
-     *
-     * @param Number|array $lat  Latitude coordinates or a coordinates array in the order of [longitude, latitude]
-     * @param Number       $long Longitude coordinates
+     * @var float
      */
-    public function __construct($lat, $long = null)
+    protected $latitude;
+
+    public static function fromArray(array $point): self
     {
-        if (null === $long) {
-            if (\is_array($lat)) {
-                [$long, $lat] = $lat;
-            } else {
-                throw new \InvalidArgumentException('Arguments must be an array or two numbers.');
-            }
+        if (2 !== $length = \count($point)) {
+            throw new \InvalidArgumentException(\sprintf('Must be an array consisting of exactly 2 elements, %d passed', $length));
         }
 
-        if (!\is_numeric($long) || $long > 180 || $long < -180) {
-            throw new \InvalidArgumentException('longitude must be a valid number between -180 and 180.');
-        }
-
-        if (!\is_numeric($lat) || $lat > 90 || $lat < -90) {
-            throw new \InvalidArgumentException('latitude must be a valid number between -90 and 90.');
-        }
-
-        $this->longitude = (float) $long;
-        $this->latitude = (float) $lat;
+        return new self($point[1], $point[0]);
     }
 
     /**
@@ -63,11 +48,34 @@ class Point implements GeometryInterface
      */
     public static function fromDms(array $lat, array $lon): self
     {
-        $decLat = Location::dmsToDecimal($lat[0], $lat[1], $lat[2], isset($lat[3]) ? $lat[3] : null);
+        $decLat = Location::dmsToDecimal($lat[0], $lat[1], $lat[2], $lat[3] ?? null);
 
-        $decLon = Location::dmsToDecimal($lon[0], $lon[1], $lon[2], isset($lon[3]) ? $lon[3] : null);
+        $decLon = Location::dmsToDecimal($lon[0], $lon[1], $lon[2], $lon[3] ?? null);
 
         return new self($decLat, $decLon);
+    }
+
+    /**
+     * Create a new Point from Longitude and latitude.
+     *
+     * Usage: new Point(latitude, longitude);
+     * or new Point([longitude, latitude]);
+     *
+     * @param float $lat  Latitude coordinates
+     * @param float $long Longitude coordinates
+     */
+    public function __construct(float $lat, float $long)
+    {
+        if ($long > 180 || $long < -180) {
+            throw new \InvalidArgumentException('longitude must be a valid number between -180 and 180.');
+        }
+
+        if ( $lat > 90 || $lat < -90) {
+            throw new \InvalidArgumentException('latitude must be a valid number between -90 and 90.');
+        }
+
+        $this->longitude = $long;
+        $this->latitude = $lat;
     }
 
     /**
@@ -184,7 +192,7 @@ class Point implements GeometryInterface
      */
     public function initialBearingTo(Point $point2): float
     {
-        if (\function_exists('initial_bearing') && Location::$useSpatialExtension) {
+        if (Location::$useSpatialExtension && \function_exists('initial_bearing')) {
             return initial_bearing($this->jsonSerialize(), $point2->jsonSerialize());
         }
         $y = \sin(
@@ -249,13 +257,13 @@ class Point implements GeometryInterface
      *
      * @throw \InvalidArgumentException
      */
-    public function getFractionAlongLineTo(Point $point, $fraction): Point
+    public function getFractionAlongLineTo(Point $point, $fraction): self
     {
         if ($fraction < 0 || $fraction > 1) {
             throw new \InvalidArgumentException('$fraction must be between 0 and 1');
         }
 
-        if (\function_exists('fraction_along_gc_line') && Location::$useSpatialExtension) {
+        if (Location::$useSpatialExtension && \function_exists('fraction_along_gc_line')) {
             $result = fraction_along_gc_line($this->jsonSerialize(), $point->jsonSerialize(), $fraction);
 
             return new self($result['coordinates']);
@@ -274,7 +282,7 @@ class Point implements GeometryInterface
         $y = $a * \cos($lat1) * \sin($lon1) +
                         $b * \cos($lat2) * \sin($lon2);
         $z = $a * \sin($lat1) + $b * \sin($lat2);
-        $res_lat = \atan2($z, \sqrt(\pow($x, 2) + \pow($y, 2)));
+        $res_lat = \atan2($z, \sqrt(($x ** 2) + ($y ** 2)));
         $res_long = \atan2($y, $x);
 
         return new self(\rad2deg($res_lat), \rad2deg($res_long));
@@ -286,17 +294,6 @@ class Point implements GeometryInterface
     public function lineTo(Point $point): LineString
     {
         return new LineString($this, $point);
-    }
-
-    /**
-     * @param $distance
-     * @param string $unit
-     *
-     * @deprecated
-     */
-    public function getMbr($distance, $unit = 'km'): Polygon
-    {
-        return $this->getBBoxByRadius($distance, $unit);
     }
 
     /**
@@ -313,7 +310,7 @@ class Point implements GeometryInterface
      */
     public function toWkt(): string
     {
-        return 'POINT('.(string) $this.')';
+        return 'POINT('.$this.')';
     }
 
     /**

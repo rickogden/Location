@@ -11,6 +11,7 @@ namespace Ricklab\Location\Geometry;
  */
 interface GeometryInterface extends \JsonSerializable
 {
+    public static function fromArray(array $geometries);
     /**
      * Representation of the geometry in Well-Known Text.
      */

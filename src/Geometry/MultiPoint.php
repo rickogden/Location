@@ -20,11 +20,25 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
 
     protected $position = 0;
 
+    public static function fromArray(array $geometries): self
+    {
+        $result = [];
+        foreach ($geometries as $point) {
+            if ($point instanceof Point) {
+                $result[] = $point;
+            } else {
+                $result[] = Point::fromArray($point);
+            }
+        }
+
+        return new self($result);
+    }
+
     public function __construct(array $points)
     {
-        foreach ($points as $point) {
-            $this[] = $point;
-        }
+        $this->geometries = (function(Point ...$points) {
+            return $points;
+        })(...$points);
     }
 
     /**

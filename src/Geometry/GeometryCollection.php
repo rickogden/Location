@@ -19,6 +19,11 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
      */
     protected $geometries = [];
 
+    public static function fromArray(array $geometries): self
+    {
+        return new self($geometries);
+    }
+
     /**
      * GeometryCollection constructor.
      *

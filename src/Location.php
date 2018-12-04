@@ -103,29 +103,29 @@ class Location
      *
      * @return GeometryInterface
      */
-    protected static function createGeometry($type, $coordinates)
+    protected static function createGeometry($type, $coordinates): GeometryInterface
     {
         switch (\mb_strtolower($type)) {
             case 'point':
-                $result = new Point($coordinates);
+                $result = Point::fromArray($coordinates);
                 break;
             case 'linestring':
-                $result = new LineString($coordinates);
+                $result = LineString::fromArray($coordinates);
                 break;
             case 'polygon':
-                $result = new Polygon($coordinates);
+                $result = Polygon::fromArray($coordinates);
                 break;
             case 'multipoint':
-                $result = new MultiPoint($coordinates);
+                $result = MultiPoint::fromArray($coordinates);
                 break;
             case 'multilinestring':
-                $result = new MultiLineString($coordinates);
+                $result = MultiLineString::fromArray($coordinates);
                 break;
             case 'multipolygon':
-                $result = new MultiPolygon($coordinates);
+                $result = MultiPolygon::fromArray($coordinates);
                 break;
             case 'geometrycollection':
-                $result = new GeometryCollection($coordinates);
+                $result = GeometryCollection::fromArray($coordinates);
                 break;
             default:
                 throw new \InvalidArgumentException('This type is not supported');
@@ -141,7 +141,7 @@ class Location
      *
      * @return GeometryInterface
      */
-    public static function fromWkt($wkt)
+    public static function fromWkt($wkt): GeometryInterface
     {
         $type = \trim(\mb_substr($wkt, 0, \mb_strpos($wkt, '(')));
         $wkt = \trim(\str_replace($type, '', $wkt));
@@ -192,7 +192,7 @@ class Location
      *
      * @return float
      */
-    public static function calculateDistance(Point $point1, Point $point2, $unit, $formula = null)
+    public static function calculateDistance(Point $point1, Point $point2, $unit, $formula = null): float
     {
         if (null === $formula) {
             $formula = self::$defaultFormula;
@@ -218,7 +218,7 @@ class Location
      *
      * @return float distance in metres
      */
-    public static function vincenty(Point $point1, Point $point2)
+    public static function vincenty(Point $point1, Point $point2): float
     {
         if (\function_exists('vincenty') && self::$useSpatialExtension && self::getEllipsoid() instanceof Earth) {
             $from = $point1->jsonSerialize();
@@ -300,7 +300,7 @@ class Location
     /**
      * Set the ellipsoid to perform the calculations on.
      */
-    public static function setEllipsoid(Ellipsoid $ellipsoid)
+    public static function setEllipsoid(Ellipsoid $ellipsoid): void
     {
         self::$ellipsoid = $ellipsoid;
     }
@@ -314,7 +314,7 @@ class Location
      *
      * @return float the distance in the new unit of measurement
      */
-    public static function convert($distance, $from, $to)
+    public static function convert($distance, $from, $to): float
     {
         $ellipsoid = self::getEllipsoid();
 
@@ -329,7 +329,7 @@ class Location
      *
      * @return float distance in radians
      */
-    public static function haversine(Point $point1, Point $point2)
+    public static function haversine(Point $point1, Point $point2): float
     {
         if (\function_exists('haversine') && self::$useSpatialExtension) {
             $from = $point1->jsonSerialize();
@@ -361,7 +361,7 @@ class Location
      *
      * @return Polygon the BBox
      */
-    public static function getBBoxByRadius(Point $point, $radius, $unit = 'km')
+    public static function getBBoxByRadius(Point $point, float $radius, $unit = 'km'): Polygon
     {
         $north = $point->getRelativePoint($radius, 0, $unit);
         $south = $point->getRelativePoint($radius, 180, $unit);
@@ -403,16 +403,16 @@ class Location
      *
      * @return Polygon
      */
-    public static function getBBox($geometry)
+    public static function getBBox($geometry): Polygon
     {
         [$minLon, $minLat, $maxLon, $maxLat] = self::getBBoxArray($geometry);
 
-        $nw = new Point([$minLon, $maxLat]);
-        $ne = new Point([$maxLon, $maxLat]);
-        $se = new Point([$maxLon, $minLat]);
-        $sw = new Point([$minLon, $minLat]);
+        $nw = Point::fromArray([$minLon, $maxLat]);
+        $ne = Point::fromArray([$maxLon, $maxLat]);
+        $se = Point::fromArray([$maxLon, $minLat]);
+        $sw = Point::fromArray([$minLon, $minLat]);
 
-        return new Polygon([[$nw, $ne, $se, $sw]]);
+        return Polygon::fromArray([[$nw, $ne, $se, $sw]]);
     }
 
     /**
@@ -420,7 +420,7 @@ class Location
      *
      * @return array of coordinates in the order of: minimum longitude, minimum latitude, maximum longitude and maximum latitude
      */
-    public static function getBBoxArray($geometry)
+    public static function getBBoxArray($geometry): array
     {
         $maxLat = -90;
         $minLat = 90;
@@ -459,7 +459,7 @@ class Location
      *
      * @return float
      */
-    public static function dmsToDecimal($degrees, $minutes, $seconds, $direction = null)
+    public static function dmsToDecimal($degrees, $minutes, $seconds, $direction = null): float
     {
         $decimal = $degrees + ($minutes / 60) + ($seconds / 3600);
 
@@ -475,7 +475,7 @@ class Location
      *
      * @return array of degrees, minutes, seconds from North/East
      */
-    public static function decimalToDms($decimal)
+    public static function decimalToDms($decimal): array
     {
         $deg = \floor($decimal);
         $min = \floor(($decimal - $deg) * 60);

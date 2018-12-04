@@ -18,33 +18,23 @@ class LineStringTest extends TestCase
     {
         $point1 = new Point(53.48575, -2.27354);
         $point2 = new Point(53.48204, -2.23194);
-        $this->line = new LineString($point1, $point2);
+        $this->line = new LineString([$point1, $point2]);
     }
 
-    public function testConstructor()
+    public function testStatic()
     {
         $point1 = new Point(53.48575, -2.27354);
         $point2 = new Point(53.48204, -2.23194);
-        $line = new LineString($point1, $point2);
+        $line = LineString::fromArray([$point1, $point2]);
 
-        $line2 = new LineString([$point1, $point2]);
+        $line2 = LineString::fromArray([$point1->toArray(), $point2->toArray()]);
 
         $this->assertInstanceOf('\Ricklab\Location\Geometry\LineString', $line);
         $this->assertInstanceOf('\Ricklab\Location\Geometry\LineString', $line2);
     }
 
     /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testOnePointException()
-    {
-        $point1 = new Point(53.48575, -2.27354);
-
-        $line = new LineString($point1);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException \TypeError
      */
     public function testInvalidPointException()
     {
@@ -98,7 +88,7 @@ class LineStringTest extends TestCase
 
     public function testBBox()
     {
-        $this->assertEquals(
+        $this->assertJsonStringEqualsJsonString(
             '{"type":"Polygon","coordinates":[[[-2.27354,53.48575],[-2.23194,53.48575],[-2.23194,53.48204],[-2.27354,53.48204],[-2.27354,53.48575]]]}',
             \json_encode($this->line->getBBox())
         );
@@ -106,12 +96,10 @@ class LineStringTest extends TestCase
 
     public function testFromArray()
     {
-        $line = new LineString([[-2.27354, 53.48575], [-2.23194, 53.48204]]);
+        $line = LineString::fromArray([[-2.27354, 53.48575], [-2.23194, 53.48204]]);
 
-        $point1 = $line[0];
-        $point2 = $line[1];
-        $this->assertInstanceOf('\Ricklab\Location\Geometry\Point', $point1);
-        $this->assertInstanceOf('\Ricklab\Location\Geometry\Point', $point2);
+        $point1 = $line->getFirst();
+        $point2 = $line->getLast();
 
         $this->assertEquals(-2.27354, $point1->getLongitude());
         $this->assertEquals(53.48204, $point2->getLatitude());
@@ -121,7 +109,7 @@ class LineStringTest extends TestCase
     {
         $original = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
 
-        $lineString = new LineString($original);
+        $lineString = LineString::fromArray($original);
         $lineString->reverse();
         $this->assertEquals($original[0], $lineString->toArray()[1]);
         $this->assertEquals($original[1], $lineString->toArray()[0]);

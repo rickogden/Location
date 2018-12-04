@@ -16,6 +16,20 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
      */
     protected $geometries = [];
 
+    public static function fromArray(array $geometries): self
+    {
+        $result = [];
+        foreach ($geometries as $polygon) {
+            if ($polygon instanceof Polygon) {
+                $result[] = $polygon;
+            } else {
+                $result[] = Point::fromArray($polygon);
+            }
+        }
+
+        return new self($result);
+    }
+
     /**
      * @param Polygon[] $polygons
      */
@@ -38,7 +52,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
      */
     public function toWkt(): string
     {
-        return 'MULTIPOLYGON'.(string) $this;
+        return 'MULTIPOLYGON'.$this;
     }
 
     /**

@@ -6,6 +6,7 @@ namespace Ricklab\Location\Geometry;
 
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Location;
+use Ricklab\Location\Geometry\Polygon;
 
 class PolygonTest extends TestCase
 {
@@ -17,22 +18,12 @@ class PolygonTest extends TestCase
     protected function setUp()
     {
         Location::$useSpatialExtension = false;
-        $this->polygon = new Polygon([new Point(2, 3), new Point(2, 4), new Point(3, 4)]);
+        $this->polygon = Polygon::fromArray([[new Point(2, 3), new Point(2, 4), new Point(3, 4)]]);
     }
 
     public function testConstruction()
     {
         $poly1 = new Polygon([
-            [
-                new Point(2, 3),
-                new Point(2, 4),
-                new Point(3, 4),
-                new Point(2, 3),
-            ],
-        ]);
-        $this->assertEquals($this->polygon, $poly1);
-
-        $poly2 = new Polygon([
             new LineString([
                 new Point(2, 3),
                 new Point(2, 4),
@@ -40,24 +31,17 @@ class PolygonTest extends TestCase
                 new Point(2, 3),
             ]),
         ]);
-        $this->assertEquals($this->polygon, $poly2);
+        $this->assertEquals($this->polygon->toArray(), $poly1->toArray());
+
+        $poly2 = Polygon::fromArray([[[3, 2],[4, 2],[4, 3],[3, 2]]]);
+        $this->assertEquals($this->polygon->toArray(), $poly2->toArray());
     }
 
     public function testLastPointIsTheSameAsFirstPoint()
     {
         $a = $this->polygon;
-        $this->assertEquals($a[0][0]->getLatitude(), $a[0][\count($a[0]) - 1]->getLatitude());
-        $this->assertEquals($a[0][0]->getLongitude(), $a[0][\count($a[0]) - 1]->getLongitude());
-    }
-
-    public function testToArrayReturnsAnArray()
-    {
-        $this->assertInternalType('array', $this->polygon->toArray());
-    }
-
-    public function testObjectIsAPolygon()
-    {
-        $this->assertInstanceOf('Ricklab\Location\Geometry\Polygon', $this->polygon);
+        $this->assertEquals($a->toArray()[0][0][0], $a->toArray()[0][\count($a->toArray()[0]) - 1][0]);
+        $this->assertEquals($a->toArray()[0][0][1], $a->toArray()[0][\count($a->toArray()[0]) - 1][1]);
     }
 
     public function testToString()
@@ -86,12 +70,12 @@ class PolygonTest extends TestCase
     public function testBBox()
     {
         $polygon = new Polygon([
-            [
+            new LineString([
                 new Point(3, 4),
                 new Point(2, 3),
                 new Point(2, 4),
                 new Point(3, 2),
-            ],
+            ]),
         ]);
         $this->assertEquals(
             '{"type":"Polygon","coordinates":[[[2,3],[4,3],[4,2],[2,2],[2,3]]]}',
@@ -108,9 +92,8 @@ class PolygonTest extends TestCase
     {
         $ar = [[[100.0, 0.0], [101.0, 1.0], [102.0, 2.0], [103.0, 3.0]]];
 
-        $polygon = new Polygon($ar);
+        $polygon = Polygon::fromArray($ar);
 
-        $this->assertInstanceOf('Ricklab\Location\Geometry\Polygon', $polygon);
-        $this->assertEquals([100.0, 0.0], $polygon[0][0]->toArray());
+        $this->assertEquals([100.0, 0.0], $polygon->getLineStrings()[0]->getPoints()[0]->toArray());
     }
 }

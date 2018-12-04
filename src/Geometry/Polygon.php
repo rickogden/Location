@@ -6,7 +6,7 @@ namespace Ricklab\Location\Geometry;
 
 use Ricklab\Location\Location;
 
-class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
+class Polygon implements GeometryInterface, \SeekableIterator
 {
     /**
      * @var LineString[]
@@ -15,27 +15,40 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
 
     protected $position = 0;
 
-    /**
-     * Pass in an array of Points to create a Polygon or multiple arrays of points for a Polygon with holes in.
-     *
-     * @param LineString[]|Point[]|array $lines
-     */
-    public function __construct(array $lines)
+
+    public static function fromArray(array $geometries): self
     {
-        foreach ($lines as $line) {
-            if ($line instanceof LineString) {
-                $this->lineStrings[] = $line;
-            } elseif (\is_array($line)) {
-                $this->lineStrings[] = new LineString($line);
-            } elseif ($line instanceof Point) {
-                $this->lineStrings[] = new LineString($lines);
-                break;
+        $result = [];
+        foreach ($geometries as $lineString) {
+            if ($lineString instanceof LineString) {
+                $result[] = $lineString;
+            } else {
+                $result[] = LineString::fromArray($lineString);
             }
         }
 
+        return new self($result);
+    }
+
+    public static function fromLineString(LineString $lineString): self
+    {
+        return new self([$lineString]);
+    }
+
+    /**
+     * Pass in an array of Points to create a Polygon or multiple arrays of points for a Polygon with holes in.
+     *
+     * @param LineString[]
+     */
+    public function __construct(array $lines)
+    {
+        $this->lineStrings = (function(LineString ...$lineStrings) {
+            return $lineStrings;
+        })(...$lines);
+
         foreach ($this->lineStrings as $line) {
-            if ($line->getLast() != $line->getFirst()) {
-                $line[] = $line->getFirst();
+            if ((string) $line->getLast() !== (string) $line->getFirst()) {
+                $line->add($line->getFirst());
             }
         }
     }
@@ -142,84 +155,6 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Whether a offset exists.
-     *
-     * @see http://php.net/manual/en/arrayaccess.offsetexists.php
-     *
-     * @param mixed $offset <p>
-     *                      An offset to check for.
-     *                      </p>
-     *
-     * @return bool true on success or false on failure.
-     *              </p>
-     *              <p>
-     *              The return value will be casted to boolean if non-boolean was returned
-     */
-    public function offsetExists($offset)
-    {
-        return isset($this->lineStrings[$offset]);
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to retrieve.
-     *
-     * @see http://php.net/manual/en/arrayaccess.offsetget.php
-     *
-     * @param number $offset <p>
-     *                       The offset to retrieve.
-     *                       </p>
-     *
-     * @return LineString
-     */
-    public function offsetGet($offset)
-    {
-        return $this->lineStrings[$offset];
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to set.
-     *
-     * @see http://php.net/manual/en/arrayaccess.offsetset.php
-     *
-     * @param number     $offset <p>
-     *                           The offset to assign the value to.
-     *                           </p>
-     * @param lineString $value  <p>
-     *                           The value to set.
-     *                           </p>
-     */
-    public function offsetSet($offset, $value)
-    {
-        if ($value instanceof LineString) {
-            if (null === $offset) {
-                $this->lineStrings[] = $value;
-            } elseif (\is_integer($offset)) {
-                $this->lineStrings[$offset] = $value;
-            } else {
-                throw new \OutOfBoundsException('Key must be numeric.');
-            }
-        }
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to unset.
-     *
-     * @see http://php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to unset.
-     *                      </p>
-     */
-    public function offsetUnset($offset)
-    {
-        unset($this->lineStrings[$offset]);
-    }
-
-    /**
      * (PHP 5 &gt;= 5.1.0)<br/>
      * Seeks to a position.
      *
@@ -266,5 +201,13 @@ class Polygon implements GeometryInterface, \ArrayAccess, \SeekableIterator
     public function getBBox()
     {
         return Location::getBBox($this);
+    }
+
+    /**
+     * @return LineString[]
+     */
+    public function getLineStrings(): array
+    {
+        return $this->lineStrings;
     }
 }

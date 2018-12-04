@@ -14,7 +14,7 @@ use Ricklab\Location\Location;
 /**
  * Class LineString.
  */
-class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, \Countable
+class LineString implements GeometryInterface, \SeekableIterator, \Countable
 {
     /**
      * @var Point[]
@@ -26,21 +26,31 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
      */
     protected $position = 0;
 
-    /**
-     * @param Point|Point[] $points the points, or the starting point
-     * @param Point|null    $end    the end point, only used if $points is not an array
-     */
-    public function __construct($points, Point $end = null)
+    public static function fromArray(array $geometries): self
     {
-        if ($points instanceof Point && null !== $end) {
-            $this->points = [$points, $end];
-        } elseif (\is_array($points) && \count($points) > 1) {
-            foreach ($points as $point) {
-                $this[] = $point;
+        $result = [];
+        foreach ($geometries as $point) {
+            if ($point instanceof Point) {
+                $result[] = $point;
+            } else {
+                $result[] = Point::fromArray($point);
             }
-        } else {
-            throw new \InvalidArgumentException('Parameters must be 2 points or an array of points.');
         }
+
+        return new self($result);
+    }
+
+    /**
+     * @param Point[] $points the points, or the starting point
+     */
+    public function __construct(array $points)
+    {
+        if (\count($points) < 2) {
+            throw new \InvalidArgumentException('array must have 2 or more elements.');
+        }
+        $this->points = (function (Point ...$points) {
+            return $points;
+        })(...$points);
     }
 
     /**
@@ -152,90 +162,6 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Whether a offset exists.
-     *
-     * @see http://php.net/manual/en/arrayaccess.offsetexists.php
-     *
-     * @param mixed $offset <p>
-     *                      An offset to check for.
-     *                      </p>
-     *
-     * @return bool true on success or false on failure.
-     *              </p>
-     *              <p>
-     *              The return value will be casted to boolean if non-boolean was returned
-     */
-    public function offsetExists($offset)
-    {
-        return isset($this->points[$offset]);
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to retrieve.
-     *
-     * @see http://php.net/manual/en/arrayaccess.offsetget.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to retrieve.
-     *                      </p>
-     *
-     * @return Point
-     */
-    public function offsetGet($offset)
-    {
-        return $this->points[$offset];
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to set.
-     *
-     * @see http://php.net/manual/en/arrayaccess.offsetset.php
-     *
-     * @param int   $offset <p>
-     *                      The offset to assign the value to.
-     *                      </p>
-     * @param point $value  <p>
-     *                      The value to set.
-     *                      </p>
-     */
-    public function offsetSet($offset, $value)
-    {
-        if (\is_array($value)) {
-            $value = new Point($value);
-        }
-
-        if ($value instanceof Point) {
-            if (\is_integer($offset)) {
-                $this->points[$offset] = $value;
-            } elseif (null === $offset) {
-                $this->points[] = $value;
-            } else {
-                throw new \OutOfBoundsException('Key must be numeric.');
-            }
-        } else {
-            throw new \InvalidArgumentException('Value must be a point or an array');
-        }
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to unset.
-     *
-     * @see http://php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @param int $offset <p>
-     *                    The offset to unset.
-     *                    </p>
-     */
-    public function offsetUnset($offset)
-    {
-        unset($this->points[$offset]);
-    }
-
-    /**
      * Gets the bounding box which will contain the entire geometry.
      */
     public function getBBox(): Polygon
@@ -261,8 +187,6 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
 
     /**
      * Reverses the direction of the line.
-     *
-     * @return $this
      */
     public function reverse(): self
     {
@@ -272,19 +196,15 @@ class LineString implements GeometryInterface, \SeekableIterator, \ArrayAccess, 
     }
 
     /**
-     * Count elements of an object.
-     *
-     * @see https://php.net/manual/en/countable.count.php
-     *
-     * @return int the custom count as an integer.
-     *             </p>
-     *             <p>
-     *             The return value is cast to an integer
-     *
-     * @since 5.1.0
+     * {@inheritdoc}
      */
     public function count()
     {
         return \count($this->points);
+    }
+
+    public function add(Point $point): void
+    {
+        $this->points[] = $point;
     }
 }

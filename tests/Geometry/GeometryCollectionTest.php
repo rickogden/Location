@@ -28,8 +28,8 @@ class GeometryCollectionTest extends TestCase
   }';
         $geojson = \json_encode(\json_decode($json, true));
 
-        $point = new Point([100.0, 0.0]);
-        $lineString = new LineString([[101.0, 0.0], [102.0, 1.0]]);
+        $point = Point::fromArray([100.0, 0.0]);
+        $lineString = LineString::fromArray([[101.0, 0.0], [102.0, 1.0]]);
 
         $geometryCollection = new GeometryCollection([$point, $lineString]);
 
@@ -40,8 +40,8 @@ class GeometryCollectionTest extends TestCase
     {
         $wkt = 'GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6, 7 10))';
 
-        $point = new Point([4, 6]);
-        $lineString = new LineString([[4, 6], [7, 10]]);
+        $point = Point::fromArray([4, 6]);
+        $lineString = LineString::fromArray([[4, 6], [7, 10]]);
 
         $geometryCollection = new GeometryCollection([$point, $lineString]);
 
