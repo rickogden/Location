@@ -18,7 +18,7 @@ class PointTest extends TestCase
 
     protected function setUp()
     {
-        $this->point = new Point($this->lat, $this->lon);
+        $this->point = new Point($this->lon, $this->lat);
     }
 
     public function testInstanceOfClassIsAPoint(): void
@@ -62,7 +62,7 @@ class PointTest extends TestCase
 
     public function testDistanceTo(): void
     {
-        $newPoint = new Point(53.48204, -2.23194);
+        $newPoint = new Point(-2.23194, 53.48204);
         $this->assertEquals(1.729, \round($this->point->distanceTo($newPoint, 'miles'), 3));
         $this->assertEquals(2.783, \round($this->point->distanceTo($newPoint), 3));
         $this->assertEquals(
@@ -76,7 +76,7 @@ class PointTest extends TestCase
      */
     public function testDistanceToException(): void
     {
-        $newPoint = new Point(53.48204, -2.23194);
+        $newPoint = new Point(-2.23194, 53.48204);
         $this->point->distanceTo($newPoint, 'foo');
     }
 

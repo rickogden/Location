@@ -60,9 +60,9 @@ class LocationTest extends TestCase
 
     public function testVincenty(): void
     {
-        $flinders = new Geometry\Point(-37.95103341666667, 144.42486788888888);
+        $flinders = new Geometry\Point(144.42486788888888, -37.95103341666667);
 
-        $buninyond = new Geometry\Point(-37.65282113888889, 143.92649552777777);
+        $buninyond = new Geometry\Point(143.92649552777777, -37.65282113888889);
 
         Location::$useSpatialExtension = true;
         $this->assertEquals(54972.271, Location::vincenty($flinders, $buninyond));
@@ -109,7 +109,7 @@ class LocationTest extends TestCase
 
     public function testBboxByRadius(): void
     {
-        $point = new Point(53, -2);
+        $point = new Point(-2, 53);
         $bbox = Location::getBBoxByRadius($point, 2, 'km');
 
         $this->assertCount(5, $bbox->getPoints());

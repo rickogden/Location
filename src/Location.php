@@ -386,10 +386,10 @@ class Location
         $limits['w'] = \rad2deg($minLon);
         $limits['e'] = \rad2deg($maxLon);
 
-        $nw = new Point($limits['n'], $limits['w']);
-        $ne = new Point($limits['n'], $limits['e']);
-        $sw = new Point($limits['s'], $limits['w']);
-        $se = new Point($limits['s'], $limits['e']);
+        $nw = new Point($limits['w'], $limits['n']);
+        $ne = new Point($limits['e'], $limits['n']);
+        $sw = new Point($limits['w'], $limits['s']);
+        $se = new Point($limits['e'], $limits['s']);
 
         return new Polygon([new LineString([$nw, $ne, $se, $sw])]);
     }
@@ -508,6 +508,6 @@ class Location
         $res_lat = \atan2($z, \sqrt(($x ** 2) + ($y ** 2)));
         $res_long = \atan2($y, $x);
 
-        return new Point(\rad2deg($res_lat), \rad2deg($res_long));
+        return new Point(\rad2deg($res_long), \rad2deg($res_lat));
     }
 }

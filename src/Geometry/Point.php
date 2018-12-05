@@ -48,7 +48,7 @@ class Point implements GeometryInterface
             throw new \InvalidArgumentException(\sprintf('Must be an array consisting of exactly 2 elements, %d passed', $length));
         }
 
-        return new self($point[1], $point[0]);
+        return new self($point[0], $point[1]);
     }
 
     /**
@@ -65,7 +65,7 @@ class Point implements GeometryInterface
 
         $decLon = Location::dmsToDecimal($lon[0], $lon[1], $lon[2], $lon[3] ?? 'E');
 
-        return new self($decLat, $decLon);
+        return new self($decLon, $decLat);
     }
 
     /**
@@ -74,10 +74,10 @@ class Point implements GeometryInterface
      * Usage: new Point(latitude, longitude);
      * or new Point([longitude, latitude]);
      *
-     * @param float $lat  Latitude coordinates
      * @param float $long Longitude coordinates
+     * @param float $lat Latitude coordinates
      */
-    public function __construct(float $lat, float $long)
+    public function __construct(float $long, float $lat)
     {
         $this->setLatitude($lat);
         $this->setLongitude($long);
@@ -150,7 +150,7 @@ class Point implements GeometryInterface
         $lon2x = \cos($distance / $rad) - \sin($lat1) * \sin($lat2);
         $lon2 = $lon1 + \atan2($lon2y, $lon2x);
 
-        return new self(\rad2deg($lat2), \rad2deg($lon2));
+        return new self(\rad2deg($lon2), \rad2deg($lat2));
     }
 
     /**

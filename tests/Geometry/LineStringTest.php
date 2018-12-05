@@ -16,15 +16,15 @@ class LineStringTest extends TestCase
 
     protected function setUp()
     {
-        $point1 = new Point(53.48575, -2.27354);
-        $point2 = new Point(53.48204, -2.23194);
+        $point1 = new Point(-2.27354, 53.48575);
+        $point2 = new Point(-2.23194, 53.48204);
         $this->line = new LineString([$point1, $point2]);
     }
 
     public function testStatic(): void
     {
-        $point1 = new Point(53.48575, -2.27354);
-        $point2 = new Point(53.48204, -2.23194);
+        $point1 = new Point(-2.27354, 53.48575);
+        $point2 = new Point(-2.23194, 53.48204);
         $line = LineString::fromArray([$point1, $point2]);
 
         $line2 = LineString::fromArray([$point1->toArray(), $point2->toArray()]);
@@ -38,7 +38,7 @@ class LineStringTest extends TestCase
      */
     public function testInvalidPointException(): void
     {
-        $point1 = new Point(53.48575, -2.27354);
+        $point1 = new Point(-2.27354, 53.48575);
 
         $line = new LineString([$point1, 'foo']);
     }
@@ -48,7 +48,7 @@ class LineStringTest extends TestCase
      */
     public function testOnePointInArrayException(): void
     {
-        $point1 = new Point(53.48575, -2.27354);
+        $point1 = new Point(-2.27354, 53.48575);
 
         $line = new LineString([$point1]);
     }

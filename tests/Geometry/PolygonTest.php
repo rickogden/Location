@@ -17,17 +17,17 @@ class PolygonTest extends TestCase
     protected function setUp()
     {
         Location::$useSpatialExtension = false;
-        $this->polygon = Polygon::fromArray([[new Point(2, 3), new Point(2, 4), new Point(3, 4)]]);
+        $this->polygon = Polygon::fromArray([[new Point(3, 2), new Point(4, 2), new Point(4, 3)]]);
     }
 
     public function testConstruction(): void
     {
         $poly1 = new Polygon([
             new LineString([
-                new Point(2, 3),
-                new Point(2, 4),
-                new Point(3, 4),
-                new Point(2, 3),
+                new Point(3, 2),
+                new Point(4, 2),
+                new Point(4, 3),
+                new Point(3, 2),
             ]),
         ]);
         $this->assertEquals($this->polygon->toArray(), $poly1->toArray());
@@ -40,10 +40,10 @@ class PolygonTest extends TestCase
     {
         $poly1 = new Polygon([
             new LineString([
-                new Point(2, 3),
-                new Point(2, 4),
-                new Point(3, 4),
-                new Point(2, 3),
+                new Point(3, 2),
+                new Point(4, 2),
+                new Point(4, 3),
+                new Point(3, 2),
             ]),
             LineString::fromArray([[1, 2], [2, 3]]),
         ]);
@@ -86,10 +86,10 @@ class PolygonTest extends TestCase
     {
         $polygon = new Polygon([
             new LineString([
-                new Point(3, 4),
-                new Point(2, 3),
-                new Point(2, 4),
+                new Point(4, 3),
                 new Point(3, 2),
+                new Point(4, 2),
+                new Point(2, 3),
             ]),
         ]);
         $this->assertEquals(
