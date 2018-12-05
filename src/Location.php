@@ -434,7 +434,7 @@ class Location
      * @param float       $seconds
      * @param null|string $direction use "S" for south and "W" for west. Defaults to East/North.
      */
-    public static function dmsToDecimal($degrees, $minutes, $seconds, $direction = null): float
+    public static function dmsToDecimal(int $degrees, int $minutes, float $seconds, ?string $direction = null): float
     {
         $decimal = $degrees + ($minutes / 60) + ($seconds / 3600);
 
@@ -450,7 +450,7 @@ class Location
      *
      * @return array of degrees, minutes, seconds from North/East
      */
-    public static function decimalToDms($decimal): array
+    public static function decimalToDms(float $decimal): array
     {
         $deg = \floor($decimal);
         $min = \floor(($decimal - $deg) * 60);
