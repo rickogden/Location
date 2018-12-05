@@ -202,8 +202,7 @@ class Location
         Point $point2,
         string $unit,
         int $formula = self::FORMULA_HAVERSINE
-    ): float
-    {
+    ): float {
         if (null === $formula) {
             $formula = self::$defaultFormula;
         }

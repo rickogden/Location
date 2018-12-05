@@ -11,7 +11,6 @@ use Ricklab\Location\Location;
  */
 interface EllipsoidInterface
 {
-
     /**
      * @var array Unit multipliers relative to km
      */
@@ -53,5 +52,4 @@ interface EllipsoidInterface
     public function getMinorSemiAxis(string $unit = Location::UNIT_METRES): float;
 
     public function getFlattening(): float;
-
 }

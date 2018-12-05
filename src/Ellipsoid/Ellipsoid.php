@@ -13,7 +13,6 @@ use Ricklab\Location\Location;
 
 abstract class Ellipsoid implements EllipsoidInterface
 {
-
     abstract protected function getRadiusInMetres(): float;
 
     abstract protected function getMinorSemiAxisInMetres(): float;
