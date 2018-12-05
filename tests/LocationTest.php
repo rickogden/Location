@@ -90,8 +90,8 @@ class LocationTest extends TestCase
 
     public function testFromWkt()
     {
-        $multipolywkt = 'MULTIPOLYGON(((1.432 -1.543, 5 1, 5 5, 1 5, 1.432 -1.543),(2 2, 3 2, 3 3, 2 3, 2 2)),((3 3, 6 2, 6 4, 3 3)))';
-        $multilinewkt = 'MULTILINESTRING((3 4, 10 50, 20 25),(-5 -8, -10 -8, -15 -4))';
+        $multipolywkt = 'MULTIPOLYGON(((1.432 -1.543, 5 1, 5 5, 1 5, 1.432 -1.543), (2 2, 3 2, 3 3, 2 3, 2 2)), ((3 3, 6 2, 6 4, 3 3)))';
+        $multilinewkt = 'MULTILINESTRING((3 4, 10 50, 20 25), (-5 -8, -10 -8, -15 -4))';
         $pointwkt = 'POINT(4 5)';
         $multipoly = Location::fromWkt($multipolywkt);
         $multiline = Location::fromWkt($multilinewkt);

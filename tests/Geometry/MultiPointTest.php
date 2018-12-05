@@ -34,8 +34,8 @@ class MultiPointTest extends TestCase
 
     public function testWkt()
     {
-        $wktv1 = 'MULTIPOINT ((10 40),(40 30),(20 20),(30 10))';
-        $wktv2 = 'MULTIPOINT(10 40,40 30,20 20,30 10)';
+        $wktv1 = 'MULTIPOINT ((10 40), (40 30), (20 20), (30 10))';
+        $wktv2 = 'MULTIPOINT(10 40, 40 30, 20 20, 30 10)';
 
         $mp1 = Location::fromWkt($wktv1);
         $mp2 = Location::fromWkt($wktv2);

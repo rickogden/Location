@@ -9,14 +9,14 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
-use Ricklab\Location\Geometry\Traits\GeometryCollectionTrait;
+use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
  * Class MultiLineString.
  */
 class MultiLineString implements GeometryInterface, GeometryCollectionInterface, \IteratorAggregate
 {
-    use GeometryCollectionTrait;
+    use GeometryTrait;
 
     public static function getGeoJsonType(): string
     {

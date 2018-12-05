@@ -10,10 +10,13 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Geometry\Traits\TransformationTrait;
 use Ricklab\Location\Location;
 
 class Point implements GeometryInterface
 {
+    use TransformationTrait;
+
     /**
      * @var float
      */
@@ -23,6 +26,16 @@ class Point implements GeometryInterface
      * @var float
      */
     protected $latitude;
+
+    public static function getWktType(): string
+    {
+        return 'POINT';
+    }
+
+    public static function getGeoJsonType(): string
+    {
+        return 'Point';
+    }
 
     public static function fromArray(array $point): self
     {
@@ -61,16 +74,8 @@ class Point implements GeometryInterface
      */
     public function __construct(float $lat, float $long)
     {
-        if ($long > 180 || $long < -180) {
-            throw new \InvalidArgumentException('longitude must be a valid number between -180 and 180.');
-        }
-
-        if ($lat > 90 || $lat < -90) {
-            throw new \InvalidArgumentException('latitude must be a valid number between -90 and 90.');
-        }
-
-        $this->longitude = $long;
-        $this->latitude = $lat;
+        $this->setLatitude($lat);
+        $this->setLongitude($long);
     }
 
     /**
@@ -134,7 +139,7 @@ class Point implements GeometryInterface
         $bearing = \deg2rad($bearing);
 
         $lat2 = \sin($lat1) * \cos($distance / $rad) +
-                \cos($lat1) * \sin($distance / $rad) * \cos($bearing);
+            \cos($lat1) * \sin($distance / $rad) * \cos($bearing);
         $lat2 = \asin($lat2);
 
         $lon2y = \sin($bearing) * \sin($distance / $rad) * \cos($lat1);
@@ -149,7 +154,7 @@ class Point implements GeometryInterface
      *
      * @return Number Latitude in Rads
      */
-    public function latitudeToRad()
+    public function latitudeToRad(): float
     {
         return \deg2rad($this->latitude);
     }
@@ -159,7 +164,7 @@ class Point implements GeometryInterface
      *
      * @return Number Longitude in Rads
      */
-    public function longitudeToRad()
+    public function longitudeToRad(): float
     {
         return \deg2rad($this->longitude);
     }
@@ -172,33 +177,7 @@ class Point implements GeometryInterface
      */
     public function initialBearingTo(Point $point2): float
     {
-        if (Location::$useSpatialExtension && \function_exists('initial_bearing')) {
-            return initial_bearing($this->jsonSerialize(), $point2->jsonSerialize());
-        }
-        $y = \sin(
-                          \deg2rad($point2->getLongitude() - $this->getLongitude())
-                      ) * \cos($point2->latitudeToRad());
-        $x = \cos($this->latitudeToRad())
-                      * \sin($point2->latitudeToRad()) - \sin(
-                                                            $this->latitudeToRad()
-                                                        ) * \cos($point2->latitudeToRad()) *
-                                                        \cos(
-                                                            \deg2rad($point2->getLongitude() - $this->getLongitude())
-                                                        );
-        $result = \atan2($y, $x);
-
-        return \fmod(\rad2deg($result) + 360, 360);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'type' => 'Point',
-            'coordinates' => $this->toArray(),
-        ];
+        return Location::getInitialBearing($this, $point2);
     }
 
     /**
@@ -237,35 +216,9 @@ class Point implements GeometryInterface
      *
      * @throw \InvalidArgumentException
      */
-    public function getFractionAlongLineTo(Point $point, $fraction): self
+    public function getFractionAlongLineTo(Point $point, float $fraction): self
     {
-        if ($fraction < 0 || $fraction > 1) {
-            throw new \InvalidArgumentException('$fraction must be between 0 and 1');
-        }
-
-        if (Location::$useSpatialExtension && \function_exists('fraction_along_gc_line')) {
-            $result = fraction_along_gc_line($this->jsonSerialize(), $point->jsonSerialize(), $fraction);
-
-            return self::fromArray($result['coordinates']);
-        }
-        $distance = Location::haversine($this, $point);
-
-        $lat1 = $this->latitudeToRad();
-        $lat2 = $point->latitudeToRad();
-        $lon1 = $this->longitudeToRad();
-        $lon2 = $point->longitudeToRad();
-
-        $a = \sin((1 - $fraction) * $distance) / \sin($distance);
-        $b = \sin($fraction * $distance) / \sin($distance);
-        $x = $a * \cos($lat1) * \cos($lon1) +
-                        $b * \cos($lat2) * \cos($lon2);
-        $y = $a * \cos($lat1) * \sin($lon1) +
-                        $b * \cos($lat2) * \sin($lon2);
-        $z = $a * \sin($lat1) + $b * \sin($lat2);
-        $res_lat = \atan2($z, \sqrt(($x ** 2) + ($y ** 2)));
-        $res_long = \atan2($y, $x);
-
-        return new self(\rad2deg($res_lat), \rad2deg($res_long));
+        return Location::getFractionAlongLineBetween($this, $point, $fraction);
     }
 
     /**
@@ -290,7 +243,7 @@ class Point implements GeometryInterface
      */
     public function toWkt(): string
     {
-        return 'POINT('.$this.')';
+        return \sprintf('%s(%s)', self::getWktType(), $this);
     }
 
     /**
@@ -311,5 +264,23 @@ class Point implements GeometryInterface
     public function getPoints(): array
     {
         return [$this];
+    }
+
+    private function setLatitude(float $lat): void
+    {
+        if ($lat > 90 || $lat < -90) {
+            throw new \InvalidArgumentException('latitude must be a valid number between -90 and 90.');
+        }
+
+        $this->latitude = $lat;
+    }
+
+    private function setLongitude(float $long): void
+    {
+        if ($long > 180 || $long < -180) {
+            throw new \InvalidArgumentException('longitude must be a valid number between -180 and 180.');
+        }
+
+        $this->longitude = $long;
     }
 }

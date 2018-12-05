@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
-use Ricklab\Location\Geometry\Traits\GeometryCollectionTrait;
+use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, \IteratorAggregate
 {
-    use GeometryCollectionTrait;
+    use GeometryTrait;
 
     public static function getWktType(): string
     {

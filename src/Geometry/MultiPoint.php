@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
-use Ricklab\Location\Geometry\Traits\GeometryCollectionTrait;
+use Ricklab\Location\Geometry\Traits\GeometryTrait;
 use Ricklab\Location\Location;
 
 class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \IteratorAggregate
 {
-    use GeometryCollectionTrait;
+    use GeometryTrait;
 
     public static function getWktType(): string
     {

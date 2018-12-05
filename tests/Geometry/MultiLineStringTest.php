@@ -33,7 +33,7 @@ class MultiLineStringTest extends TestCase
 
     public function testToWkt()
     {
-        $wkt = 'MULTILINESTRING((3 4, 10 50, 20 25),(-5 -8, -10 -8, -15 -4))';
+        $wkt = 'MULTILINESTRING((3 4, 10 50, 20 25), (-5 -8, -10 -8, -15 -4))';
 
         $lineString1 = new LineString([
             Point::fromArray([3, 4]),

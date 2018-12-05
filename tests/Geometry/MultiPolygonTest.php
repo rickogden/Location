@@ -15,7 +15,7 @@ class MultiPolygonTest extends TestCase
 {
     public function testToWkt()
     {
-        $wkt = 'MULTIPOLYGON(((1 1, 5 1, 5 5, 1 5, 1 1),(2 2, 3 2, 3 3, 2 3, 2 2)),((3 3, 6 2, 6 4, 3 3)))';
+        $wkt = 'MULTIPOLYGON(((1 1, 5 1, 5 5, 1 5, 1 1), (2 2, 3 2, 3 3, 2 3, 2 2)), ((3 3, 6 2, 6 4, 3 3)))';
 
         $multipolygon = MultiPolygon::fromArray([
             Polygon::fromArray([

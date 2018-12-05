@@ -9,15 +9,24 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Geometry\Traits\GeometryTrait;
+
 /**
  * Class GeometryCollection.
  */
 class GeometryCollection implements GeometryInterface, GeometryCollectionInterface
 {
-    /**
-     * @var GeometryInterface[]
-     */
-    protected $geometries = [];
+    use GeometryTrait;
+
+    public static function getWktType(): string
+    {
+        return 'GEOMETRYCOLLECTION';
+    }
+
+    public static function getGeoJsonType(): string
+    {
+        return 'GeometryCollection';
+    }
 
     public static function fromArray(array $geometries): self
     {
@@ -40,43 +49,11 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     }
 
     /**
-     * @return string the Well-Known Text representation of the geometry
-     */
-    public function toWkt(): string
-    {
-        return 'GEOMETRYCOLLECTION'.$this;
-    }
-
-    /**
-     * All the geometries contained as an array.
-     *
-     * @return GeometryInterface[]
-     */
-    public function toArray(): array
-    {
-        return $this->geometries;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPoints(): array
-    {
-        $points = [];
-        foreach ($this->geometries as $geometry) {
-            $geomPoints = $geometry->getPoints();
-            $points += $geomPoints;
-        }
-
-        return $points;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function jsonSerialize(): array
     {
-        $json['type'] = 'GeometryCollection';
+        $json['type'] = self::getGeoJsonType();
         foreach ($this->geometries as $geometry) {
             $json['geometries'][] = $geometry->jsonSerialize();
         }
@@ -94,7 +71,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
             $collection[] = $geometry->toWkt();
         }
 
-        return '('.\implode(',', $collection).')';
+        return '('.\implode(', ', $collection).')';
     }
 
     /**

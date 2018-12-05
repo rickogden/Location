@@ -110,8 +110,10 @@ class LineStringTest extends TestCase
         $original = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
 
         $lineString = LineString::fromArray($original);
-        $lineString->reverse();
-        $this->assertEquals($original[0], $lineString->toArray()[1]);
-        $this->assertEquals($original[1], $lineString->toArray()[0]);
+        $lineString2 = $lineString->reverse();
+        $this->assertEquals($original[0], $lineString2->toArray()[1]);
+        $this->assertEquals($original[1], $lineString2->toArray()[0]);;
+        $this->assertEquals($original[0], $lineString->toArray()[0]);
+        $this->assertEquals($original[1], $lineString->toArray()[1]);
     }
 }

@@ -473,4 +473,55 @@ class Location
 
         return [$deg, $min, $sec];
     }
+
+    public static function getInitialBearing(Point $point1, Point $point2): float
+    {
+        if (self::$useSpatialExtension && \function_exists('initial_bearing')) {
+            return initial_bearing($point1->jsonSerialize(), $point2->jsonSerialize());
+        }
+        $y = \sin(
+                \deg2rad($point2->getLongitude() - $point1->getLongitude())
+            ) * \cos($point2->latitudeToRad());
+        $x = \cos($point1->latitudeToRad())
+            * \sin($point2->latitudeToRad()) - \sin(
+                $point1->latitudeToRad()
+            ) * \cos($point2->latitudeToRad()) *
+            \cos(
+                \deg2rad($point2->getLongitude() - $point1->getLongitude())
+            );
+        $result = \atan2($y, $x);
+
+        return \fmod(\rad2deg($result) + 360, 360);
+    }
+
+    public static function getFractionAlongLineBetween(Point $point1, Point $point2, float $fraction): Point
+    {
+        if ($fraction < 0 || $fraction > 1) {
+            throw new \InvalidArgumentException('$fraction must be between 0 and 1');
+        }
+
+        if (self::$useSpatialExtension && \function_exists('fraction_along_gc_line')) {
+            $result = fraction_along_gc_line($point1->jsonSerialize(), $point2->jsonSerialize(), $fraction);
+
+            return Point::fromArray($result['coordinates']);
+        }
+        $distance = self::haversine($point1, $point2);
+
+        $lat1 = $point1->latitudeToRad();
+        $lat2 = $point2->latitudeToRad();
+        $lon1 = $point1->longitudeToRad();
+        $lon2 = $point2->longitudeToRad();
+
+        $a = \sin((1 - $fraction) * $distance) / \sin($distance);
+        $b = \sin($fraction * $distance) / \sin($distance);
+        $x = $a * \cos($lat1) * \cos($lon1) +
+            $b * \cos($lat2) * \cos($lon2);
+        $y = $a * \cos($lat1) * \sin($lon1) +
+            $b * \cos($lat2) * \sin($lon2);
+        $z = $a * \sin($lat1) + $b * \sin($lat2);
+        $res_lat = \atan2($z, \sqrt(($x ** 2) + ($y ** 2)));
+        $res_long = \atan2($y, $x);
+
+        return new Point(\rad2deg($res_lat), \rad2deg($res_long));
+    }
 }

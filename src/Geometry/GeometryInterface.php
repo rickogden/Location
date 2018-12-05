@@ -11,6 +11,10 @@ namespace Ricklab\Location\Geometry;
  */
 interface GeometryInterface extends \JsonSerializable
 {
+    public static function getWktType(): string;
+
+    public static function getGeoJsonType(): string;
+
     public static function fromArray(array $geometries);
 
     /**

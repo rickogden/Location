@@ -38,7 +38,7 @@ class GeometryCollectionTest extends TestCase
 
     public function testToWkt()
     {
-        $wkt = 'GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6, 7 10))';
+        $wkt = 'GEOMETRYCOLLECTION(POINT(4 6), LINESTRING(4 6, 7 10))';
 
         $point = Point::fromArray([4, 6]);
         $lineString = LineString::fromArray([[4, 6], [7, 10]]);

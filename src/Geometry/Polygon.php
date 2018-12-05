@@ -4,16 +4,28 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Geometry\Traits\GeometryTrait;
 use Ricklab\Location\Location;
 
-class Polygon implements GeometryInterface, \SeekableIterator
+class Polygon implements GeometryInterface, \IteratorAggregate
 {
+    use GeometryTrait;
+
     /**
      * @var LineString[]
      */
-    protected $lineStrings;
+    protected $geometries = [];
 
-    protected $position = 0;
+    public static function getWktType(): string
+    {
+        return 'POLYGON';
+    }
+
+    public static function getGeoJsonType(): string
+    {
+        return 'Polygon';
+    }
+
 
     public static function fromArray(array $geometries): self
     {
@@ -29,11 +41,6 @@ class Polygon implements GeometryInterface, \SeekableIterator
         return new self($result);
     }
 
-    public static function fromLineString(LineString $lineString): self
-    {
-        return new self([$lineString]);
-    }
-
     /**
      * Pass in an array of Points to create a Polygon or multiple arrays of points for a Polygon with holes in.
      *
@@ -41,55 +48,9 @@ class Polygon implements GeometryInterface, \SeekableIterator
      */
     public function __construct(array $lines)
     {
-        $this->lineStrings = (function (LineString ...$lineStrings) {
-            return $lineStrings;
-        })(...$lines);
-
-        foreach ($this->lineStrings as $line) {
-            if ((string) $line->getLast() !== (string) $line->getFirst()) {
-                $line->add($line->getFirst());
-            }
+        foreach ($lines as $line) {
+            $this->add($line);
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __toString(): string
-    {
-        return '('.\implode(',', $this->lineStrings).')';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toWkt(): string
-    {
-        return 'POLYGON'.$this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'type' => 'Polygon',
-            'coordinates' => $this->toArray(),
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toArray(): array
-    {
-        $return = [];
-        foreach ($this->lineStrings as $line) {
-            $return[] = $line->toArray();
-        }
-
-        return $return;
     }
 
     /**
@@ -100,104 +61,12 @@ class Polygon implements GeometryInterface, \SeekableIterator
      *
      * @return float
      */
-    public function getPerimeter($unit = 'km', $formula = null)
+    public function getPerimeter($unit = 'km', $formula = null): float
     {
-        return $this->lineStrings[0]->getLength($unit, $formula);
+        return $this->geometries[0]->getLength($unit, $formula);
     }
 
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Return the current element.
-     *
-     * @see http://php.net/manual/en/iterator.current.php
-     *
-     * @return LineString
-     */
-    public function current()
-    {
-        return $this->lineStrings[$this->position];
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Move forward to next element.
-     *
-     * @see http://php.net/manual/en/iterator.next.php
-     */
-    public function next()
-    {
-        ++$this->position ;
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Return the key of the current element.
-     *
-     * @see http://php.net/manual/en/iterator.key.php
-     *
-     * @return mixed scalar on success, or null on failure
-     */
-    public function key()
-    {
-        return $this->position;
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Rewind the Iterator to the first element.
-     *
-     * @see http://php.net/manual/en/iterator.rewind.php
-     */
-    public function rewind()
-    {
-        $this->position = 0;
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.1.0)<br/>
-     * Seeks to a position.
-     *
-     * @see http://php.net/manual/en/seekableiterator.seek.php
-     *
-     * @param int $position <p>
-     *                      The position to seek to.
-     *                      </p>
-     */
-    public function seek($position)
-    {
-        $this->position = $position;
-
-        if (!$this->valid()) {
-            throw new \OutOfBoundsException('Item does not exist');
-        }
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Checks if current position is valid.
-     *
-     * @see http://php.net/manual/en/iterator.valid.php
-     *
-     * @return bool the return value will be casted to boolean and then evaluated.
-     *              Returns true on success or false on failure
-     */
-    public function valid()
-    {
-        return isset($this->lineStrings[$this->position]);
-    }
-
-    public function getPoints(): array
-    {
-        $points = [];
-        foreach ($this->lineStrings as $line) {
-            $linePoints = $line->getPoints();
-            $points[] = $linePoints;
-        }
-
-        return \array_merge(...$points);
-    }
-
-    public function getBBox()
+    public function getBBox(): self
     {
         return Location::getBBox($this);
     }
@@ -207,6 +76,15 @@ class Polygon implements GeometryInterface, \SeekableIterator
      */
     public function getLineStrings(): array
     {
-        return $this->lineStrings;
+        return $this->geometries;
+    }
+
+    private function add(LineString $lineString): void
+    {
+        if (!$lineString->isClosedShape()) {
+            $lineString = $lineString->addPoint($lineString->getFirst());
+        }
+
+        $this->geometries[] = $lineString;
     }
 }

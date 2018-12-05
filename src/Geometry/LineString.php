@@ -9,22 +9,35 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Geometry\Traits\GeometryTrait;
 use Ricklab\Location\Location;
 
 /**
  * Class LineString.
  */
-class LineString implements GeometryInterface, \SeekableIterator, \Countable
+class LineString implements GeometryInterface, \IteratorAggregate
 {
+    use GeometryTrait;
+
     /**
      * @var Point[]
      */
-    protected $points = [];
+    protected $geometries = [];
 
     /**
      * @var int
      */
     protected $position = 0;
+
+    public static function getWktType(): string
+    {
+        return 'LINESTRING';
+    }
+
+    public static function getGeoJsonType(): string
+    {
+        return 'LineString';
+    }
 
     public static function fromArray(array $geometries): self
     {
@@ -48,9 +61,9 @@ class LineString implements GeometryInterface, \SeekableIterator, \Countable
         if (\count($points) < 2) {
             throw new \InvalidArgumentException('array must have 2 or more elements.');
         }
-        $this->points = (function (Point ...$points) {
-            return $points;
-        })(...$points);
+        foreach ($points as $point) {
+            $this->add($point);
+        }
     }
 
     /**
@@ -58,15 +71,15 @@ class LineString implements GeometryInterface, \SeekableIterator, \Countable
      */
     public function getInitialBearing(): float
     {
-        return $this->points[0]->initialBearingTo($this->points[1]);
+        return $this->geometries[0]->initialBearingTo($this->geometries[1]);
     }
 
     public function getLength($unit = 'km', $formula = null)
     {
         $distance = 0;
 
-        for ($i = 1, $iMax = \count($this->points); $i < $iMax; ++$i) {
-            $distance += $this->points[$i - 1]->distanceTo($this->points[$i], $unit, $formula);
+        for ($i = 1, $iMax = \count($this->geometries); $i < $iMax; ++$i) {
+            $distance += $this->geometries[$i - 1]->distanceTo($this->geometries[$i], $unit, $formula);
         }
 
         return $distance;
@@ -77,7 +90,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \Countable
      */
     public function getFirst(): Point
     {
-        return $this->points[0];
+        return $this->geometries[0];
     }
 
     /**
@@ -85,15 +98,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \Countable
      */
     public function getLast(): Point
     {
-        return $this->points[\count($this->points) - 1];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __toString(): string
-    {
-        return '('.\implode(', ', $this->points).')';
+        return $this->geometries[\count($this->geometries) - 1];
     }
 
     /**
@@ -112,7 +117,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \Countable
     public function toArray(): array
     {
         $return = [];
-        foreach ($this->points as $point) {
+        foreach ($this->geometries as $point) {
             $return[] = $point->toArray();
         }
 
@@ -125,40 +130,6 @@ class LineString implements GeometryInterface, \SeekableIterator, \Countable
     public function toWkt(): string
     {
         return 'LINESTRING'.$this;
-    }
-
-    public function seek($position)
-    {
-        $this->position = $position;
-
-        if (!$this->valid()) {
-            throw new \OutOfBoundsException('Item does not exist');
-        }
-    }
-
-    public function valid()
-    {
-        return isset($this->points[$this->position]);
-    }
-
-    public function current()
-    {
-        return $this->points[$this->position];
-    }
-
-    public function key()
-    {
-        return $this->position;
-    }
-
-    public function next()
-    {
-        ++$this->position ;
-    }
-
-    public function rewind()
-    {
-        $this->position = 0;
     }
 
     /**
@@ -174,7 +145,7 @@ class LineString implements GeometryInterface, \SeekableIterator, \Countable
      */
     public function toPolygon(): Polygon
     {
-        return new Polygon($this->getPoints());
+        return new Polygon([$this]);
     }
 
     /**
@@ -182,27 +153,35 @@ class LineString implements GeometryInterface, \SeekableIterator, \Countable
      */
     public function getPoints(): array
     {
-        return $this->points;
+        return $this->geometries;
     }
 
     /**
      * Reverses the direction of the line.
      */
-    public function reverse(): void
+    public function reverse(): self
     {
-        $this->points = \array_reverse($this->points);
+        return new self(\array_reverse($this->geometries));
+    }
+
+    private function add(Point $point): void
+    {
+        $this->geometries[] = $point;
     }
 
     /**
-     * {@inheritdoc}
+     * A new LineString with the new point added.
      */
-    public function count(): int
+    public function addPoint(Point $point): self
     {
-        return \count($this->points);
+        $points = $this->geometries;
+        $points[] = $point;
+
+        return new self($points);
     }
 
-    public function add(Point $point): void
+    public function isClosedShape(): bool
     {
-        $this->points[] = $point;
+        return (string) $this->geometries[0] === (string) \end($this->geometries);
     }
 }
