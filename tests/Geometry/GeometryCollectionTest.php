@@ -56,6 +56,7 @@ class GeometryCollectionTest extends TestCase
     ]
   }';
 
+        /** @var GeometryCollection $geomCollection */
         $geomCollection = Location::fromGeoJson($json);
 
         $this->assertInstanceOf(GeometryCollection::class, $geomCollection);
@@ -67,6 +68,7 @@ class GeometryCollectionTest extends TestCase
     {
         $wkt = 'GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6, 7 10))';
 
+        /** @var GeometryCollection $geomCollection */
         $geomCollection = Location::fromWkt($wkt);
 
         $this->assertInstanceOf(GeometryCollection::class, $geomCollection);

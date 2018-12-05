@@ -17,6 +17,7 @@ class LocationTest extends TestCase
 
     public function testCreatePoint(): void
     {
+        /** @var Point $point */
         $point = Location::fromGeoJson('{"type":"Point","coordinates":[-2.27354,53.48575]}');
 
         $this->assertInstanceOf(Point::class, $point);
@@ -26,6 +27,7 @@ class LocationTest extends TestCase
 
     public function testCreateLineString(): void
     {
+        /** @var LineString $line */
         $line = Location::fromGeoJson(
             '{"type":"LineString","coordinates":[[-2.27354,53.48575],[-2.23194,53.48204]]}'
         );
@@ -41,6 +43,7 @@ class LocationTest extends TestCase
 
     public function testCreatePolygon(): void
     {
+        /** @var Polygon $polygon */
         $polygon = Location::fromGeoJson('{"type":"Polygon","coordinates":[[[3,2],[4,2],[4,3],[3,2]]]}');
 
         $this->assertInstanceOf(Polygon::class, $polygon);

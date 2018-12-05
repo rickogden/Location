@@ -29,8 +29,8 @@ class LineStringTest extends TestCase
 
         $line2 = LineString::fromArray([$point1->toArray(), $point2->toArray()]);
 
-        $this->assertInstanceOf('\Ricklab\Location\Geometry\LineString', $line);
-        $this->assertInstanceOf('\Ricklab\Location\Geometry\LineString', $line2);
+        $this->assertInstanceOf(LineString::class, $line);
+        $this->assertInstanceOf(LineString::class, $line2);
     }
 
     /**
