@@ -26,7 +26,6 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \Ite
         return 'MultiPoint';
     }
 
-
     public static function fromArray(array $geometries): self
     {
         $result = [];

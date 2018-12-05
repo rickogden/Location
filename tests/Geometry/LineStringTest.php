@@ -112,7 +112,7 @@ class LineStringTest extends TestCase
         $lineString = LineString::fromArray($original);
         $lineString2 = $lineString->reverse();
         $this->assertEquals($original[0], $lineString2->toArray()[1]);
-        $this->assertEquals($original[1], $lineString2->toArray()[0]);;
+        $this->assertEquals($original[1], $lineString2->toArray()[0]);
         $this->assertEquals($original[0], $lineString->toArray()[0]);
         $this->assertEquals($original[1], $lineString->toArray()[1]);
     }

@@ -19,7 +19,6 @@ trait GeometryTrait
      */
     protected $geometries = [];
 
-
     public function __toString(): string
     {
         return \sprintf('(%s)', \implode(', ', $this->geometries));

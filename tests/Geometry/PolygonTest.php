@@ -45,7 +45,7 @@ class PolygonTest extends TestCase
                 new Point(3, 4),
                 new Point(2, 3),
             ]),
-            LineString::fromArray([[1,2], [2,3]]),
+            LineString::fromArray([[1, 2], [2, 3]]),
         ]);
 
         $points = $poly1->getPoints();

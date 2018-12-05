@@ -26,7 +26,6 @@ class Polygon implements GeometryInterface, \IteratorAggregate
         return 'Polygon';
     }
 
-
     public static function fromArray(array $geometries): self
     {
         $result = [];
@@ -58,8 +57,6 @@ class Polygon implements GeometryInterface, \IteratorAggregate
      *
      * @param string   $unit
      * @param null|int $formula defaults to Location::$defaultFormula
-     *
-     * @return float
      */
     public function getPerimeter($unit = 'km', $formula = null): float
     {
