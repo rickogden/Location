@@ -36,6 +36,22 @@ class PolygonTest extends TestCase
         $this->assertEquals($this->polygon->toArray(), $poly2->toArray());
     }
 
+    public function testGetPoints()
+    {
+        $poly1 = new Polygon([
+            new LineString([
+                new Point(2, 3),
+                new Point(2, 4),
+                new Point(3, 4),
+                new Point(2, 3),
+            ]),
+            LineString::fromArray([[1,2], [2,3]]),
+        ]);
+
+        $points = $poly1->getPoints();
+        $this->assertCount(7, $points);
+    }
+
     public function testLastPointIsTheSameAsFirstPoint()
     {
         $a = $this->polygon;

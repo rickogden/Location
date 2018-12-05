@@ -191,10 +191,10 @@ class Polygon implements GeometryInterface, \SeekableIterator
         $points = [];
         foreach ($this->lineStrings as $line) {
             $linePoints = $line->getPoints();
-            $points += $linePoints;
+            $points[] = $linePoints;
         }
 
-        return $points;
+        return \array_merge(...$points);
     }
 
     public function getBBox()
