@@ -14,5 +14,5 @@ before_script:
   - echo "extension=geospatial.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - cd ..
 install:
-  - composer install
+  - composer install --no-dev
 script: phpunit --coverage-text

@@ -68,10 +68,10 @@ class LocationTest extends TestCase
         $buninyond = new Geometry\Point(143.92649552777777, -37.65282113888889);
 
         Location::$useSpatialExtension = true;
-        $this->assertEquals(54972.27114, \round(Location::vincenty($flinders, $buninyond), 5));
+        $this->assertEquals(54972.271, \round(Location::vincenty($flinders, $buninyond), 3));
 
         Location::$useSpatialExtension = false;
-        $this->assertEquals(54972.27114, \round(Location::vincenty($flinders, $buninyond), 5));
+        $this->assertEquals(54972.271, \round(Location::vincenty($flinders, $buninyond), 3));
         Location::$useSpatialExtension = true;
     }
 
