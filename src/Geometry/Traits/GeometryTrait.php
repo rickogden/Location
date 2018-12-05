@@ -8,7 +8,7 @@ use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\Point;
 
 /**
- * @author Rick Ogden <rick@airtimerewards.com>
+ * @author Rick Ogden <rick@rickogden.com>
  */
 trait GeometryTrait
 {

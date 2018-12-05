@@ -11,63 +11,23 @@ namespace Ricklab\Location\Ellipsoid;
 
 use Ricklab\Location\Location;
 
-abstract class Ellipsoid
+abstract class Ellipsoid implements EllipsoidInterface
 {
-    /**
-     * @var array Unit multipliers relative to km
-     */
-    protected const MULTIPLIERS = [
-        Location::UNIT_KM => 0.001,
-        Location::UNIT_MILES => 0.00062137119,
-        Location::UNIT_METRES => 1,
-        Location::UNIT_FEET => 3.2808399,
-        Location::UNIT_YARDS => 1.0936133,
-        Location::UNIT_NAUTICAL_MILES => 0.0005399568,
-    ];
 
-    /**
-     * @var array Key translations for multipliers
-     */
-    protected const KEYS = [
-        'km' => Location::UNIT_KM,
-        'kilometres' => Location::UNIT_KM,
-        'kilometers' => Location::UNIT_KM,
-        'miles' => Location::UNIT_MILES,
-        'metres' => Location::UNIT_METRES,
-        'meters' => Location::UNIT_METRES,
-        'm' => Location::UNIT_METRES,
-        'feet' => Location::UNIT_FEET,
-        'ft' => Location::UNIT_FEET,
-        'foot' => Location::UNIT_FEET,
-        'yards' => Location::UNIT_YARDS,
-        'yds' => Location::UNIT_YARDS,
-        'nautical miles' => Location::UNIT_NAUTICAL_MILES,
-        'nm' => Location::UNIT_NAUTICAL_MILES,
-    ];
+    abstract protected function getRadiusInMetres(): float;
 
-    /**
-     * @var float radius in metres (for use in Haversine)
-     */
-    protected $radius;
+    abstract protected function getMinorSemiAxisInMetres(): float;
 
-    /**
-     * @var float The radius at the equator in metres (for use in Vincenty)
-     */
-    protected $majorSemiAxis;
-
-    /**
-     * @var float The radius at the poles in metres (for use in Vincenty)
-     */
-    protected $minorSemiAxis;
+    abstract protected function getMajorSemiAxisInMetres(): float;
 
     /**
      * Returns the average radius of the ellipsoid in specified units.
      *
      * @param string $unit can be 'km', 'miles', 'metres', 'feet', 'yards', 'nautical miles'
      */
-    public function radius($unit = 'km'): float
+    public function radius(string $unit = Location::UNIT_METRES): float
     {
-        return $this->unitConversion($this->radius, $unit);
+        return $this->unitConversion($this->getRadiusInMetres(), $unit);
     }
 
     /**
@@ -75,7 +35,7 @@ abstract class Ellipsoid
      *
      * @return float The multiplier
      */
-    public function getMultiplier($unit): float
+    public function getMultiplier(string $unit = Location::UNIT_METRES): float
     {
         try {
             return self::MULTIPLIERS[self::KEYS[\mb_strtolower($unit)]];
@@ -90,7 +50,7 @@ abstract class Ellipsoid
      *
      * @return float the distance in the new unit
      */
-    protected function unitConversion($distance, $unit): float
+    protected function unitConversion(float $distance, string $unit): float
     {
         return $distance * $this->getMultiplier($unit);
     }
@@ -98,25 +58,25 @@ abstract class Ellipsoid
     /**
      * @param string $unit unit of measurement
      */
-    public function getMajorSemiAxis($unit = 'm'): float
+    public function getMajorSemiAxis(string $unit = Location::UNIT_METRES): float
     {
         if ('m' !== $unit) {
-            return $this->unitConversion($this->majorSemiAxis / 1000, $unit);
+            return $this->unitConversion($this->getMajorSemiAxisInMetres() / 1000, $unit);
         }
 
-        return $this->majorSemiAxis;
+        return $this->getMajorSemiAxisInMetres();
     }
 
     /**
      * @param string $unit unit of measurement
      */
-    public function getMinorSemiAxis($unit = 'm'): float
+    public function getMinorSemiAxis(string $unit = Location::UNIT_METRES): float
     {
         if ('m' !== $unit) {
-            return $this->unitConversion($this->minorSemiAxis / 1000, $unit);
+            return $this->unitConversion($this->getMinorSemiAxisInMetres() / 1000, $unit);
         }
 
-        return $this->minorSemiAxis;
+        return $this->getMinorSemiAxisInMetres();
     }
 
     public function getFlattening(): float

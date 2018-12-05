@@ -278,7 +278,7 @@ class Location
                     * (-3 + 4 * ($cosof2sigma ** 2))));
         $s = $ellipsoid->getMinorSemiAxis() * $A * ($sigma - $deltaSigma);
 
-        return \floor($s * 1000) / 1000;
+        return $s * 1000;
     }
 
     /**

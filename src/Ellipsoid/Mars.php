@@ -6,9 +6,10 @@ namespace Ricklab\Location\Ellipsoid;
 
 class Mars extends Ellipsoid
 {
-    protected $radius = 3376000;
+    use EllipsoidTrait;
+    protected const RADIUS = 3376000;
 
-    protected $majorSemiAxis = 3396200;
+    protected const MAJOR_SEMI_AXIS = 3396200;
 
-    protected $minorSemiAxis = 3376200;
+    protected const MINOR_SEMI_AXIS = 3376200;
 }

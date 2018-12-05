@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry\Traits;
 
 /**
- * @author Rick Ogden <rick@airtimerewards.com>
+ * @author Rick Ogden <rick@rickogden.com>
  */
 trait TransformationTrait
 {
