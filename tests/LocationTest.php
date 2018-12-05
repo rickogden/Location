@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Ricklab\Location;
 
 use PHPUnit\Framework\TestCase;
+use Ricklab\Location\Geometry\LineString;
 use Ricklab\Location\Geometry\Point;
+use Ricklab\Location\Geometry\Polygon;
 
 class LocationTest extends TestCase
 {
@@ -13,7 +15,7 @@ class LocationTest extends TestCase
     {
     }
 
-    public function testCreatePoint()
+    public function testCreatePoint(): void
     {
         $point = Location::fromGeoJson('{"type":"Point","coordinates":[-2.27354,53.48575]}');
 
@@ -22,32 +24,32 @@ class LocationTest extends TestCase
         $this->assertEquals(53.48575, $point->getLatitude());
     }
 
-    public function testCreateLineString()
+    public function testCreateLineString(): void
     {
         $line = Location::fromGeoJson(
             '{"type":"LineString","coordinates":[[-2.27354,53.48575],[-2.23194,53.48204]]}'
         );
 
-        $this->assertInstanceOf('Ricklab\Location\Geometry\LineString', $line);
+        $this->assertInstanceOf(LineString::class, $line);
         $this->assertEquals(2.783, \round($line->getLength(), 3));
 
         $multiPointLine = Location::fromGeoJson(
             '{"type":"LineString","coordinates":[[-2.27354,53.48575],[-2.23194,53.48204], [-2.23144,53.48254]]}'
         );
-        $this->assertInstanceOf('Ricklab\Location\Geometry\LineString', $multiPointLine);
+        $this->assertInstanceOf(LineString::class, $multiPointLine);
     }
 
-    public function testCreatePolygon()
+    public function testCreatePolygon(): void
     {
         $polygon = Location::fromGeoJson('{"type":"Polygon","coordinates":[[[3,2],[4,2],[4,3],[3,2]]]}');
 
-        $this->assertInstanceOf('Ricklab\Location\Geometry\Polygon', $polygon);
+        $this->assertInstanceOf(Polygon::class, $polygon);
 
         $retVal = $polygon->toWkt();
         $this->assertEquals('POLYGON((3 2, 4 2, 4 3, 3 2))', $retVal);
     }
 
-    public function testConvert()
+    public function testConvert(): void
     {
         $this->assertEquals(5.754, \round(Location::convert(5, 'nm', 'miles'), 3));
 
@@ -56,7 +58,7 @@ class LocationTest extends TestCase
         $this->assertEquals(8.047, \round(Location::convert(5, 'miles', 'km'), 3));
     }
 
-    public function testVincenty()
+    public function testVincenty(): void
     {
         $flinders = new Geometry\Point(-37.95103341666667, 144.42486788888888);
 
@@ -70,7 +72,7 @@ class LocationTest extends TestCase
         Location::$useSpatialExtension = true;
     }
 
-    public function testDmsToDecimal()
+    public function testDmsToDecimal(): void
     {
         $decimal = Location::dmsToDecimal(117, 29, 50.5);
 
@@ -81,14 +83,14 @@ class LocationTest extends TestCase
         $this->assertEquals(-1.0342916666667, $decimal2);
     }
 
-    public function testDecimalToDms()
+    public function testDecimalToDms(): void
     {
         $dms = Location::decimalToDms(1.0342916666667);
         $dms[2] = \round($dms[2], 5);
         $this->assertEquals([1, 2, 3.45], $dms);
     }
 
-    public function testFromWkt()
+    public function testFromWkt(): void
     {
         $multipolywkt = 'MULTIPOLYGON(((1.432 -1.543, 5 1, 5 5, 1 5, 1.432 -1.543), (2 2, 3 2, 3 3, 2 3, 2 2)), ((3 3, 6 2, 6 4, 3 3)))';
         $multilinewkt = 'MULTILINESTRING((3 4, 10 50, 20 25), (-5 -8, -10 -8, -15 -4))';
@@ -103,5 +105,13 @@ class LocationTest extends TestCase
         $this->assertEquals([4, 5], $point->toArray());
         $this->assertEquals($multipolywkt, $multipoly->toWkt());
         $this->assertEquals($multilinewkt, $multiline->toWkt());
+    }
+
+    public function testBboxByRadius(): void
+    {
+        $point = new Point(53, -2);
+        $bbox = Location::getBBoxByRadius($point, 2, 'km');
+
+        $this->assertCount(5, $bbox->getPoints());
     }
 }

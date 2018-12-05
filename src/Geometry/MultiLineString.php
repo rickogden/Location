@@ -45,11 +45,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface,
     public function __construct(array $lineStrings)
     {
         foreach ($lineStrings as $lineString) {
-            if (!$lineString instanceof LineString) {
-                $lineString = new LineString($lineString);
-            }
-
-            $this->geometries[] = $lineString;
+            $this->addGeometry($lineString);
         }
     }
 
@@ -64,7 +60,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface,
     /**
      * Adds a new LineString to the collection.
      */
-    public function addGeometry(LineString $lineString)
+    public function addGeometry(LineString $lineString): void
     {
         $this->geometries[] = $lineString;
     }
@@ -72,7 +68,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface,
     /**
      * Removes a LineString from the collection.
      */
-    public function removeGeometry(LineString $lineString)
+    public function removeGeometry(LineString $lineString): void
     {
         foreach ($this->geometries as $index => $geom) {
             if ($lineString === $geom) {

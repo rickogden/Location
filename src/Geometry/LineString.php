@@ -98,38 +98,7 @@ class LineString implements GeometryInterface, \IteratorAggregate
      */
     public function getLast(): Point
     {
-        return $this->geometries[\count($this->geometries) - 1];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function jsonSerialize(): array
-    {
-        $coordinates = $this->toArray();
-
-        return ['type' => 'LineString', 'coordinates' => $coordinates];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toArray(): array
-    {
-        $return = [];
-        foreach ($this->geometries as $point) {
-            $return[] = $point->toArray();
-        }
-
-        return $return;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toWkt(): string
-    {
-        return 'LINESTRING'.$this;
+        return \end($this->geometries);
     }
 
     /**
@@ -157,7 +126,7 @@ class LineString implements GeometryInterface, \IteratorAggregate
     }
 
     /**
-     * Reverses the direction of the line.
+     * A new LineString in the reverse direction.
      */
     public function reverse(): self
     {
@@ -182,6 +151,6 @@ class LineString implements GeometryInterface, \IteratorAggregate
 
     public function isClosedShape(): bool
     {
-        return (string) $this->geometries[0] === (string) \end($this->geometries);
+        return (string) $this->getFirst() === (string) $this->getLast();
     }
 }

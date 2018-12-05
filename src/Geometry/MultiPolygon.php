@@ -45,14 +45,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, \I
     public function __construct(array $polygons)
     {
         foreach ($polygons as $polygon) {
-            if (\is_array($polygon)) {
-                $polygon = new Polygon($polygon);
-            }
-
-            if (!$polygon instanceof Polygon) {
-                throw new \InvalidArgumentException('$polygons must be an array of Polygon objects');
-            }
-            $this->geometries[] = $polygon;
+            $this->addGeometry($polygon);
         }
     }
 
@@ -67,24 +60,20 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, \I
     /**
      * @return $this
      */
-    public function addGeometry(Polygon $polygon)
+    public function addGeometry(Polygon $polygon): void
     {
         $this->geometries[] = $polygon;
-
-        return $this;
     }
 
     /**
      * @return $this
      */
-    public function removeGeometry(Polygon $polygon)
+    public function removeGeometry(Polygon $polygon): void
     {
         foreach ($this->geometries as $index => $geom) {
             if ($polygon === $geom) {
                 unset($this->geometries[$index]);
             }
         }
-
-        return $this;
     }
 }

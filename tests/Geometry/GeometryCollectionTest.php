@@ -1,11 +1,6 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 03/12/2015
- * Time: 11:10.
- */
 
 namespace Ricklab\Location\Geometry;
 
@@ -14,7 +9,7 @@ use Ricklab\Location\Location;
 
 class GeometryCollectionTest extends TestCase
 {
-    public function testToGeoJson()
+    public function testToGeoJson(): void
     {
         $json = '{ "type": "GeometryCollection",
     "geometries": [
@@ -36,7 +31,7 @@ class GeometryCollectionTest extends TestCase
         $this->assertEquals($geojson, \json_encode($geometryCollection));
     }
 
-    public function testToWkt()
+    public function testToWkt(): void
     {
         $wkt = 'GEOMETRYCOLLECTION(POINT(4 6), LINESTRING(4 6, 7 10))';
 
@@ -48,7 +43,7 @@ class GeometryCollectionTest extends TestCase
         $this->assertEquals($wkt, $geometryCollection->toWkt());
     }
 
-    public function testFromGeoJson()
+    public function testFromGeoJson(): void
     {
         $json = '{ "type": "GeometryCollection",
     "geometries": [
@@ -63,18 +58,18 @@ class GeometryCollectionTest extends TestCase
 
         $geomCollection = Location::fromGeoJson($json);
 
-        $this->assertTrue($geomCollection instanceof GeometryCollection);
+        $this->assertInstanceOf(GeometryCollection::class, $geomCollection);
         $this->assertEquals([100.0, 0.0], $geomCollection->getGeometries()[0]->toArray());
         $this->assertEquals([[101.0, 0.0], [102.0, 1.0]], $geomCollection->getGeometries()[1]->toArray());
     }
 
-    public function testFromWkt()
+    public function testFromWkt(): void
     {
         $wkt = 'GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6, 7 10))';
 
         $geomCollection = Location::fromWkt($wkt);
 
-        $this->assertTrue($geomCollection instanceof GeometryCollection);
+        $this->assertInstanceOf(GeometryCollection::class, $geomCollection);
         $this->assertEquals([4, 6], $geomCollection->getGeometries()[0]->toArray());
         $this->assertEquals([[4, 6], [7, 10]], $geomCollection->getGeometries()[1]->toArray());
     }

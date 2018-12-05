@@ -137,7 +137,7 @@ class Location
      *
      * @param string $wkt The WKT to create the geometry from
      */
-    public static function fromWkt($wkt): GeometryInterface
+    public static function fromWkt(string $wkt): GeometryInterface
     {
         $type = \trim(\mb_substr($wkt, 0, \mb_strpos($wkt, '(')));
         $wkt = \trim(\str_replace($type, '', $wkt));
@@ -155,17 +155,22 @@ class Location
                 }
             }
         } else {
-            $wkt = \str_replace(', ', ',', $wkt);
-            $wkt = \str_replace(' ,', ',', $wkt);
-            $wkt = \str_replace('(', '[', $wkt);
-            $wkt = \str_replace(')', ']', $wkt);
+            $json = \str_replace([', ', ' ,', '(', ')'], [',', ',', '[', ']'], $wkt);
 
             if ('point' === \mb_strtolower($type)) {
-                $wkt = \preg_replace('/(-?\d+\.?\d*) (-?\d+\.?\d*)/', '$1, $2', $wkt);
+                $json = \preg_replace('/(-?\d+\.?\d*) (-?\d+\.?\d*)/', '$1, $2', $json);
             } else {
-                $wkt = \preg_replace('/(-?\d+\.?\d*) (-?\d+\.?\d*)/', '[$1, $2]', $wkt);
+                $json = \preg_replace('/(-?\d+\.?\d*) (-?\d+\.?\d*)/', '[$1, $2]', $json);
             }
-            $arrays = \json_decode($wkt, true);
+
+            if (null === $json) {
+                throw new \InvalidArgumentException('This is not recognised WKT.');
+            }
+            $arrays = \json_decode($json, true);
+
+            if (!$arrays) {
+                throw new \InvalidArgumentException('This is not recognised WKT.');
+            }
 
             if ('multipoint' === \mb_strtolower($type)) {
                 foreach ($arrays as $index => $points) {
@@ -236,12 +241,12 @@ class Location
         do {
             $sinLambda = \sin($lambda);
             $cosLambda = \cos($lambda);
-            $sinSigma = \sqrt(\pow($cosU2 * $sinLambda, 2) +
-                                    \pow($cosU1 * $sinU2 - $sinU1 * $cosU2 * $cosLambda, 2));
+            $sinSigma = \sqrt((($cosU2 * $sinLambda) ** 2) +
+                (($cosU1 * $sinU2 - $sinU1 * $cosU2 * $cosLambda) ** 2));
             $cosSigma = $sinU1 * $sinU2 + $cosU1 * $cosU2 * $cosLambda;
             $sigma = \atan2($sinSigma, $cosSigma);
             $sinAlpha = $cosU1 * $cosU2 * $sinLambda / $sinSigma;
-            $cos2Alpha = 1 - \pow($sinAlpha, 2);
+            $cos2Alpha = 1 - ($sinAlpha ** 2);
             $cosof2sigma = $cosSigma - 2 * $sinU1 * $sinU2 / $cos2Alpha;
 
             if (!\is_numeric($cosof2sigma)) {
@@ -251,29 +256,15 @@ class Location
                            (4 + $flattening * (4 - 3 * $cos2Alpha));
             $lambdaP = $lambda;
             $lambda = $L + (1 - $C) * $flattening * $sinAlpha *
-                                ($sigma + $C * $sinSigma * ($cosof2sigma + $C * $cosSigma * (-1 + 2 * \pow(
-                                                $cosof2sigma,
-                                                2
-                                            ))));
+                ($sigma + $C * $sinSigma * ($cosof2sigma + $C * $cosSigma * (-1 + 2 * ($cosof2sigma ** 2))));
         } while (\abs($lambda - $lambdaP) > 1e-12 && --$looplimit > 0);
 
-        $uSq = $cos2Alpha * (\pow($ellipsoid->getMajorSemiAxis(), 2) - \pow(
-                        $ellipsoid->getMinorSemiAxis(),
-                        2
-                    )) / \pow($ellipsoid->getMinorSemiAxis(), 2);
+        $uSq = $cos2Alpha * (($ellipsoid->getMajorSemiAxis() ** 2) - ($ellipsoid->getMinorSemiAxis() ** 2)) / ($ellipsoid->getMinorSemiAxis() ** 2);
         $A = 1 + $uSq / 16384 * (4096 + $uSq * (-768 + $uSq * (320 - 175 * $uSq)));
         $B = $uSq / 1024 * (256 + $uSq * (-128 + $uSq * (74 - 47 * $uSq)));
-        $deltaSigma = $B * $sinSigma * ($cosof2sigma + $B / 4 * ($cosSigma * (-1 + 2 * \pow(
-                                $cosof2sigma,
-                                2
-                            )) -
-                                                                       $B / 6 * $cosof2sigma * (-3 + 4 * \pow(
-                                                                               $sinSigma,
-                                                                               2
-                                                                           )) * (-3 + 4 * \pow(
-                                                                               $cosof2sigma,
-                                                                               2
-                                                                           ))));
+        $deltaSigma = $B * $sinSigma * ($cosof2sigma + $B / 4 * ($cosSigma * (-1 + 2 * ($cosof2sigma ** 2)) -
+                    $B / 6 * $cosof2sigma * (-3 + 4 * ($sinSigma ** 2))
+                    * (-3 + 4 * ($cosof2sigma ** 2))));
         $s = $ellipsoid->getMinorSemiAxis() * $A * ($sigma - $deltaSigma);
 
         return \floor($s * 1000) / 1000;
@@ -363,7 +354,7 @@ class Location
         $limits['n'] = $north->getLatitude();
         $limits['s'] = $south->getLatitude();
 
-        $radDist = $radius / Location::getEllipsoid()->radius($unit);
+        $radDist = $radius / self::getEllipsoid()->radius($unit);
         //   $minLat  = deg2rad( $limits['s'] );
         //   $maxLat  = deg2rad( $limits['n'] );
         $radLon = $point->longitudeToRad();
@@ -389,7 +380,7 @@ class Location
         $sw = new Point($limits['s'], $limits['w']);
         $se = new Point($limits['s'], $limits['e']);
 
-        return new Polygon([[$nw, $ne, $se, $sw]]);
+        return new Polygon([new LineString([$nw, $ne, $se, $sw])]);
     }
 
     /**

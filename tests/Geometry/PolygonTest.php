@@ -20,7 +20,7 @@ class PolygonTest extends TestCase
         $this->polygon = Polygon::fromArray([[new Point(2, 3), new Point(2, 4), new Point(3, 4)]]);
     }
 
-    public function testConstruction()
+    public function testConstruction(): void
     {
         $poly1 = new Polygon([
             new LineString([
@@ -36,7 +36,7 @@ class PolygonTest extends TestCase
         $this->assertEquals($this->polygon->toArray(), $poly2->toArray());
     }
 
-    public function testGetPoints()
+    public function testGetPoints(): void
     {
         $poly1 = new Polygon([
             new LineString([
@@ -52,20 +52,20 @@ class PolygonTest extends TestCase
         $this->assertCount(7, $points);
     }
 
-    public function testLastPointIsTheSameAsFirstPoint()
+    public function testLastPointIsTheSameAsFirstPoint(): void
     {
         $a = $this->polygon;
         $this->assertEquals($a->toArray()[0][0][0], $a->toArray()[0][\count($a->toArray()[0]) - 1][0]);
         $this->assertEquals($a->toArray()[0][0][1], $a->toArray()[0][\count($a->toArray()[0]) - 1][1]);
     }
 
-    public function testToString()
+    public function testToString(): void
     {
         $retval = '((3 2, 4 2, 4 3, 3 2))';
         $this->assertEquals($retval, (string) $this->polygon);
     }
 
-    public function testToWkt()
+    public function testToWkt(): void
     {
         $retVal = $this->polygon->toWkt();
         $this->assertEquals('POLYGON((3 2, 4 2, 4 3, 3 2))', $retVal);
@@ -76,13 +76,13 @@ class PolygonTest extends TestCase
         $this->polygon = null;
     }
 
-    public function testJsonSerialize()
+    public function testJsonSerialize(): void
     {
         $json = \json_encode($this->polygon);
         $this->assertEquals('{"type":"Polygon","coordinates":[[[3,2],[4,2],[4,3],[3,2]]]}', $json);
     }
 
-    public function testBBox()
+    public function testBBox(): void
     {
         $polygon = new Polygon([
             new LineString([
@@ -103,7 +103,7 @@ class PolygonTest extends TestCase
         );
     }
 
-    public function testFromArray()
+    public function testFromArray(): void
     {
         $ar = [[[100.0, 0.0], [101.0, 1.0], [102.0, 2.0], [103.0, 3.0]]];
 

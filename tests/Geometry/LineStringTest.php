@@ -21,7 +21,7 @@ class LineStringTest extends TestCase
         $this->line = new LineString([$point1, $point2]);
     }
 
-    public function testStatic()
+    public function testStatic(): void
     {
         $point1 = new Point(53.48575, -2.27354);
         $point2 = new Point(53.48204, -2.23194);
@@ -36,7 +36,7 @@ class LineStringTest extends TestCase
     /**
      * @expectedException \TypeError
      */
-    public function testInvalidPointException()
+    public function testInvalidPointException(): void
     {
         $point1 = new Point(53.48575, -2.27354);
 
@@ -46,20 +46,20 @@ class LineStringTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testOnePointInArrayException()
+    public function testOnePointInArrayException(): void
     {
         $point1 = new Point(53.48575, -2.27354);
 
         $line = new LineString([$point1]);
     }
 
-    public function testGetLength()
+    public function testGetLength(): void
     {
         $this->assertEquals(2.783, \round($this->line->getLength(), 3));
         $this->assertEquals(2.792, \round($this->line->getLength('km', Location::VINCENTY), 3));
     }
 
-    public function testInitialBearing()
+    public function testInitialBearing(): void
     {
         Location::$useSpatialExtension = false;
         $this->assertEquals(98.50702, \round($this->line->getInitialBearing(), 5));
@@ -67,26 +67,26 @@ class LineStringTest extends TestCase
         $this->assertEquals(98.50702, \round($this->line->getInitialBearing(), 5));
     }
 
-    public function testGeoJson()
+    public function testGeoJson(): void
     {
         $retval = \json_encode($this->line);
         $this->assertEquals('{"type":"LineString","coordinates":[[-2.27354,53.48575],[-2.23194,53.48204]]}', $retval);
     }
 
-    public function testToArray()
+    public function testToArray(): void
     {
         $retval = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
 
         $this->assertEquals($retval, $this->line->toArray());
     }
 
-    public function testToString()
+    public function testToString(): void
     {
         $retval = '(-2.27354 53.48575, -2.23194 53.48204)';
         $this->assertEquals($retval, (string) $this->line);
     }
 
-    public function testBBox()
+    public function testBBox(): void
     {
         $this->assertJsonStringEqualsJsonString(
             '{"type":"Polygon","coordinates":[[[-2.27354,53.48575],[-2.23194,53.48575],[-2.23194,53.48204],[-2.27354,53.48204],[-2.27354,53.48575]]]}',
@@ -94,7 +94,7 @@ class LineStringTest extends TestCase
         );
     }
 
-    public function testFromArray()
+    public function testFromArray(): void
     {
         $line = LineString::fromArray([[-2.27354, 53.48575], [-2.23194, 53.48204]]);
 
@@ -105,7 +105,7 @@ class LineStringTest extends TestCase
         $this->assertEquals(53.48204, $point2->getLatitude());
     }
 
-    public function testReverse()
+    public function testReverse(): void
     {
         $original = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
 

@@ -21,46 +21,46 @@ class PointTest extends TestCase
         $this->point = new Point($this->lat, $this->lon);
     }
 
-    public function testInstanceOfClassIsAPoint()
+    public function testInstanceOfClassIsAPoint(): void
     {
-        $this->assertTrue($this->point instanceof Point);
+        $this->assertInstanceOf(Point::class, $this->point);
     }
 
-    public function testPointCreationAsArray()
+    public function testPointCreationAsArray(): void
     {
         $point = Point::fromArray([$this->lon, $this->lat]);
         $this->assertEquals($this->lat, $point->getLatitude());
         $this->assertEquals($this->lon, $point->getLongitude());
     }
 
-    public function testLatitudeRetrieval()
+    public function testLatitudeRetrieval(): void
     {
         $this->assertEquals($this->point->getLatitude(), $this->lat);
     }
 
-    public function testLongitudeRetrieval()
+    public function testLongitudeRetrieval(): void
     {
         $this->assertEquals($this->lon, $this->point->getLongitude());
     }
 
-    public function testToStringMethod()
+    public function testToStringMethod(): void
     {
         $this->assertEquals($this->lon.' '.$this->lat, (string) $this->point);
     }
 
-    public function testToWktConversion()
+    public function testToWktConversion(): void
     {
         $this->assertEquals('POINT('.$this->lon.' '.$this->lat.')', $this->point->toWkt());
     }
 
-    public function testRelativePoint()
+    public function testRelativePoint(): void
     {
         $newPoint = $this->point->getRelativePoint(2.783, 98.50833, 'km');
         $this->assertEquals(53.48204, \round($newPoint->getLatitude(), 5));
         $this->assertEquals(-2.23194, \round($newPoint->getLongitude(), 5));
     }
 
-    public function testDistanceTo()
+    public function testDistanceTo(): void
     {
         $newPoint = new Point(53.48204, -2.23194);
         $this->assertEquals(1.729, \round($this->point->distanceTo($newPoint, 'miles'), 3));
@@ -74,20 +74,20 @@ class PointTest extends TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testDistanceToException()
+    public function testDistanceToException(): void
     {
         $newPoint = new Point(53.48204, -2.23194);
         $this->point->distanceTo($newPoint, 'foo');
     }
 
-    public function testJsonSerializable()
+    public function testJsonSerializable(): void
     {
         $geoJSON = \json_encode($this->point);
         $this->assertInternalType('string', $geoJSON);
         $this->assertJsonStringEqualsJsonString('{"type":"Point", "coordinates":[-2.27354, 53.48575]}', $geoJSON);
     }
 
-    public function testFromDms()
+    public function testFromDms(): void
     {
         $point = Point::fromDms([1, 2, 3.45], [0, 6, 9, 'S']);
 
@@ -96,7 +96,7 @@ class PointTest extends TestCase
         $this->assertEquals(-0.1025, $point->getLongitude());
     }
 
-    public function testFractionAlongLine()
+    public function testFractionAlongLine(): void
     {
         Location::$useSpatialExtension = false;
         $this->fractionAlongLine();
@@ -104,7 +104,7 @@ class PointTest extends TestCase
         $this->fractionAlongLine();
     }
 
-    private function fractionAlongLine()
+    private function fractionAlongLine(): void
     {
         $point1 = Point::fromArray([5, 10]);
         $point2 = Point::fromArray([15, 10]);

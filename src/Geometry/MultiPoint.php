@@ -43,9 +43,9 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \Ite
 
     public function __construct(array $points)
     {
-        $this->geometries = (function (Point ...$points) {
-            return $points;
-        })(...$points);
+        foreach ($points as $point) {
+            $this->addGeometry($point);
+        }
     }
 
     /**
@@ -61,25 +61,21 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \Ite
     /**
      * @return $this
      */
-    public function addGeometry(Point $point): self
+    public function addGeometry(Point $point): void
     {
         $this->geometries[] = $point;
-
-        return $this;
     }
 
     /**
      * @return $this
      */
-    public function removeGeometry(Point $point): self
+    public function removeGeometry(Point $point): void
     {
         foreach ($this->geometries as $index => $geom) {
             if ($point === $geom) {
                 unset($this->geometries[$index]);
             }
         }
-
-        return $this;
     }
 
     public function getBBox(): Polygon

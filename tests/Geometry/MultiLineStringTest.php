@@ -1,11 +1,6 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 02/12/2015
- * Time: 11:17.
- */
 
 namespace Ricklab\Location\Geometry;
 
@@ -13,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class MultiLineStringTest extends TestCase
 {
-    public function testToGeoJson()
+    public function testToGeoJson(): void
     {
         $geojson = '{ "type": "MultiLineString",
     "coordinates": [
@@ -31,7 +26,7 @@ class MultiLineStringTest extends TestCase
         $this->assertEquals($geojson, \json_encode($multiLineString));
     }
 
-    public function testToWkt()
+    public function testToWkt(): void
     {
         $wkt = 'MULTILINESTRING((3 4, 10 50, 20 25), (-5 -8, -10 -8, -15 -4))';
 
@@ -52,7 +47,7 @@ class MultiLineStringTest extends TestCase
         $this->assertEquals($wkt, $multiLineString->toWkt());
     }
 
-    public function testAddAndRemoveGeometries()
+    public function testAddAndRemoveGeometries(): void
     {
         $lineString = new LineString([
             Point::fromArray([3, 4]),
@@ -69,10 +64,10 @@ class MultiLineStringTest extends TestCase
         ]);
 
         $multiLineString->addGeometry($lineString2);
-        $this->assertTrue(\in_array($lineString, $multiLineString->getGeometries()));
-        $this->assertTrue(\in_array($lineString2, $multiLineString->getGeometries()));
+        $this->assertContains($lineString, $multiLineString->getGeometries());
+        $this->assertContains($lineString2, $multiLineString->getGeometries());
         $multiLineString->removeGeometry($lineString);
         $this->assertCount(1, $multiLineString->getGeometries());
-        $this->assertFalse(\in_array($lineString, $multiLineString->getGeometries()));
+        $this->assertNotContains($lineString, $multiLineString->getGeometries());
     }
 }

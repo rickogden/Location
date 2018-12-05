@@ -1,11 +1,6 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 05/01/2016
- * Time: 15:40.
- */
 
 namespace Ricklab\Location\Feature;
 
@@ -14,7 +9,7 @@ use Ricklab\Location\Location;
 
 class FeatureCollectionTest extends TestCase
 {
-    public function testFromGeoJson()
+    public function testFromGeoJson(): void
     {
         $initialjson = '{ "type": "FeatureCollection",
     "features": [
@@ -34,7 +29,7 @@ class FeatureCollectionTest extends TestCase
         /** @var FeatureCollection $featureCollection */
         $featureCollection = Location::fromGeoJson($initialjson);
 
-        $this->assertTrue($featureCollection instanceof FeatureCollection);
+        $this->assertInstanceOf(FeatureCollection::class, $featureCollection);
         $this->assertEquals(\json_encode(\json_decode($initialjson)), \json_encode($featureCollection));
     }
 }

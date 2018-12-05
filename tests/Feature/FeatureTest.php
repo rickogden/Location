@@ -1,11 +1,6 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 05/01/2016
- * Time: 14:55.
- */
 
 namespace Ricklab\Location\Feature;
 
@@ -16,7 +11,7 @@ use Ricklab\Location\Location;
 
 class FeatureTest extends TestCase
 {
-    public function testBBox()
+    public function testBBox(): void
     {
         $line = LineString::fromArray([[2, 3], [4, 5]]);
         $feature = new Feature();
@@ -27,7 +22,7 @@ class FeatureTest extends TestCase
         $this->assertInternalType('array', $json['bbox']);
     }
 
-    public function testGeoJson()
+    public function testGeoJson(): void
     {
         $initialjson = '{ "type": "Feature",
     "bbox": [-10.0, -10.0, 10.0, 10.0],
