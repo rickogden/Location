@@ -9,16 +9,23 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Geometry\Traits\GeometryCollectionTrait;
 use Ricklab\Location\Location;
 
-class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \SeekableIterator, \ArrayAccess
+class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \IteratorAggregate
 {
-    /**
-     * @var Point[]
-     */
-    protected $geometries;
+    use GeometryCollectionTrait;
 
-    protected $position = 0;
+    public static function getWktType(): string
+    {
+        return 'MULTIPOINT';
+    }
+
+    public static function getGeoJsonType(): string
+    {
+        return 'MultiPoint';
+    }
+
 
     public static function fromArray(array $geometries): self
     {
@@ -43,28 +50,12 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
 
     /**
      * {@inheritdoc}
-     */
-    public function toWkt(): string
-    {
-        return 'MULTIPOINT'.$this;
-    }
-
-    /**
-     * {@inheritdoc}
      *
      * @return Point[]
      */
     public function getGeometries(): array
     {
         return $this->getPoints();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPoints(): array
-    {
-        return $this->geometries;
     }
 
     /**
@@ -89,101 +80,6 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \See
         }
 
         return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __toString(): string
-    {
-        return '('.\implode(', ', $this->geometries).')';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function jsonSerialize(): array
-    {
-        $coordinates = $this->toArray();
-
-        return ['type' => 'MultiPoint', 'coordinates' => $coordinates];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toArray(): array
-    {
-        $return = [];
-        foreach ($this->geometries as $point) {
-            $return[] = $point->toArray();
-        }
-
-        return $return;
-    }
-
-    public function seek($position): void
-    {
-        $this->position = $position;
-
-        if (!$this->valid()) {
-            throw new \OutOfBoundsException('Item does not exist');
-        }
-    }
-
-    public function valid(): bool
-    {
-        return isset($this->geometries[$this->position]);
-    }
-
-    public function current(): Point
-    {
-        return $this->geometries[$this->position];
-    }
-
-    public function key(): int
-    {
-        return $this->position;
-    }
-
-    public function next(): void
-    {
-        ++$this->position;
-    }
-
-    public function rewind(): void
-    {
-        $this->position = 0;
-    }
-
-    public function offsetExists($offset): bool
-    {
-        return isset($this->geometries[$offset]);
-    }
-
-    public function offsetGet($offset): Point
-    {
-        return $this->geometries[$offset];
-    }
-
-    public function offsetSet($offset, $value): void
-    {
-        if (!$value instanceof Point) {
-            $value = new Point($value);
-        }
-
-        if (\is_int($offset)) {
-            $this->geometries[$offset] = $value;
-        } elseif (null === $offset) {
-            $this->geometries[] = $value;
-        } else {
-            throw new \OutOfBoundsException('Key must be numeric.');
-        }
-    }
-
-    public function offsetUnset($offset): void
-    {
-        unset($this->geometries[$offset]);
     }
 
     public function getBBox(): Polygon

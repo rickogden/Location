@@ -9,15 +9,24 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Geometry\Traits\GeometryCollectionTrait;
+
 /**
  * Class MultiLineString.
  */
-class MultiLineString implements GeometryInterface, GeometryCollectionInterface
+class MultiLineString implements GeometryInterface, GeometryCollectionInterface, \IteratorAggregate
 {
-    /**
-     * @var LineString[]
-     */
-    protected $geometries = [];
+    use GeometryCollectionTrait;
+
+    public static function getGeoJsonType(): string
+    {
+        return 'MultiLineString';
+    }
+
+    public static function getWktType(): string
+    {
+        return 'MULTILINESTRING';
+    }
 
     public static function fromArray(array $geometries): self
     {
@@ -45,52 +54,6 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function toWkt(): string
-    {
-        return 'MULTILINESTRING'.(string) $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPoints(): array
-    {
-        $points = [];
-        foreach ($this->geometries as $line) {
-            $linePoints = $line->getPoints();
-            $points += $linePoints;
-        }
-
-        return $points;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'type' => 'MultiLineString',
-            'coordinates' => $this->toArray(),
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toArray(): array
-    {
-        $return = [];
-        foreach ($this->geometries as $line) {
-            $return[] = $line->toArray();
-        }
-
-        return $return;
-    }
-
-    /**
      * @return LineString[] an array of the LineStrings
      */
     public function getGeometries(): array
@@ -100,22 +63,14 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
 
     /**
      * Adds a new LineString to the collection.
-     *
-     *
-     * @return $this
      */
     public function addGeometry(LineString $lineString)
     {
         $this->geometries[] = $lineString;
-
-        return $this;
     }
 
     /**
      * Removes a LineString from the collection.
-     *
-     *
-     * @return $this
      */
     public function removeGeometry(LineString $lineString)
     {
@@ -124,15 +79,5 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface
                 unset($this->geometries[$index]);
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __toString(): string
-    {
-        return '('.\implode(',', $this->geometries).')';
     }
 }

@@ -9,12 +9,21 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
-class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
+use Ricklab\Location\Geometry\Traits\GeometryCollectionTrait;
+
+class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, \IteratorAggregate
 {
-    /**
-     * @var Polygon[]
-     */
-    protected $geometries = [];
+    use GeometryCollectionTrait;
+
+    public static function getWktType(): string
+    {
+        return 'MULTIPOLYGON';
+    }
+
+    public static function getGeoJsonType(): string
+    {
+        return 'MultiPolygon';
+    }
 
     public static function fromArray(array $geometries): self
     {
@@ -48,27 +57,6 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
     }
 
     /**
-     * @return string the Well-Known Text representation of the geometry
-     */
-    public function toWkt(): string
-    {
-        return 'MULTIPOLYGON'.$this;
-    }
-
-    /**
-     * @return Point[] gets all the points in a geometry. Note, order is not necessarily representative.
-     */
-    public function getPoints(): array
-    {
-        $points = [];
-        foreach ($this->geometries as $polygon) {
-            $points = $polygon->getPoints();
-        }
-
-        return $points;
-    }
-
-    /**
      * @return Polygon[]
      */
     public function getGeometries(): array
@@ -98,38 +86,5 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface
         }
 
         return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function jsonSerialize(): array
-    {
-        return [
-            'type' => 'MultiPolygon',
-            'coordinates' => $this->toArray(),
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function toArray(): array
-    {
-        $ar = [];
-
-        foreach ($this->geometries as $polygon) {
-            $ar[] = $polygon->toArray();
-        }
-
-        return $ar;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __toString(): string
-    {
-        return '('.\implode(',', $this->geometries).')';
     }
 }
