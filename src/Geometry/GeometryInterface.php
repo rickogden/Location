@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 /**
- * The interface for all the Geomtry objects.
+ * The interface for all the Geometry objects.
  *
  * Interface GeometryInterface
  */
@@ -35,7 +35,7 @@ interface GeometryInterface extends \JsonSerializable
     public function getPoints(): array;
 
     /**
-     * Returns a string representive of the geometry using spaces to separate lon, lat pairs, commas to separate
+     * Returns a string representative of the geometry using spaces to separate lon, lat pairs, commas to separate
      * coordinates, and brackets to separate coordinate groups. E.g. (2 4, 3 5).
      */
     public function __toString(): string;

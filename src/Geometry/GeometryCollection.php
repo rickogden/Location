@@ -86,15 +86,10 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
 
     /**
      * Adds a geometry to the collection.
-     *
-     *
-     * @return $this
      */
-    public function addGeometry(GeometryInterface $geometry)
+    public function addGeometry(GeometryInterface $geometry): void
     {
         $this->geometries[] = $geometry;
-
-        return $this;
     }
 
     /**
@@ -103,14 +98,12 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
      *
      * @return $this
      */
-    public function removeGeometry(GeometryInterface $geometry)
+    public function removeGeometry(GeometryInterface $geometry): void
     {
         foreach ($this->geometries as $index => $geom) {
             if ($geom === $geometry) {
                 unset($this->geometries[$index]);
             }
         }
-
-        return $this;
     }
 }

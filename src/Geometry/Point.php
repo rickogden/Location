@@ -54,16 +54,16 @@ class Point implements GeometryInterface
     /**
      * Create a new point from Degrees, minutes and seconds.
      *
-     * @param array $lat Latitude in the order of degress, minutes, seconds[, direction]
-     * @param array $lon Longitude in the order of degress, minutes, seconds[, direction]
+     * @param array $lat Latitude in the order of degrees, minutes, seconds[, direction]
+     * @param array $lon Longitude in the order of degrees, minutes, seconds[, direction]
      *
      * @return Point
      */
     public static function fromDms(array $lat, array $lon): self
     {
-        $decLat = Location::dmsToDecimal($lat[0], $lat[1], $lat[2], $lat[3] ?? null);
+        $decLat = Location::dmsToDecimal($lat[0], $lat[1], $lat[2], $lat[3] ?? 'N');
 
-        $decLon = Location::dmsToDecimal($lon[0], $lon[1], $lon[2], $lon[3] ?? null);
+        $decLon = Location::dmsToDecimal($lon[0], $lon[1], $lon[2], $lon[3] ?? 'E');
 
         return new self($decLat, $decLon);
     }
