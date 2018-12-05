@@ -67,7 +67,7 @@ class PointTest extends TestCase
         $this->assertEquals(2.783, \round($this->point->distanceTo($newPoint), 3));
         $this->assertEquals(
             2.792,
-            \round($this->point->distanceTo($newPoint, 'km', Location::VINCENTY), 3)
+            \round($this->point->distanceTo($newPoint, 'km', Location::FORMULA_VINCENTY), 3)
         );
     }
 

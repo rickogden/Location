@@ -128,7 +128,7 @@ class Feature extends FeatureAbstract implements \ArrayAccess
      *              <p>
      *              The return value will be casted to boolean if non-boolean was returned
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->properties[$offset]);
     }
@@ -173,7 +173,7 @@ class Feature extends FeatureAbstract implements \ArrayAccess
      *                      The value to set.
      *                      </p>
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->setProperty($offset, $value);
     }
@@ -201,15 +201,13 @@ class Feature extends FeatureAbstract implements \ArrayAccess
      *                      The offset to unset.
      *                      </p>
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->removeProperty($offset);
     }
 
-    public function removeProperty($key)
+    public function removeProperty($key): void
     {
         unset($this->properties[$key]);
-
-        return $this;
     }
 }

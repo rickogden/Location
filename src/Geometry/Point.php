@@ -17,6 +17,11 @@ class Point implements GeometryInterface
 {
     use TransformationTrait;
 
+    public const MAX_LATITUDE = 90;
+    public const MIN_LATITUDE = -90;
+    public const MAX_LONGITUDE = 180;
+    public const MIN_LONGITUDE = -180;
+
     /**
      * @var float
      */
@@ -113,13 +118,12 @@ class Point implements GeometryInterface
     /**
      * Find distance to another point.
      *
-     * @param string $unit
-     * @param int    $formula formula to use, should either be Location::HAVERSINE or Location::VINCENTY. Defaults to
-     *                        Location::$defaultFormula
+     * @param int $formula formula to use, should either be Location::HAVERSINE or Location::VINCENTY. Defaults to
+     *                     Location::$defaultFormula
      *
      * @return float the distance
      */
-    public function distanceTo(Point $point2, $unit = 'km', $formula = null): float
+    public function distanceTo(Point $point2, string $unit = 'km', int $formula = Location::FORMULA_HAVERSINE): float
     {
         return Location::calculateDistance($this, $point2, $unit, $formula);
     }
@@ -268,7 +272,7 @@ class Point implements GeometryInterface
 
     private function setLatitude(float $lat): void
     {
-        if ($lat > 90 || $lat < -90) {
+        if ($lat > self::MAX_LATITUDE || $lat < self::MIN_LATITUDE) {
             throw new \InvalidArgumentException('latitude must be a valid number between -90 and 90.');
         }
 
@@ -277,7 +281,7 @@ class Point implements GeometryInterface
 
     private function setLongitude(float $long): void
     {
-        if ($long > 180 || $long < -180) {
+        if ($long > self::MAX_LONGITUDE || $long < self::MIN_LONGITUDE) {
             throw new \InvalidArgumentException('longitude must be a valid number between -180 and 180.');
         }
 

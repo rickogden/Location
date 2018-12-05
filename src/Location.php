@@ -25,9 +25,15 @@ use Ricklab\Location\Geometry\Polygon;
 
 class Location
 {
-    public const HAVERSINE = 1;
+    public const FORMULA_HAVERSINE = 1;
+    public const FORMULA_VINCENTY = 2;
 
-    public const VINCENTY = 2;
+    public const UNIT_FEET = 'feet';
+    public const UNIT_KM = 'km';
+    public const UNIT_METRES = 'metres';
+    public const UNIT_MILES = 'miles';
+    public const UNIT_NAUTICAL_MILES = 'nautical miles';
+    public const UNIT_YARDS = 'yards';
 
     /**
      * @var bool Set to false if you have the pecl geospatial extension installed but do not want to use it
@@ -37,7 +43,7 @@ class Location
     /**
      * @var int Set to either Location::HAVERSINE or Location::VICENTY. Defaults to Location::HAVERSINE
      */
-    public static $defaultFormula = self::HAVERSINE;
+    public static $defaultFormula = self::FORMULA_HAVERSINE;
 
     /**
      * @var Ellipsoid
@@ -101,7 +107,7 @@ class Location
      * @param $type string the geometry type to create
      * @param $coordinates array the coordinates for the geometry type
      */
-    protected static function createGeometry($type, $coordinates): GeometryInterface
+    protected static function createGeometry(string $type, array $coordinates): GeometryInterface
     {
         switch (\mb_strtolower($type)) {
             case 'point':
@@ -191,13 +197,18 @@ class Location
      * @param null|int $formula formula to use, either Location::VINCENTY or Location::HAVERSINE. Defaults to
      *                          Location::$defaultFormula
      */
-    public static function calculateDistance(Point $point1, Point $point2, $unit, $formula = null): float
+    public static function calculateDistance(
+        Point $point1,
+        Point $point2,
+        string $unit,
+        int $formula = self::FORMULA_HAVERSINE
+    ): float
     {
         if (null === $formula) {
             $formula = self::$defaultFormula;
         }
 
-        if (self::VINCENTY === $formula) {
+        if (self::FORMULA_VINCENTY === $formula) {
             $mDistance = self::vincenty($point1, $point2);
 
             if ('m' === $unit) {
@@ -273,7 +284,7 @@ class Location
     /**
      * @return Earth|Ellipsoid the ellipsoid in use (generally Earth)
      */
-    public static function getEllipsoid()
+    public static function getEllipsoid(): Ellipsoid
     {
         if (null === self::$ellipsoid) {
             self::$ellipsoid = new Earth();
@@ -299,7 +310,7 @@ class Location
      *
      * @return float the distance in the new unit of measurement
      */
-    public static function convert($distance, $from, $to): float
+    public static function convert(float $distance, string $from, string $to): float
     {
         $ellipsoid = self::getEllipsoid();
 
@@ -383,10 +394,7 @@ class Location
         return new Polygon([new LineString([$nw, $ne, $se, $sw])]);
     }
 
-    /**
-     * @param GeometryInterface|array $geometry either a geometry interface or an array of Geometries
-     */
-    public static function getBBox($geometry): Polygon
+    public static function getBBox(GeometryInterface $geometry): Polygon
     {
         [$minLon, $minLat, $maxLon, $maxLat] = self::getBBoxArray($geometry);
 
@@ -399,29 +407,16 @@ class Location
     }
 
     /**
-     * @param GeometryInterface|array $geometry either a geometry interface or an array of Geometries
-     *
      * @return array of coordinates in the order of: minimum longitude, minimum latitude, maximum longitude and maximum latitude
      */
-    public static function getBBoxArray($geometry): array
+    public static function getBBoxArray(GeometryInterface $geometry): array
     {
         $maxLat = -90;
         $minLat = 90;
         $maxLon = -180;
         $minLon = 180;
 
-        if (\is_array($geometry)) {
-            foreach ($geometry as $geom) {
-                if (!$geom instanceof GeometryInterface) {
-                    throw new \InvalidArgumentException('Array must contain GeometryInterface objects.');
-                }
-            }
-            $points = $geometry;
-        } elseif ($geometry instanceof GeometryInterface) {
-            $points = $geometry->getPoints();
-        } else {
-            throw new \InvalidArgumentException('$geometry must be an array or instance of GeometryInterface.');
-        }
+        $points = $geometry->getPoints();
 
         /** @var Point $point */
         foreach ($points as $point) {

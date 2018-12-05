@@ -74,7 +74,7 @@ class LineString implements GeometryInterface, \IteratorAggregate
         return $this->geometries[0]->initialBearingTo($this->geometries[1]);
     }
 
-    public function getLength($unit = 'km', $formula = null)
+    public function getLength($unit = 'km', $formula = Location::FORMULA_HAVERSINE)
     {
         $distance = 0;
 

@@ -9,38 +9,40 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Ellipsoid;
 
+use Ricklab\Location\Location;
+
 abstract class Ellipsoid
 {
     /**
      * @var array Unit multipliers relative to km
      */
-    protected $multipliers = [
-        'km' => 0.001,
-        'miles' => 0.00062137119,
-        'metres' => 1,
-        'feet' => 3.2808399,
-        'yards' => 1.0936133,
-        'nautical miles' => 0.0005399568,
+    protected const MULTIPLIERS = [
+        Location::UNIT_KM => 0.001,
+        Location::UNIT_MILES => 0.00062137119,
+        Location::UNIT_METRES => 1,
+        Location::UNIT_FEET => 3.2808399,
+        Location::UNIT_YARDS => 1.0936133,
+        Location::UNIT_NAUTICAL_MILES => 0.0005399568,
     ];
 
     /**
      * @var array Key translations for multipliers
      */
-    protected $keys = [
-        'km' => 'km',
-        'kilometres' => 'km',
-        'kilometers' => 'km',
-        'miles' => 'miles',
-        'metres' => 'metres',
-        'meters' => 'metres',
-        'm' => 'metres',
-        'feet' => 'feet',
-        'ft' => 'feet',
-        'foot' => 'feet',
-        'yards' => 'yards',
-        'yds' => 'yards',
-        'nautical miles' => 'nautical miles',
-        'nm' => 'nautical miles',
+    protected const KEYS = [
+        'km' => Location::UNIT_KM,
+        'kilometres' => Location::UNIT_KM,
+        'kilometers' => Location::UNIT_KM,
+        'miles' => Location::UNIT_MILES,
+        'metres' => Location::UNIT_METRES,
+        'meters' => Location::UNIT_METRES,
+        'm' => Location::UNIT_METRES,
+        'feet' => Location::UNIT_FEET,
+        'ft' => Location::UNIT_FEET,
+        'foot' => Location::UNIT_FEET,
+        'yards' => Location::UNIT_YARDS,
+        'yds' => Location::UNIT_YARDS,
+        'nautical miles' => Location::UNIT_NAUTICAL_MILES,
+        'nm' => Location::UNIT_NAUTICAL_MILES,
     ];
 
     /**
@@ -63,7 +65,7 @@ abstract class Ellipsoid
      *
      * @param string $unit can be 'km', 'miles', 'metres', 'feet', 'yards', 'nautical miles'
      */
-    public function radius($unit = 'km')
+    public function radius($unit = 'km'): float
     {
         return $this->unitConversion($this->radius, $unit);
     }
@@ -73,10 +75,10 @@ abstract class Ellipsoid
      *
      * @return float The multiplier
      */
-    public function getMultiplier($unit)
+    public function getMultiplier($unit): float
     {
         try {
-            return $this->multipliers[$this->keys[\mb_strtolower($unit)]];
+            return self::MULTIPLIERS[self::KEYS[\mb_strtolower($unit)]];
         } catch (\Exception $e) {
             throw new \InvalidArgumentException('Unit '.$unit.' is not a recognised unit.');
         }
@@ -88,17 +90,15 @@ abstract class Ellipsoid
      *
      * @return float the distance in the new unit
      */
-    protected function unitConversion($distance, $unit)
+    protected function unitConversion($distance, $unit): float
     {
         return $distance * $this->getMultiplier($unit);
     }
 
     /**
      * @param string $unit unit of measurement
-     *
-     * @return float
      */
-    public function getMajorSemiAxis($unit = 'm')
+    public function getMajorSemiAxis($unit = 'm'): float
     {
         if ('m' !== $unit) {
             return $this->unitConversion($this->majorSemiAxis / 1000, $unit);
@@ -109,10 +109,8 @@ abstract class Ellipsoid
 
     /**
      * @param string $unit unit of measurement
-     *
-     * @return float
      */
-    public function getMinorSemiAxis($unit = 'm')
+    public function getMinorSemiAxis($unit = 'm'): float
     {
         if ('m' !== $unit) {
             return $this->unitConversion($this->minorSemiAxis / 1000, $unit);
@@ -121,10 +119,7 @@ abstract class Ellipsoid
         return $this->minorSemiAxis;
     }
 
-    /**
-     * @return float
-     */
-    public function getFlattening()
+    public function getFlattening(): float
     {
         return ($this->getMajorSemiAxis() - $this->getMinorSemiAxis()) / $this->getMajorSemiAxis();
     }
