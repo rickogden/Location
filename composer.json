@@ -17,20 +17,25 @@
         "homepage":"http://www.rickogden.com",
         "role":"developer"
     }],
+    "config": {
+        "sort-packages": true
+    },
     "require": {
-        "php": ">=5.4|^7.0"
+        "php": "^7.1",
+        "ext-json": "*"
     },
     "require-dev": {
-        "phpdocumentor/phpdocumentor": "2.*"
+        "friendsofphp/php-cs-fixer": "^2.13",
+        "phpunit/phpunit": "^7.3"
     },
     "autoload": {
         "psr-4": {
-            "Ricklab\\Location\\": "src/Ricklab/Location/"
+            "Ricklab\\Location\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Ricklab\\Location\\": "tests/Ricklab/Location/"
+            "Ricklab\\Location\\": "tests/"
         }
     }
 }
