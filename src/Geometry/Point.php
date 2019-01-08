@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
 use Ricklab\Location\Location;
 
@@ -247,6 +248,7 @@ class Point implements GeometryInterface
     /**
      * @param $radius
      * @param string $unit
+     * @throws BoundBoxRangeException
      */
     public function getBBoxByRadius($radius, $unit = 'km'): Polygon
     {

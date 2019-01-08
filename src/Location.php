@@ -355,8 +355,9 @@ class Location
      * @param number $radius minimum radius from $point
      * @param string $unit unit of the radius (default is kilometres)
      *
-     * @return Polygon the BBox
      * @throws BoundBoxRangeException
+     *
+     * @return Polygon the BBox
      */
     public static function getBBoxByRadius(Point $point, float $radius, $unit = 'km'): Polygon
     {
@@ -369,7 +370,8 @@ class Location
         $radDist = $radius / self::getEllipsoid()->radius($unit);
         $radLon = $point->longitudeToRad();
         $deltaLon = \asin(\sin($radDist) / \cos($point->latitudeToRad()));
-        if (is_nan($deltaLon)) {
+
+        if (\is_nan($deltaLon)) {
             throw new BoundBoxRangeException('Cannot create a bounding-box at these coordinates.');
         }
         $minLon = $radLon - $deltaLon;
@@ -430,9 +432,6 @@ class Location
     }
 
     /**
-     * @param int         $degrees
-     * @param int         $minutes
-     * @param float       $seconds
      * @param null|string $direction use "S" for south and "W" for west. Defaults to East/North.
      */
     public static function dmsToDecimal(int $degrees, int $minutes, float $seconds, ?string $direction = null): float

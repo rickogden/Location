@@ -9,5 +9,4 @@ namespace Ricklab\Location\Exception;
  */
 class GeometryException extends \Exception
 {
-
 }
