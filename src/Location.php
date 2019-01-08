@@ -461,6 +461,9 @@ class Location
 
     public static function getInitialBearing(Point $point1, Point $point2): float
     {
+        if (self::$useSpatialExtension && \function_exists('initial_bearing')) {
+            return initial_bearing($point1->jsonSerialize(), $point2->jsonSerialize());
+        }
         $y = \sin(
                 \deg2rad($point2->getLongitude() - $point1->getLongitude())
             ) * \cos($point2->latitudeToRad());
