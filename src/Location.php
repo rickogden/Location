@@ -11,6 +11,7 @@ namespace Ricklab\Location;
 
 use Ricklab\Location\Ellipsoid\Earth;
 use Ricklab\Location\Ellipsoid\Ellipsoid;
+use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Feature\Feature;
 use Ricklab\Location\Feature\FeatureAbstract;
 use Ricklab\Location\Feature\FeatureCollection;
@@ -350,11 +351,12 @@ class Location
     }
 
     /**
-     * @param Point  $point  the centre of the bounding box
+     * @param Point $point the centre of the bounding box
      * @param number $radius minimum radius from $point
-     * @param string $unit   unit of the radius (default is kilometres)
+     * @param string $unit unit of the radius (default is kilometres)
      *
      * @return Polygon the BBox
+     * @throws BoundBoxRangeException
      */
     public static function getBBoxByRadius(Point $point, float $radius, $unit = 'km'): Polygon
     {
@@ -365,11 +367,11 @@ class Location
         $limits['s'] = $south->getLatitude();
 
         $radDist = $radius / self::getEllipsoid()->radius($unit);
-        //   $minLat  = deg2rad( $limits['s'] );
-        //   $maxLat  = deg2rad( $limits['n'] );
         $radLon = $point->longitudeToRad();
-        //if ($minLat > deg2rad(-90) && $maxLat < deg2rad(90)) {
         $deltaLon = \asin(\sin($radDist) / \cos($point->latitudeToRad()));
+        if (is_nan($deltaLon)) {
+            throw new BoundBoxRangeException('Cannot create a bounding-box at these coordinates.');
+        }
         $minLon = $radLon - $deltaLon;
 
         if ($minLon < \deg2rad(-180)) {
@@ -380,7 +382,6 @@ class Location
         if ($maxLon > \deg2rad(180)) {
             $maxLon -= 2 * \M_PI;
         }
-        //}
 
         $limits['w'] = \rad2deg($minLon);
         $limits['e'] = \rad2deg($maxLon);
@@ -477,6 +478,11 @@ class Location
         $result = \atan2($y, $x);
 
         return \fmod(\rad2deg($result) + 360, 360);
+    }
+
+    public static function getFinalBearing(Point $point1, Point $point2): float
+    {
+        return \fmod(self::getInitialBearing($point2, $point1) + 180, 360);
     }
 
     public static function getFractionAlongLineBetween(Point $point1, Point $point2, float $fraction): Point

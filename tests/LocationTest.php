@@ -11,10 +11,6 @@ use Ricklab\Location\Geometry\Polygon;
 
 class LocationTest extends TestCase
 {
-    protected function setUp()
-    {
-    }
-
     public function testCreatePoint(): void
     {
         /** @var Point $point */
@@ -116,5 +112,13 @@ class LocationTest extends TestCase
         $bbox = Location::getBBoxByRadius($point, 2, 'km');
 
         $this->assertCount(5, $bbox->getPoints());
+    }
+
+    public function testFinalBearing(): void
+    {
+        $point1 = new Point(0.119, 52.205);
+        $point2 = new Point(2.351, 48.857);
+        $finalBearing = Location::getFinalBearing($point1, $point2);
+        $this->assertSame(157.9, \round($finalBearing, 1));
     }
 }

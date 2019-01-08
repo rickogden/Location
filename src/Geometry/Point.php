@@ -174,7 +174,7 @@ class Point implements GeometryInterface
     }
 
     /**
-     * Get the bearing from this Point to another.
+     * Get the initial bearing from this Point to another.
      *
      *
      * @return float bearing
@@ -182,6 +182,17 @@ class Point implements GeometryInterface
     public function initialBearingTo(Point $point2): float
     {
         return Location::getInitialBearing($this, $point2);
+    }
+
+    /**
+     * Get the final bearing from this Point to another.
+     *
+     *
+     * @return float bearing
+     */
+    public function finalBearingTo(Point $point2): float
+    {
+        return Location::getFinalBearing($this, $point2);
     }
 
     /**
@@ -272,7 +283,7 @@ class Point implements GeometryInterface
 
     private function setLatitude(float $lat): void
     {
-        if ($lat > self::MAX_LATITUDE || $lat < self::MIN_LATITUDE) {
+        if ($lat > self::MAX_LATITUDE || $lat < self::MIN_LATITUDE || \is_nan($lat)) {
             throw new \InvalidArgumentException('latitude must be a valid number between -90 and 90.');
         }
 
@@ -281,7 +292,7 @@ class Point implements GeometryInterface
 
     private function setLongitude(float $long): void
     {
-        if ($long > self::MAX_LONGITUDE || $long < self::MIN_LONGITUDE) {
+        if ($long > self::MAX_LONGITUDE || $long < self::MIN_LONGITUDE || \is_nan($long)) {
             throw new \InvalidArgumentException('longitude must be a valid number between -180 and 180.');
         }
 
