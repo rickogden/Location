@@ -56,7 +56,7 @@ class Polygon implements GeometryInterface, \IteratorAggregate
      * The length of the perimeter of the outer-most polygon in unit specified.
      *
      * @param string   $unit
-     * @param null|int $formula defaults to Location::$defaultFormula
+     * @param int|null $formula defaults to Location::$defaultFormula
      */
     public function getPerimeter($unit = 'km', $formula = null): float
     {

@@ -248,6 +248,7 @@ class Point implements GeometryInterface
     /**
      * @param $radius
      * @param string $unit
+     *
      * @throws BoundBoxRangeException
      */
     public function getBBoxByRadius($radius, $unit = 'km'): Polygon
