@@ -195,7 +195,7 @@ class Location
      * @param Point    $point1  distance from this point
      * @param Point    $point2  distance to this point
      * @param string   $unit    of measurement in which to return the result
-     * @param null|int $formula formula to use, either Location::VINCENTY or Location::HAVERSINE. Defaults to
+     * @param int|null $formula formula to use, either Location::VINCENTY or Location::HAVERSINE. Defaults to
      *                          Location::$defaultFormula
      */
     public static function calculateDistance(
@@ -234,7 +234,7 @@ class Location
             $from = $point1->jsonSerialize();
             $to = $point2->jsonSerialize();
 
-            return vincenty($from, $to);
+            return \vincenty($from, $to);
         }
         $ellipsoid = self::getEllipsoid();
 
@@ -331,7 +331,7 @@ class Location
             $from = $point1->jsonSerialize();
             $to = $point2->jsonSerialize();
 
-            $radDistance = haversine($from, $to, 1);
+            $radDistance = \haversine($from, $to, 1);
         } else {
             $lat1 = $point1->latitudeToRad();
             $lon1 = $point1->longitudeToRad();
@@ -432,7 +432,7 @@ class Location
     }
 
     /**
-     * @param null|string $direction use "S" for south and "W" for west. Defaults to East/North.
+     * @param string|null $direction use "S" for south and "W" for west. Defaults to East/North.
      */
     public static function dmsToDecimal(int $degrees, int $minutes, float $seconds, ?string $direction = null): float
     {
@@ -461,8 +461,12 @@ class Location
 
     public static function getInitialBearing(Point $point1, Point $point2): float
     {
-        if (self::$useSpatialExtension && \function_exists('initial_bearing')) {
-            return initial_bearing($point1->jsonSerialize(), $point2->jsonSerialize());
+        if (
+            self::$useSpatialExtension &&
+            ($geospatialVersion = \phpversion('geospatial')) &&
+            \version_compare($geospatialVersion, '0.2.2-dev', '>=')
+        ) {
+            return \initial_bearing($point1->jsonSerialize(), $point2->jsonSerialize());
         }
         $y = \sin(
                 \deg2rad($point2->getLongitude() - $point1->getLongitude())
@@ -491,7 +495,7 @@ class Location
         }
 
         if (self::$useSpatialExtension && \function_exists('fraction_along_gc_line')) {
-            $result = fraction_along_gc_line($point1->jsonSerialize(), $point2->jsonSerialize(), $fraction);
+            $result = \fraction_along_gc_line($point1->jsonSerialize(), $point2->jsonSerialize(), $fraction);
 
             return Point::fromArray($result['coordinates']);
         }
