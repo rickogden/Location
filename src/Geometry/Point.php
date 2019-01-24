@@ -132,8 +132,8 @@ class Point implements GeometryInterface
     /**
      * Find a location a distance and bearing from this one.
      *
-     * @param Number $distance distance to other point
-     * @param Number $bearing  initial bearing to other point
+     * @param float $distance distance to other point
+     * @param float $bearing  initial bearing to other point
      * @param string $unit     The unit the distance is in
      */
     public function getRelativePoint(float $distance, float $bearing, string $unit = 'km'): Point
@@ -157,7 +157,7 @@ class Point implements GeometryInterface
     /**
      * Get the latitude in Rads.
      *
-     * @return Number Latitude in Rads
+     * @return float Latitude in Rads
      */
     public function latitudeToRad(): float
     {
@@ -167,7 +167,7 @@ class Point implements GeometryInterface
     /**
      * Get the longitude in Rads.
      *
-     * @return Number Longitude in Rads
+     * @return float Longitude in Rads
      */
     public function longitudeToRad(): float
     {
@@ -246,12 +246,12 @@ class Point implements GeometryInterface
     }
 
     /**
-     * @param $radius
+     * @param float $radius
      * @param string $unit
      *
      * @throws BoundBoxRangeException
      */
-    public function getBBoxByRadius($radius, $unit = 'km'): Polygon
+    public function getBBoxByRadius(float $radius, $unit = 'km'): Polygon
     {
         return Location::getBBoxByRadius($this, $radius, $unit);
     }

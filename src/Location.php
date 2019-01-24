@@ -47,7 +47,7 @@ class Location
     public static $defaultFormula = self::FORMULA_HAVERSINE;
 
     /**
-     * @var Ellipsoid
+     * @var Ellipsoid|null
      */
     protected static $ellipsoid;
 
@@ -202,7 +202,7 @@ class Location
         Point $point1,
         Point $point2,
         string $unit,
-        int $formula = self::FORMULA_HAVERSINE
+        ?int $formula = self::FORMULA_HAVERSINE
     ): float {
         if (null === $formula) {
             $formula = self::$defaultFormula;
@@ -260,9 +260,6 @@ class Location
             $cos2Alpha = 1 - ($sinAlpha ** 2);
             $cosof2sigma = $cosSigma - 2 * $sinU1 * $sinU2 / $cos2Alpha;
 
-            if (!\is_numeric($cosof2sigma)) {
-                $cosof2sigma = 0;
-            }
             $C = $flattening / 16 * $cos2Alpha *
                            (4 + $flattening * (4 - 3 * $cos2Alpha));
             $lambdaP = $lambda;
@@ -352,7 +349,7 @@ class Location
 
     /**
      * @param Point $point the centre of the bounding box
-     * @param number $radius minimum radius from $point
+     * @param float $radius minimum radius from $point
      * @param string $unit unit of the radius (default is kilometres)
      *
      * @throws BoundBoxRangeException
@@ -364,8 +361,10 @@ class Location
         $north = $point->getRelativePoint($radius, 0, $unit);
         $south = $point->getRelativePoint($radius, 180, $unit);
 
-        $limits['n'] = $north->getLatitude();
-        $limits['s'] = $south->getLatitude();
+        $limits = [
+            'n' => $north->getLatitude(),
+            's' => $south->getLatitude(),
+        ];
 
         $radDist = $radius / self::getEllipsoid()->radius($unit);
         $radLon = $point->longitudeToRad();

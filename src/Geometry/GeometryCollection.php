@@ -53,7 +53,8 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
      */
     public function jsonSerialize(): array
     {
-        $json['type'] = self::getGeoJsonType();
+        $json = ['type' => self::getGeoJsonType()];
+
         foreach ($this->geometries as $geometry) {
             $json['geometries'][] = $geometry->jsonSerialize();
         }
@@ -94,9 +95,6 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
 
     /**
      * Removes a geometry from the collection.
-     *
-     *
-     * @return $this
      */
     public function removeGeometry(GeometryInterface $geometry): void
     {
