@@ -81,7 +81,7 @@ class PointTest extends TestCase
     public function testJsonSerializable(): void
     {
         $geoJSON = \json_encode($this->point);
-        $this->assertInternalType('string', $geoJSON);
+        $this->assertIsString($geoJSON);
         $this->assertJsonStringEqualsJsonString('{"type":"Point", "coordinates":[-2.27354, 53.48575]}', $geoJSON);
     }
 
