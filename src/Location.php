@@ -348,9 +348,9 @@ class Location
     }
 
     /**
-     * @param Point $point the centre of the bounding box
-     * @param float $radius minimum radius from $point
-     * @param string $unit unit of the radius (default is kilometres)
+     * @param Point  $point  the centre of the bounding box
+     * @param float  $radius minimum radius from $point
+     * @param string $unit   unit of the radius (default is kilometres)
      *
      * @throws BoundBoxRangeException
      *
