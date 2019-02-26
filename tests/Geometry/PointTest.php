@@ -71,11 +71,9 @@ class PointTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testDistanceToException(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
         $newPoint = new Point(-2.23194, 53.48204);
         $this->point->distanceTo($newPoint, 'foo');
     }
