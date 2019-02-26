@@ -50,6 +50,6 @@ trait GeometryTrait
 
     public function getIterator(): \ArrayIterator
     {
-        return new \ArrayIterator($this->getGeometries());
+        return new \ArrayIterator($this->geometries);
     }
 }
