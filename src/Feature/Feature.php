@@ -17,7 +17,7 @@ class Feature extends FeatureAbstract implements \ArrayAccess
     protected $id;
 
     /**
-     * @var GeometryInterface
+     * @var GeometryInterface|null
      */
     protected $geometry;
 
@@ -33,17 +33,17 @@ class Feature extends FeatureAbstract implements \ArrayAccess
         $this->bbox = $bbox;
     }
 
-    public function enableBBox()
+    public function enableBBox(): void
     {
         $this->bbox = true;
     }
 
-    public function disableBBox()
+    public function disableBBox(): void
     {
         $this->bbox = false;
     }
 
-    public function getGeometry(): GeometryInterface
+    public function getGeometry(): ?GeometryInterface
     {
         return $this->geometry;
     }
@@ -68,7 +68,6 @@ class Feature extends FeatureAbstract implements \ArrayAccess
 
     /**
      * Overwrites all properties.
-     *
      *
      * @return $this
      */

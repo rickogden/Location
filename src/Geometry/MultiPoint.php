@@ -57,17 +57,11 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \Ite
         return $this->getPoints();
     }
 
-    /**
-     * @return $this
-     */
     public function addGeometry(Point $point): void
     {
         $this->geometries[] = $point;
     }
 
-    /**
-     * @return $this
-     */
     public function removeGeometry(Point $point): void
     {
         foreach ($this->geometries as $index => $geom) {

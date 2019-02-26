@@ -57,17 +57,11 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, \I
         return $this->geometries;
     }
 
-    /**
-     * @return $this
-     */
     public function addGeometry(Polygon $polygon): void
     {
         $this->geometries[] = $polygon;
     }
 
-    /**
-     * @return $this
-     */
     public function removeGeometry(Polygon $polygon): void
     {
         foreach ($this->geometries as $index => $geom) {
