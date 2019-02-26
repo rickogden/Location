@@ -16,7 +16,7 @@ class PointTest extends TestCase
     public $lat = 53.48575;
     public $lon = -2.27354;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->point = new Point($this->lon, $this->lat);
     }

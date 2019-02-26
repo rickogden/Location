@@ -14,7 +14,7 @@ class PolygonTest extends TestCase
      */
     public $polygon;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         Location::$useSpatialExtension = false;
         $this->polygon = Polygon::fromArray([[new Point(3, 2), new Point(4, 2), new Point(4, 3)]]);
