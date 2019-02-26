@@ -71,7 +71,7 @@ class PolygonTest extends TestCase
         $this->assertEquals('POLYGON((3 2, 4 2, 4 3, 3 2))', $retVal);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->polygon = null;
     }
