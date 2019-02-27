@@ -19,7 +19,7 @@ class FeatureTest extends TestCase
         $feature->enableBBox();
 
         $json = $feature->jsonSerialize();
-        $this->assertInternalType('array', $json['bbox']);
+        $this->assertIsArray($json['bbox']);
     }
 
     public function testGeoJson(): void

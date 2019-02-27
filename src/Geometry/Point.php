@@ -76,7 +76,7 @@ class Point implements GeometryInterface
      * or new Point([longitude, latitude]);
      *
      * @param float $long Longitude coordinates
-     * @param float $lat Latitude coordinates
+     * @param float $lat  Latitude coordinates
      */
     public function __construct(float $long, float $lat)
     {
@@ -132,8 +132,8 @@ class Point implements GeometryInterface
     /**
      * Find a location a distance and bearing from this one.
      *
-     * @param float $distance distance to other point
-     * @param float $bearing  initial bearing to other point
+     * @param float  $distance distance to other point
+     * @param float  $bearing  initial bearing to other point
      * @param string $unit     The unit the distance is in
      */
     public function getRelativePoint(float $distance, float $bearing, string $unit = 'km'): Point
@@ -246,7 +246,6 @@ class Point implements GeometryInterface
     }
 
     /**
-     * @param float $radius
      * @param string $unit
      *
      * @throws BoundBoxRangeException

@@ -16,7 +16,7 @@ class PointTest extends TestCase
     public $lat = 53.48575;
     public $lon = -2.27354;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->point = new Point($this->lon, $this->lat);
     }
@@ -71,11 +71,9 @@ class PointTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testDistanceToException(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
         $newPoint = new Point(-2.23194, 53.48204);
         $this->point->distanceTo($newPoint, 'foo');
     }
@@ -83,7 +81,7 @@ class PointTest extends TestCase
     public function testJsonSerializable(): void
     {
         $geoJSON = \json_encode($this->point);
-        $this->assertInternalType('string', $geoJSON);
+        $this->assertIsString($geoJSON);
         $this->assertJsonStringEqualsJsonString('{"type":"Point", "coordinates":[-2.27354, 53.48575]}', $geoJSON);
     }
 
