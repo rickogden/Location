@@ -15,19 +15,19 @@ trait GeometryTrait
     use TransformationTrait;
 
     /**
-     * @var GeometryInterface[]
+     * @return GeometryInterface[]
      */
-    protected $geometries = [];
+    abstract protected function getGeometryArray(): array;
 
     public function __toString(): string
     {
-        return \sprintf('(%s)', \implode(', ', $this->geometries));
+        return \sprintf('(%s)', \implode(', ', $this->getGeometryArray()));
     }
 
     public function toArray(): array
     {
         $return = [];
-        foreach ($this->geometries as $geometry) {
+        foreach ($this->getGeometryArray() as $geometry) {
             $return[] = $geometry->toArray();
         }
 
@@ -40,7 +40,7 @@ trait GeometryTrait
     public function getPoints(): array
     {
         $points = [];
-        foreach ($this->geometries as $geometry) {
+        foreach ($this->getGeometryArray() as $geometry) {
             $linePoints = $geometry->getPoints();
             $points[] = $linePoints;
         }
@@ -50,6 +50,6 @@ trait GeometryTrait
 
     public function getIterator(): \ArrayIterator
     {
-        return new \ArrayIterator($this->geometries);
+        return new \ArrayIterator($this->getGeometryArray());
     }
 }

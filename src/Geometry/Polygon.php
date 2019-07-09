@@ -84,4 +84,9 @@ class Polygon implements GeometryInterface, \IteratorAggregate
 
         $this->geometries[] = $lineString;
     }
+
+    protected function getGeometryArray(): array
+    {
+        return $this->geometries;
+    }
 }

@@ -18,6 +18,11 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface,
 {
     use GeometryTrait;
 
+    /**
+     * @var LineString[]
+     */
+    protected $geometries = [];
+
     public static function getGeoJsonType(): string
     {
         return 'MultiLineString';
@@ -75,5 +80,10 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface,
                 unset($this->geometries[$index]);
             }
         }
+    }
+
+    protected function getGeometryArray(): array
+    {
+        return $this->geometries;
     }
 }

@@ -153,4 +153,9 @@ class LineString implements GeometryInterface, \IteratorAggregate
     {
         return (string) $this->getFirst() === (string) $this->getLast();
     }
+
+    protected function getGeometryArray(): array
+    {
+        return $this->geometries;
+    }
 }
