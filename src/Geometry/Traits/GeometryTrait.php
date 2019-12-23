@@ -48,7 +48,7 @@ trait GeometryTrait
         return \array_merge(...$points);
     }
 
-    public function getIterator(): \ArrayIterator
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->getGeometryArray());
     }

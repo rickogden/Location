@@ -232,7 +232,6 @@ class Location
     /**
      * Vincenty formula for calculating distances.
      *
-     *
      * @return float distance in metres
      */
     public static function vincenty(Point $point1, Point $point2): float
@@ -325,7 +324,6 @@ class Location
 
     /**
      * Uses the haversine formula to calculate the distance between 2 points.
-     *
      *
      * @return float distance in radians
      */

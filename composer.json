@@ -25,6 +25,7 @@
         "ext-json": "*"
     },
     "require-dev": {
+        "ext-simplexml": "*",
         "friendsofphp/php-cs-fixer": "^2.13",
         "phpunit/phpunit": "^7.5|^8.0",
         "vimeo/psalm": "^3.4"
@@ -36,7 +37,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Ricklab\\Location\\": "tests/"
+            "Ricklab\\Location\\": "tests/",
+            "Ricklab\\Location\\Psalm\\": "psalm/"
         }
     }
 }

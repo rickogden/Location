@@ -52,4 +52,7 @@
 
         <InvalidStringClass errorLevel="info"/>
     </issueHandlers>
+    <plugins>
+        <pluginClass class="Ricklab\Location\Psalm\Plugin"/>
+    </plugins>
 </psalm>

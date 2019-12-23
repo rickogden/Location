@@ -15,6 +15,9 @@ interface GeometryInterface extends \JsonSerializable
 
     public static function getGeoJsonType(): string;
 
+    /**
+     * @return self
+     */
     public static function fromArray(array $geometries);
 
     /**
