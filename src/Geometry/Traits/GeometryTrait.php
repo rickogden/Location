@@ -55,7 +55,7 @@ trait GeometryTrait
 
     public function equals(GeometryInterface $geometry): bool
     {
-        if (!$geometry instanceof static) {
+        if (!$geometry instanceof self) {
             return false;
         }
 
@@ -63,8 +63,8 @@ trait GeometryTrait
             return false;
         }
 
-        foreach ($this->geometries as $i => $point) {
-            if (!$geometry->geometries[$i]->equals($point)) {
+        foreach ($this->geometries as $i => $geom) {
+            if (!$geometry->geometries[$i]->equals($geom)) {
                 return false;
             }
         }
