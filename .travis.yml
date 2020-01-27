@@ -4,6 +4,7 @@ php:
   - 7.1
   - 7.2
   - 7.3
+  - 7.4
 before_script:
   - git clone https://github.com/php-geospatial/geospatial.git
   - cd geospatial
@@ -15,4 +16,6 @@ before_script:
   - cd ..
 install:
   - composer install
-script: php vendor/bin/phpunit --coverage-text
+script:
+  - php vendor/bin/psalm --show-info=false
+  - php vendor/bin/phpunit --coverage-text
