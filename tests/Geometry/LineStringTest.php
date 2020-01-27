@@ -112,4 +112,33 @@ class LineStringTest extends TestCase
         $this->assertEquals($original[0], $lineString->toArray()[0]);
         $this->assertEquals($original[1], $lineString->toArray()[1]);
     }
+
+    public function testEquals(): void
+    {
+        $original = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
+
+        $lineString = LineString::fromArray($original);
+        $lineString2 = LineString::fromArray($original);
+        $this->assertTrue($lineString->equals($lineString2));
+    }
+
+    public function testNotEquals(): void
+    {
+        $original = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
+
+        $lineString = LineString::fromArray($original);
+        $lineString2 = $lineString->reverse();
+        $this->assertFalse($lineString->equals($lineString2));
+
+        $newGeom = $original;
+        $newGeom[] = [-2.23124, 53.48214];
+        $lineString2 = LineString::fromArray($newGeom);
+        $this->assertFalse($lineString->equals($lineString2));
+
+        $polygon = new Polygon([$lineString]);
+        $this->assertFalse($lineString->equals($polygon));
+
+        $collection = new MultiPoint($lineString->getPoints());
+        $this->assertFalse($lineString->equals($collection));
+    }
 }

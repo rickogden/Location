@@ -52,4 +52,23 @@ trait GeometryTrait
     {
         return new \ArrayIterator($this->geometries);
     }
+
+    public function equals(GeometryInterface $geometry): bool
+    {
+        if (!$geometry instanceof static) {
+            return false;
+        }
+
+        if (\count($this->geometries) !== \count($geometry->geometries)) {
+            return false;
+        }
+
+        foreach ($this->geometries as $i => $point) {
+            if (!$geometry->geometries[$i]->equals($point)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

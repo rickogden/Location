@@ -151,6 +151,6 @@ class LineString implements GeometryInterface, \IteratorAggregate
 
     public function isClosedShape(): bool
     {
-        return (string) $this->getFirst() === (string) $this->getLast();
+        return $this->getFirst()->equals($this->getLast());
     }
 }

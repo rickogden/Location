@@ -10,7 +10,7 @@ use Ricklab\Location\Location;
 class PointTest extends TestCase
 {
     /**
-     * @var \Ricklab\Location\Geometry\Point
+     * @var Point
      */
     public $point;
     public $lat = 53.48575;
@@ -100,6 +100,21 @@ class PointTest extends TestCase
         $this->fractionAlongLine();
         Location::$useSpatialExtension = true;
         $this->fractionAlongLine();
+    }
+
+    public function testEqualsIsTrue(): void
+    {
+        $point1 = new Point(1.1, -1.3);
+        $point2 = new Point(1.1, -1.3);
+        $this->assertTrue($point1->equals($point2));
+    }
+
+    public function testEqualsIsFalse(): void
+    {
+        $point1 = new Point(1.1, -1.3);
+        $this->assertFalse($point1->equals(new Point(1.1, 1.3)));
+        $this->assertFalse($point1->equals(new Point(1.1, -1.31)));
+        $this->assertFalse($point1->equals(new LineString([new Point(1.1, -1.3), new Point(1.1, -1.31)])));
     }
 
     private function fractionAlongLine(): void

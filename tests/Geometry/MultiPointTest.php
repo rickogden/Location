@@ -43,4 +43,33 @@ class MultiPointTest extends TestCase
 
         $this->assertEquals($wktv2, $mp2->toWkt());
     }
+
+    public function testEquals(): void
+    {
+        $original = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
+
+        $multiPoint = MultiPoint::fromArray($original);
+        $multiPoint2 = MultiPoint::fromArray($original);
+        $this->assertTrue($multiPoint->equals($multiPoint2));
+    }
+
+    public function testNotEquals(): void
+    {
+        $original = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
+
+        $multiPoint = MultiPoint::fromArray($original);
+        $multiPoint2 = MultiPoint::fromArray(\array_reverse($original));
+        $this->assertFalse($multiPoint->equals($multiPoint2));
+
+        $newGeom = $original;
+        $newGeom[] = [-2.23124, 53.48214];
+        $multiPoint2 = MultiPoint::fromArray($newGeom);
+        $this->assertFalse($multiPoint->equals($multiPoint2));
+
+        $polygon = new Polygon([new LineString($multiPoint->getPoints())]);
+        $this->assertFalse($multiPoint->equals($polygon));
+
+        $lineString = new LineString($multiPoint->getPoints());
+        $this->assertFalse($multiPoint->equals($lineString));
+    }
 }
