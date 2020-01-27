@@ -18,6 +18,11 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
 {
     use GeometryTrait;
 
+    /**
+     * @var GeometryInterface[]
+     */
+    protected $geometries = [];
+
     public static function getWktType(): string
     {
         return 'GEOMETRYCOLLECTION';
@@ -103,5 +108,10 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
                 unset($this->geometries[$index]);
             }
         }
+    }
+
+    protected function getGeometryArray(): array
+    {
+        return $this->geometries;
     }
 }

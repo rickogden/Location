@@ -78,15 +78,6 @@ class Feature extends FeatureAbstract implements \ArrayAccess
         return $this;
     }
 
-    /**
-     * (PHP 5 &gt;= 5.4.0)<br/>
-     * Specify data which should be serialized to JSON.
-     *
-     * @see http://php.net/manual/en/jsonserializable.jsonserialize.php
-     *
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     *               which is a value of any type other than a resource
-     */
     public function jsonSerialize(): array
     {
         $array = [];
@@ -97,11 +88,10 @@ class Feature extends FeatureAbstract implements \ArrayAccess
 
         $array['type'] = 'Feature';
 
-        if ($this->bbox) {
-            $array['bbox'] = Location::getBBoxArray($this->geometry);
-        }
-
         if ($this->geometry instanceof GeometryInterface) {
+            if ($this->bbox) {
+                $array['bbox'] = Location::getBBoxArray($this->geometry);
+            }
             $array['geometry'] = $this->geometry->jsonSerialize();
         } else {
             $array['geometry'] = null;
@@ -112,38 +102,11 @@ class Feature extends FeatureAbstract implements \ArrayAccess
         return $array;
     }
 
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Whether a offset exists.
-     *
-     * @see http://php.net/manual/en/arrayaccess.offsetexists.php
-     *
-     * @param mixed $offset <p>
-     *                      An offset to check for.
-     *                      </p>
-     *
-     * @return bool true on success or false on failure.
-     *              </p>
-     *              <p>
-     *              The return value will be casted to boolean if non-boolean was returned
-     */
     public function offsetExists($offset): bool
     {
         return isset($this->properties[$offset]);
     }
 
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to retrieve.
-     *
-     * @see http://php.net/manual/en/arrayaccess.offsetget.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to retrieve.
-     *                      </p>
-     *
-     * @return mixed can return all value types
-     */
     public function offsetGet($offset)
     {
         return $this->getProperty($offset);
@@ -159,19 +122,6 @@ class Feature extends FeatureAbstract implements \ArrayAccess
         return $this->properties[$key];
     }
 
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to set.
-     *
-     * @see http://php.net/manual/en/arrayaccess.offsetset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to assign the value to.
-     *                      </p>
-     * @param mixed $value  <p>
-     *                      The value to set.
-     *                      </p>
-     */
     public function offsetSet($offset, $value): void
     {
         $this->setProperty($offset, $value);

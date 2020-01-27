@@ -15,6 +15,11 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, \I
 {
     use GeometryTrait;
 
+    /**
+     * @var Polygon[]
+     */
+    protected $geometries = [];
+
     public static function getWktType(): string
     {
         return 'MULTIPOLYGON';
@@ -69,5 +74,10 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, \I
                 unset($this->geometries[$index]);
             }
         }
+    }
+
+    protected function getGeometryArray(): array
+    {
+        return $this->geometries;
     }
 }

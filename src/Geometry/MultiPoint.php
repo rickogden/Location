@@ -16,6 +16,11 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \Ite
 {
     use GeometryTrait;
 
+    /**
+     * @var Point[]
+     */
+    protected $geometries = [];
+
     public static function getWktType(): string
     {
         return 'MULTIPOINT';
@@ -74,5 +79,10 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \Ite
     public function getBBox(): Polygon
     {
         return Location::getBBox($this);
+    }
+
+    protected function getGeometryArray(): array
+    {
+        return $this->geometries;
     }
 }

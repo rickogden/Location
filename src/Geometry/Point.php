@@ -257,7 +257,7 @@ class Point implements GeometryInterface
      */
     public function toWkt(): string
     {
-        return \sprintf('%s(%s)', self::getWktType(), $this);
+        return \sprintf('%s(%s)', self::getWktType(), (string) $this);
     }
 
     /**

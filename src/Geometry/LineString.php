@@ -74,7 +74,7 @@ class LineString implements GeometryInterface, \IteratorAggregate
         return $this->geometries[0]->initialBearingTo($this->geometries[1]);
     }
 
-    public function getLength($unit = 'km', $formula = Location::FORMULA_HAVERSINE)
+    public function getLength(string $unit = 'km', int $formula = Location::FORMULA_HAVERSINE): float
     {
         $distance = 0;
 
@@ -152,5 +152,10 @@ class LineString implements GeometryInterface, \IteratorAggregate
     public function isClosedShape(): bool
     {
         return $this->getFirst()->equals($this->getLast());
+    }
+
+    protected function getGeometryArray(): array
+    {
+        return $this->geometries;
     }
 }

@@ -74,9 +74,10 @@ class FeatureCollection extends FeatureAbstract implements \IteratorAggregate
         $points = [];
         foreach ($this->features as $feature) {
             $features[] = $feature->jsonSerialize();
+            $geometry = $feature->getGeometry();
 
-            if ($this->bbox) {
-                $points[] = $feature->getGeometry()->getPoints();
+            if ($this->bbox && null !== $geometry) {
+                $points[] = $geometry->getPoints();
             }
         }
 
