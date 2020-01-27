@@ -177,7 +177,6 @@ class Point implements GeometryInterface
     /**
      * Get the initial bearing from this Point to another.
      *
-     *
      * @return float bearing
      */
     public function initialBearingTo(Point $point2): float
@@ -187,7 +186,6 @@ class Point implements GeometryInterface
 
     /**
      * Get the final bearing from this Point to another.
-     *
      *
      * @return float bearing
      */
@@ -216,7 +214,6 @@ class Point implements GeometryInterface
 
     /**
      * Finds the mid point between two points.
-     *
      *
      * @return Point the mid point
      */
@@ -260,7 +257,7 @@ class Point implements GeometryInterface
      */
     public function toWkt(): string
     {
-        return \sprintf('%s(%s)', self::getWktType(), $this);
+        return \sprintf('%s(%s)', self::getWktType(), (string) $this);
     }
 
     /**
@@ -299,5 +296,12 @@ class Point implements GeometryInterface
         }
 
         $this->longitude = $long;
+    }
+
+    public function equals(GeometryInterface $geometry): bool
+    {
+        return $geometry instanceof self
+            && $geometry->latitude === $this->latitude
+            && $geometry->longitude === $this->longitude;
     }
 }

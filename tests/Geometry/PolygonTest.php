@@ -10,7 +10,7 @@ use Ricklab\Location\Location;
 class PolygonTest extends TestCase
 {
     /**
-     * @var \Ricklab\Location\Geometry\Polygon
+     * @var Polygon
      */
     public $polygon;
 
@@ -110,5 +110,39 @@ class PolygonTest extends TestCase
         $polygon = Polygon::fromArray($ar);
 
         $this->assertEquals([100.0, 0.0], $polygon->getLineStrings()[0]->getPoints()[0]->toArray());
+    }
+
+    public function testEquals(): void
+    {
+        $original = [[[-2.27354, 53.48575], [-2.23194, 53.48204]]];
+
+        $polygon = Polygon::fromArray($original);
+        $polygon2 = Polygon::fromArray($original);
+        $this->assertTrue($polygon->equals($polygon2));
+    }
+
+    public function testNotEquals(): void
+    {
+        $original = [[[-2.27354, 53.48575], [-2.23194, 53.48204]]];
+
+        $polygon = Polygon::fromArray($original);
+        $polygon2 = Polygon::fromArray([[[-2.23194, 53.48204], [-2.27354, 53.48575]]]);
+        $this->assertFalse($polygon->equals($polygon2));
+
+        $newGeom = $original;
+        $newGeom[0][] = [-2.23124, 53.48214];
+        $polygon2 = Polygon::fromArray($newGeom);
+        $this->assertFalse($polygon->equals($polygon2));
+
+        $lineString = $polygon->getLineStrings()[0];
+        $this->assertFalse($polygon->equals($lineString));
+
+        $collection = new MultiPoint($polygon->getPoints());
+        $this->assertFalse($polygon->equals($collection));
+
+        $newGeom2 = $original;
+        $newGeom2[] = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
+        $newPolygon = Polygon::fromArray($newGeom2);
+        $this->assertFalse($polygon->equals($newPolygon));
     }
 }

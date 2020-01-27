@@ -19,13 +19,13 @@ trait TransformationTrait
 
     public function toWkt(): string
     {
-        return self::getWktType().$this;
+        return static::getWktType().$this;
     }
 
     public function jsonSerialize(): array
     {
         return [
-            'type' => self::getGeoJsonType(),
+            'type' => static::getGeoJsonType(),
             'coordinates' => $this->toArray(),
         ];
     }

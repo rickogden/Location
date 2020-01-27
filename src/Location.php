@@ -83,7 +83,11 @@ class Location
             $geometry = new Feature();
 
             if (isset($geojson['geometry'])) {
-                $geometry->setGeometry(self::fromGeoJson($geojson['geometry']));
+                $decodedGeo = self::fromGeoJson($geojson['geometry']);
+
+                if ($decodedGeo instanceof GeometryInterface) {
+                    $geometry->setGeometry($decodedGeo);
+                }
             }
 
             if (isset($geojson['properties'])) {
@@ -93,8 +97,11 @@ class Location
             $geometry = new FeatureCollection();
 
             foreach ($geojson['features'] as $feature) {
-                /* @noinspection PhpParamsInspection */
-                $geometry->addFeature(self::fromGeoJson($feature));
+                $decodedFeature = self::fromGeoJson($feature);
+
+                if ($decodedFeature instanceof Feature) {
+                    $geometry->addFeature($decodedFeature);
+                }
             }
         } else {
             $coordinates = $geojson['coordinates'];
@@ -146,7 +153,7 @@ class Location
      */
     public static function fromWkt(string $wkt): GeometryInterface
     {
-        $type = \trim(\mb_substr($wkt, 0, \mb_strpos($wkt, '(')));
+        $type = \trim(\mb_substr($wkt, 0, \mb_strpos($wkt, '(') ?: 0));
         $wkt = \trim(\str_replace($type, '', $wkt));
 
         if ('geometrycollection' === \mb_strtolower($type)) {
@@ -224,7 +231,6 @@ class Location
 
     /**
      * Vincenty formula for calculating distances.
-     *
      *
      * @return float distance in metres
      */
@@ -318,7 +324,6 @@ class Location
 
     /**
      * Uses the haversine formula to calculate the distance between 2 points.
-     *
      *
      * @return float distance in radians
      */

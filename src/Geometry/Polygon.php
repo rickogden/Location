@@ -55,12 +55,11 @@ class Polygon implements GeometryInterface, \IteratorAggregate
     /**
      * The length of the perimeter of the outer-most polygon in unit specified.
      *
-     * @param string   $unit
-     * @param int|null $formula defaults to Location::$defaultFormula
+     * @param int $formula defaults to Location::$defaultFormula
      */
-    public function getPerimeter($unit = 'km', $formula = null): float
+    public function getPerimeter(string $unit = 'km', ?int $formula = null): float
     {
-        return $this->geometries[0]->getLength($unit, $formula);
+        return $this->geometries[0]->getLength($unit, $formula ?? Location::$defaultFormula);
     }
 
     public function getBBox(): self
@@ -83,5 +82,10 @@ class Polygon implements GeometryInterface, \IteratorAggregate
         }
 
         $this->geometries[] = $lineString;
+    }
+
+    protected function getGeometryArray(): array
+    {
+        return $this->geometries;
     }
 }
