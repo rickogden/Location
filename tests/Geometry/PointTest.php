@@ -117,6 +117,20 @@ class PointTest extends TestCase
         $this->assertFalse($point1->equals(new LineString([new Point(1.1, -1.3), new Point(1.1, -1.31)])));
     }
 
+    public function geoHahProvider(): \Generator
+    {
+        yield ['u4pruydqqvj', 10.40744, 57.64911];
+    }
+
+    /**
+     * @dataProvider geoHahProvider
+     */
+    public function testGetGeoHash(string $hash, float $lon, float $lat): void
+    {
+        $point = new Point($lon, $lat);
+        $this->assertSame($hash, (string) $point->getGeoHash(11));
+    }
+
     private function fractionAlongLine(): void
     {
         $point1 = Point::fromArray([5, 10]);

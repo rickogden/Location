@@ -304,4 +304,9 @@ class Point implements GeometryInterface
             && $geometry->latitude === $this->latitude
             && $geometry->longitude === $this->longitude;
     }
+
+    public function getGeoHash(int $resolution = 12): GeoHash
+    {
+        return GeoHash::fromPoint($this, $resolution);
+    }
 }
