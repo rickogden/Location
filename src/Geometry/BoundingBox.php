@@ -9,17 +9,10 @@ use Ricklab\Location\Location;
 
 class BoundingBox extends Polygon
 {
-    /** @var float */
-    private $minLon;
-
-    /** @var float */
-    private $maxLon;
-
-    /** @var float */
-    private $minLat;
-
-    /** @var float */
-    private $maxLat;
+    private float $minLon;
+    private float $maxLon;
+    private float $minLat;
+    private float $maxLat;
 
     public static function fromCenter(Point $point, float $radius, string $unit = Location::UNIT_KM): self
     {

@@ -14,12 +14,12 @@ class Polygon implements GeometryInterface, \IteratorAggregate
     /**
      * @var LineString[]
      */
-    protected $geometries = [];
+    protected array $geometries = [];
 
     /**
      * @var bool|null whether this geometry is a bouding box
      */
-    private $isBoundingBox;
+    private ?bool $isBoundingBox;
 
     public static function getWktType(): string
     {

@@ -22,12 +22,8 @@ class LineString implements GeometryInterface, \IteratorAggregate
     /**
      * @var Point[]
      */
-    protected $geometries = [];
-
-    /**
-     * @var int
-     */
-    protected $position = 0;
+    protected array $geometries = [];
+    protected int $position = 0;
 
     public static function getWktType(): string
     {

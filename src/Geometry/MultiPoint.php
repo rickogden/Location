@@ -18,7 +18,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \Ite
     /**
      * @var Point[]
      */
-    protected $geometries = [];
+    protected array $geometries = [];
 
     public static function getWktType(): string
     {

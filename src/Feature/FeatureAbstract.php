@@ -11,12 +11,12 @@ namespace Ricklab\Location\Feature;
 
 abstract class FeatureAbstract implements \JsonSerializable
 {
-    protected $bbox = false;
+    protected bool $bbox = false;
 
     /**
      * @param bool|true $bbox
      */
-    public function withBbox($bbox = true): void
+    public function withBbox(bool $bbox = true): void
     {
         $this->bbox = (bool) $bbox;
     }

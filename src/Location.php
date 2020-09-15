@@ -40,17 +40,13 @@ class Location
     /**
      * @var bool Set to false if you have the pecl geospatial extension installed but do not want to use it
      */
-    public static $useSpatialExtension = true;
+    public static bool $useSpatialExtension = true;
 
     /**
      * @var int Set to either Location::HAVERSINE or Location::VICENTY. Defaults to Location::HAVERSINE
      */
-    public static $defaultFormula = self::FORMULA_HAVERSINE;
-
-    /**
-     * @var Ellipsoid|null
-     */
-    protected static $ellipsoid;
+    public static int $defaultFormula = self::FORMULA_HAVERSINE;
+    protected static ?Ellipsoid $ellipsoid = null;
 
     /**
      * Create a geometry from GeoJSON.
@@ -408,8 +404,8 @@ class Location
      */
     public static function decimalToDms(float $decimal): array
     {
-        $deg = \floor($decimal);
-        $min = \floor(($decimal - $deg) * 60);
+        $deg = (int) \floor($decimal);
+        $min = (int) \floor(($decimal - $deg) * 60);
         $sec = ($decimal - $deg - $min / 60) * 3600;
 
         return [$deg, $min, $sec];

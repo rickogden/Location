@@ -15,16 +15,8 @@ use Ricklab\Location\Geometry\GeometryInterface;
 class Feature extends FeatureAbstract implements \ArrayAccess
 {
     protected $id;
-
-    /**
-     * @var GeometryInterface|null
-     */
-    protected $geometry;
-
-    /**
-     * @var array
-     */
-    protected $properties = [];
+    protected ?GeometryInterface $geometry;
+    protected array $properties = [];
 
     public function __construct(array $properties = [], ?GeometryInterface $geometry = null, bool $bbox = false)
     {

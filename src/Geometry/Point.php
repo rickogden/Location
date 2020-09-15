@@ -23,15 +23,8 @@ class Point implements GeometryInterface
     public const MAX_LONGITUDE = 180;
     public const MIN_LONGITUDE = -180;
 
-    /**
-     * @var float
-     */
-    protected $longitude;
-
-    /**
-     * @var float
-     */
-    protected $latitude;
+    protected float $longitude;
+    protected float $latitude;
 
     public static function getWktType(): string
     {

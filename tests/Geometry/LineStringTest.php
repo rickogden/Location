@@ -9,10 +9,7 @@ use Ricklab\Location\Location;
 
 class LineStringTest extends TestCase
 {
-    /**
-     * @var LineString
-     */
-    protected $line;
+    protected LineString $line;
 
     protected function setUp(): void
     {

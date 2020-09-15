@@ -41,10 +41,7 @@ class GeoHash
         'z',
     ];
 
-    /**
-     * @var string
-     */
-    private $hash;
+    private string $hash;
 
     public static function fromPoint(Point $point, int $resolution = 12): self
     {

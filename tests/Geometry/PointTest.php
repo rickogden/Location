@@ -9,12 +9,9 @@ use Ricklab\Location\Location;
 
 class PointTest extends TestCase
 {
-    /**
-     * @var Point
-     */
-    public $point;
-    public $lat = 53.48575;
-    public $lon = -2.27354;
+    public Point $point;
+    public float $lat = 53.48575;
+    public float $lon = -2.27354;
 
     protected function setUp(): void
     {

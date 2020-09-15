@@ -17,7 +17,7 @@ class FeatureCollection extends FeatureAbstract implements \IteratorAggregate
     /**
      * @var Feature[]
      */
-    protected $features = [];
+    protected array $features = [];
 
     /**
      * FeatureCollection constructor.
