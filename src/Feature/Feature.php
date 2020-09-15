@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Feature;
 
+use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryInterface;
-use Ricklab\Location\Location;
 
 class Feature extends FeatureAbstract implements \ArrayAccess
 {
@@ -90,7 +90,7 @@ class Feature extends FeatureAbstract implements \ArrayAccess
 
         if ($this->geometry instanceof GeometryInterface) {
             if ($this->bbox) {
-                $array['bbox'] = Location::getBBoxArray($this->geometry);
+                $array['bbox'] = BoundingBox::fromGeometry($this->geometry)->getBounds();
             }
             $array['geometry'] = $this->geometry->jsonSerialize();
         } else {
