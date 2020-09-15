@@ -15,6 +15,7 @@ use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Feature\Feature;
 use Ricklab\Location\Feature\FeatureAbstract;
 use Ricklab\Location\Feature\FeatureCollection;
+use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryCollection;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\LineString;
@@ -353,86 +354,37 @@ class Location
     }
 
     /**
+     * @deprecated use BoundingBox::fromCenter() instead
+     *
      * @param Point  $point  the centre of the bounding box
      * @param float  $radius minimum radius from $point
      * @param string $unit   unit of the radius (default is kilometres)
      *
      * @throws BoundBoxRangeException
      *
-     * @return Polygon the BBox
+     * @return BoundingBox the BBox
      */
-    public static function getBBoxByRadius(Point $point, float $radius, $unit = 'km'): Polygon
+    public static function getBBoxByRadius(Point $point, float $radius, $unit = 'km'): BoundingBox
     {
-        $north = $point->getRelativePoint($radius, 0, $unit);
-        $south = $point->getRelativePoint($radius, 180, $unit);
-
-        $limits = [
-            'n' => $north->getLatitude(),
-            's' => $south->getLatitude(),
-        ];
-
-        $radDist = $radius / self::getEllipsoid()->radius($unit);
-        $radLon = $point->longitudeToRad();
-        $deltaLon = \asin(\sin($radDist) / \cos($point->latitudeToRad()));
-
-        if (\is_nan($deltaLon)) {
-            throw new BoundBoxRangeException('Cannot create a bounding-box at these coordinates.');
-        }
-        $minLon = $radLon - $deltaLon;
-
-        if ($minLon < \deg2rad(-180)) {
-            $minLon += 2 * \M_PI;
-        }
-        $maxLon = $radLon + $deltaLon;
-
-        if ($maxLon > \deg2rad(180)) {
-            $maxLon -= 2 * \M_PI;
-        }
-
-        $limits['w'] = \rad2deg($minLon);
-        $limits['e'] = \rad2deg($maxLon);
-
-        $nw = new Point($limits['w'], $limits['n']);
-        $ne = new Point($limits['e'], $limits['n']);
-        $sw = new Point($limits['w'], $limits['s']);
-        $se = new Point($limits['e'], $limits['s']);
-
-        return new Polygon([new LineString([$nw, $ne, $se, $sw])]);
-    }
-
-    public static function getBBox(GeometryInterface $geometry): Polygon
-    {
-        [$minLon, $minLat, $maxLon, $maxLat] = self::getBBoxArray($geometry);
-
-        $nw = Point::fromArray([$minLon, $maxLat]);
-        $ne = Point::fromArray([$maxLon, $maxLat]);
-        $se = Point::fromArray([$maxLon, $minLat]);
-        $sw = Point::fromArray([$minLon, $minLat]);
-
-        return Polygon::fromArray([[$nw, $ne, $se, $sw]]);
+        return BoundingBox::fromCenter($point, $radius, $unit);
     }
 
     /**
+     * @deprecated use BoundingBox::fromGeometry() instead
+     */
+    public static function getBBox(GeometryInterface $geometry): Polygon
+    {
+        return BoundingBox::fromGeometry($geometry);
+    }
+
+    /**
+     * @deprecated Use BoundingBox::fromGeometry($geometry)->getBounds() instead
+     *
      * @return array of coordinates in the order of: minimum longitude, minimum latitude, maximum longitude and maximum latitude
      */
     public static function getBBoxArray(GeometryInterface $geometry): array
     {
-        $maxLat = -90;
-        $minLat = 90;
-        $maxLon = -180;
-        $minLon = 180;
-
-        $points = $geometry->getPoints();
-
-        /** @var Point $point */
-        foreach ($points as $point) {
-            $maxLat = ($point->getLatitude() > $maxLat) ? $point->getLatitude() : $maxLat;
-            $minLat = ($point->getLatitude() < $minLat) ? $point->getLatitude() : $minLat;
-            $maxLon = ($point->getLongitude() > $maxLon) ? $point->getLongitude() : $maxLon;
-            $minLon = ($point->getLongitude() < $minLon) ? $point->getLongitude() : $minLon;
-        }
-
-        return [$minLon, $minLat, $maxLon, $maxLat];
+        return BoundingBox::fromGeometry($geometry)->getBounds();
     }
 
     /**
@@ -452,7 +404,7 @@ class Location
     /**
      * @param float $decimal the decimal longitude/latitude
      *
-     * @return array of degrees, minutes, seconds from North/East
+     * @return array{0: int, 1: int, 2: float} of degrees, minutes, seconds from North/East
      */
     public static function decimalToDms(float $decimal): array
     {
@@ -473,8 +425,8 @@ class Location
             return \initial_bearing($point1->jsonSerialize(), $point2->jsonSerialize());
         }
         $y = \sin(
-                \deg2rad($point2->getLongitude() - $point1->getLongitude())
-            ) * \cos($point2->latitudeToRad());
+            \deg2rad($point2->getLongitude() - $point1->getLongitude())
+        ) * \cos($point2->latitudeToRad());
         $x = \cos($point1->latitudeToRad())
             * \sin($point2->latitudeToRad()) - \sin(
                 $point1->latitudeToRad()

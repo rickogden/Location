@@ -16,6 +16,11 @@ class Polygon implements GeometryInterface, \IteratorAggregate
      */
     protected $geometries = [];
 
+    /**
+     * @var bool|null whether this geometry is a bouding box
+     */
+    private $isBoundingBox;
+
     public static function getWktType(): string
     {
         return 'POLYGON';
@@ -62,9 +67,9 @@ class Polygon implements GeometryInterface, \IteratorAggregate
         return $this->geometries[0]->getLength($unit, $formula ?? Location::$defaultFormula);
     }
 
-    public function getBBox(): self
+    public function getBBox(): BoundingBox
     {
-        return Location::getBBox($this);
+        return BoundingBox::fromGeometry($this);
     }
 
     /**
