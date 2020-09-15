@@ -106,7 +106,7 @@ class LineString implements GeometryInterface, \IteratorAggregate
      */
     public function getBBox(): Polygon
     {
-        return Location::getBBox($this);
+        return BoundingBox::fromGeometry($this);
     }
 
     /**
@@ -152,6 +152,17 @@ class LineString implements GeometryInterface, \IteratorAggregate
     public function isClosedShape(): bool
     {
         return $this->getFirst()->equals($this->getLast());
+    }
+
+    public function contains(Point $point): bool
+    {
+        foreach ($this->geometries as $geo) {
+            if ($geo->equals($point)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function getGeometryArray(): array

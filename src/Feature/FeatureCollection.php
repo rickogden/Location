@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Feature;
 
+use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\LineString;
-use Ricklab\Location\Location;
 
 class FeatureCollection extends FeatureAbstract implements \IteratorAggregate
 {
@@ -89,7 +89,7 @@ class FeatureCollection extends FeatureAbstract implements \IteratorAggregate
         $return['type'] = 'FeatureCollection';
 
         if ($this->bbox) {
-            $return['bbox'] = Location::getBBoxArray(new LineString($points));
+            $return['bbox'] = BoundingBox::fromGeometry(new LineString($points))->getBounds();
         }
 
         $return['features'] = $features;
