@@ -14,15 +14,13 @@ class BoundingBox extends Polygon
     private float $minLat;
     private float $maxLat;
 
+    /**
+     * @throws BoundBoxRangeException currently cannot create a bounding box over the meridian
+     */
     public static function fromCenter(Point $point, float $radius, string $unit = Location::UNIT_KM): self
     {
-        $north = $point->getRelativePoint($radius, 0, $unit);
-        $south = $point->getRelativePoint($radius, 180, $unit);
-
-        $limits = [
-            'n' => $north->getLatitude(),
-            's' => $south->getLatitude(),
-        ];
+        $maxLat = $point->getRelativePoint($radius, 0, $unit)->getLatitude();
+        $minLat = $point->getRelativePoint($radius, 180, $unit)->getLatitude();
 
         $radDist = $radius / Location::getEllipsoid()->radius($unit);
         $radLon = $point->longitudeToRad();
@@ -42,10 +40,10 @@ class BoundingBox extends Polygon
             $maxLon -= 2 * \M_PI;
         }
 
-        $limits['w'] = \rad2deg($minLon);
-        $limits['e'] = \rad2deg($maxLon);
+        $minLon = \rad2deg($minLon);
+        $maxLon = \rad2deg($maxLon);
 
-        return new self($limits['w'], $limits['s'], $limits['e'], $limits['n']);
+        return new self($minLon, $minLat, $maxLon, $maxLat);
     }
 
     public static function fromGeometry(GeometryInterface $geometry): self
@@ -111,5 +109,13 @@ class BoundingBox extends Polygon
             $this->maxLon,
             $this->maxLat,
         ];
+    }
+
+    public function getCenter(): Point
+    {
+        $lat = ($this->minLat + $this->maxLat) / 2;
+        $lon = ($this->minLon + $this->maxLon) / 2;
+
+        return new Point($lon, $lat);
     }
 }

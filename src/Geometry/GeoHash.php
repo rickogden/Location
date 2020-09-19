@@ -123,4 +123,52 @@ class GeoHash
     {
         return $this->hash;
     }
+
+    public function getBounds(): BoundingBox
+    {
+        $minLon = Point::MIN_LONGITUDE;
+        $maxLon = Point::MAX_LONGITUDE;
+        $minLat = Point::MIN_LATITUDE;
+        $maxLat = Point::MAX_LATITUDE;
+        $i = 0;
+
+        $hash = \mb_str_split($this->hash);
+        $indexes = \array_flip(self::HASH_MAP);
+        $evenBit = true;
+
+        foreach ($hash as $char) {
+            $index = $indexes[$char];
+
+            for ($i = 4; $i >= 0; --$i) {
+                $bitN = $index >> $i & 1;
+
+                if ($evenBit) {
+                    $midLon = ($minLon + $maxLon) / 2;
+
+                    if (1 === $bitN) {
+                        $minLon = $midLon;
+                    } else {
+                        $maxLon = $midLon;
+                    }
+                } else {
+                    $midLat = ($minLat + $maxLat) / 2;
+
+                    if (1 === $bitN) {
+                        $minLat = $midLat;
+                    } else {
+                        $maxLat = $midLat;
+                    }
+                }
+
+                $evenBit = !$evenBit;
+            }
+        }
+
+        return new BoundingBox($minLon, $minLat, $maxLon, $maxLat);
+    }
+
+    public function getCenter(): Point
+    {
+        return $this->getBounds()->getCenter();
+    }
 }
