@@ -67,6 +67,14 @@ class BoundingBox extends Polygon
     }
 
     /**
+     * @param GeometryInterface[] $geometries
+     */
+    public static function fromGeometries(array $geometries): self
+    {
+        return self::fromGeometry(new GeometryCollection($geometries));
+    }
+
+    /**
      * @param array{0: float, 1: float, 2: float, 3: float} Array of coordinates in the order of: minimum longitude, minimum latitude, max longitude and maximum latitude
      */
     public static function fromArray(array $geometries): self
@@ -117,5 +125,25 @@ class BoundingBox extends Polygon
         $lon = ($this->minLon + $this->maxLon) / 2;
 
         return new Point($lon, $lat);
+    }
+
+    public function getMinLon(): float
+    {
+        return $this->minLon;
+    }
+
+    public function getMaxLon(): float
+    {
+        return $this->maxLon;
+    }
+
+    public function getMinLat(): float
+    {
+        return $this->minLat;
+    }
+
+    public function getMaxLat(): float
+    {
+        return $this->maxLat;
     }
 }

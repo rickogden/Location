@@ -14,7 +14,7 @@ class Polygon implements GeometryInterface, \IteratorAggregate
     /**
      * @var LineString[]
      */
-    protected array $geometries = [];
+    private array $geometries = [];
 
     /**
      * @var bool|null whether this geometry is a bouding box
