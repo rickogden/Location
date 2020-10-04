@@ -6,6 +6,13 @@ namespace Ricklab\Location\Geometry;
 
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Location;
+use function asin;
+use function cos;
+use function deg2rad;
+use function is_nan;
+use function rad2deg;
+use function sin;
+use const M_PI;
 
 class BoundingBox extends Polygon
 {
@@ -22,26 +29,26 @@ class BoundingBox extends Polygon
         $maxLat = $point->getRelativePoint($radius, 0, $unit)->getLatitude();
         $minLat = $point->getRelativePoint($radius, 180, $unit)->getLatitude();
 
-        $radDist = $radius / Location::getEllipsoid()->radius($unit);
-        $radLon = $point->longitudeToRad();
-        $deltaLon = \asin(\sin($radDist) / \cos($point->latitudeToRad()));
+        $radDist  = $radius / Location::getEllipsoid()->radius($unit);
+        $radLon   = $point->longitudeToRad();
+        $deltaLon = asin(sin($radDist) / cos($point->latitudeToRad()));
 
-        if (\is_nan($deltaLon)) {
+        if (is_nan($deltaLon)) {
             throw new BoundBoxRangeException('Cannot create a bounding-box at these coordinates.');
         }
         $minLon = $radLon - $deltaLon;
 
-        if ($minLon < \deg2rad(-180)) {
-            $minLon += 2 * \M_PI;
+        if ($minLon < deg2rad(-180)) {
+            $minLon += 2 * M_PI;
         }
         $maxLon = $radLon + $deltaLon;
 
-        if ($maxLon > \deg2rad(180)) {
-            $maxLon -= 2 * \M_PI;
+        if ($maxLon > deg2rad(180)) {
+            $maxLon -= 2 * M_PI;
         }
 
-        $minLon = \rad2deg($minLon);
-        $maxLon = \rad2deg($maxLon);
+        $minLon = rad2deg($minLon);
+        $maxLon = rad2deg($maxLon);
 
         return new self($minLon, $minLat, $maxLon, $maxLat);
     }
@@ -55,7 +62,6 @@ class BoundingBox extends Polygon
 
         $points = $geometry->getPoints();
 
-        /** @var Point $point */
         foreach ($points as $point) {
             $maxLat = ($point->getLatitude() > $maxLat) ? $point->getLatitude() : $maxLat;
             $minLat = ($point->getLatitude() < $minLat) ? $point->getLatitude() : $minLat;

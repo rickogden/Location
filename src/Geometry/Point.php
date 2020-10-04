@@ -10,9 +10,20 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use InvalidArgumentException;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
 use Ricklab\Location\Location;
+use function asin;
+use function atan2;
+use function cos;
+use function count;
+use function deg2rad;
+use function is_nan;
+use function rad2deg;
+use function round;
+use function sin;
+use function sprintf;
 
 class Point implements GeometryInterface
 {
@@ -38,8 +49,9 @@ class Point implements GeometryInterface
 
     public static function fromArray(array $point): self
     {
-        if (2 !== $length = \count($point)) {
-            throw new \InvalidArgumentException(\sprintf('Must be an array consisting of exactly 2 elements, %d passed', $length));
+        if (2 !== $length = count($point)) {
+            throw new InvalidArgumentException(sprintf('Must be an array consisting of exactly 2 elements, %d passed',
+                $length));
         }
 
         return new self($point[0], $point[1]);
@@ -131,20 +143,20 @@ class Point implements GeometryInterface
      */
     public function getRelativePoint(float $distance, float $bearing, string $unit = 'km'): Point
     {
-        $rad = Location::getEllipsoid()->radius($unit);
-        $lat1 = $this->latitudeToRad();
-        $lon1 = $this->longitudeToRad();
-        $bearing = \deg2rad($bearing);
+        $rad     = Location::getEllipsoid()->radius($unit);
+        $lat1    = $this->latitudeToRad();
+        $lon1    = $this->longitudeToRad();
+        $bearing = deg2rad($bearing);
 
-        $lat2 = \sin($lat1) * \cos($distance / $rad) +
-            \cos($lat1) * \sin($distance / $rad) * \cos($bearing);
-        $lat2 = \asin($lat2);
+        $lat2 = sin($lat1) * cos($distance / $rad) +
+                cos($lat1) * sin($distance / $rad) * cos($bearing);
+        $lat2 = asin($lat2);
 
-        $lon2y = \sin($bearing) * \sin($distance / $rad) * \cos($lat1);
-        $lon2x = \cos($distance / $rad) - \sin($lat1) * \sin($lat2);
-        $lon2 = $lon1 + \atan2($lon2y, $lon2x);
+        $lon2y = sin($bearing) * sin($distance / $rad) * cos($lat1);
+        $lon2x = cos($distance / $rad) - sin($lat1) * sin($lat2);
+        $lon2  = $lon1 + atan2($lon2y, $lon2x);
 
-        return new self(\rad2deg($lon2), \rad2deg($lat2));
+        return new self(rad2deg($lon2), rad2deg($lat2));
     }
 
     /**
@@ -154,7 +166,7 @@ class Point implements GeometryInterface
      */
     public function latitudeToRad(): float
     {
-        return \deg2rad($this->latitude);
+        return deg2rad($this->latitude);
     }
 
     /**
@@ -164,7 +176,7 @@ class Point implements GeometryInterface
      */
     public function longitudeToRad(): float
     {
-        return \deg2rad($this->longitude);
+        return deg2rad($this->longitude);
     }
 
     /**
@@ -236,13 +248,11 @@ class Point implements GeometryInterface
     }
 
     /**
-     * @param string $unit
-     *
      * @throws BoundBoxRangeException
      */
-    public function getBBoxByRadius(float $radius, $unit = 'km'): Polygon
+    public function getBBoxByRadius(float $radius, string $unit = Location::UNIT_KM): BoundingBox
     {
-        return Location::getBBoxByRadius($this, $radius, $unit);
+        return BoundingBox::fromCenter($this, $radius, $unit);
     }
 
     /**
@@ -250,7 +260,7 @@ class Point implements GeometryInterface
      */
     public function toWkt(): string
     {
-        return \sprintf('%s(%s)', self::getWktType(), (string) $this);
+        return sprintf('%s(%s)', self::getWktType(), (string)$this);
     }
 
     /**
@@ -275,8 +285,8 @@ class Point implements GeometryInterface
 
     private function setLatitude(float $lat): void
     {
-        if ($lat > self::MAX_LATITUDE || $lat < self::MIN_LATITUDE || \is_nan($lat)) {
-            throw new \InvalidArgumentException('latitude must be a valid number between -90 and 90.');
+        if ($lat > self::MAX_LATITUDE || $lat < self::MIN_LATITUDE || is_nan($lat)) {
+            throw new InvalidArgumentException('latitude must be a valid number between -90 and 90.');
         }
 
         $this->latitude = $lat;
@@ -284,8 +294,8 @@ class Point implements GeometryInterface
 
     private function setLongitude(float $long): void
     {
-        if ($long > self::MAX_LONGITUDE || $long < self::MIN_LONGITUDE || \is_nan($long)) {
-            throw new \InvalidArgumentException('longitude must be a valid number between -180 and 180.');
+        if ($long > self::MAX_LONGITUDE || $long < self::MIN_LONGITUDE || is_nan($long)) {
+            throw new InvalidArgumentException('longitude must be a valid number between -180 and 180.');
         }
 
         $this->longitude = $long;
@@ -294,8 +304,8 @@ class Point implements GeometryInterface
     public function equals(GeometryInterface $geometry): bool
     {
         return $geometry instanceof self
-            && $geometry->latitude === $this->latitude
-            && $geometry->longitude === $this->longitude;
+               && $geometry->latitude === $this->latitude
+               && $geometry->longitude === $this->longitude;
     }
 
     public function getGeoHash(int $resolution = 12): GeoHash
@@ -305,9 +315,9 @@ class Point implements GeometryInterface
 
     public function round(int $precision): Point
     {
-        $point = clone $this;
-        $point->latitude = \round($this->latitude, $precision);
-        $point->longitude = \round($this->longitude, $precision);
+        $point            = clone $this;
+        $point->latitude  = round($this->latitude, $precision);
+        $point->longitude = round($this->longitude, $precision);
 
         return $point;
     }

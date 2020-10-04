@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 use Ricklab\Location\Location;
 
-class Polygon implements GeometryInterface, \IteratorAggregate
+class Polygon implements GeometryInterface, IteratorAggregate
 {
     use GeometryTrait;
 
@@ -60,7 +61,7 @@ class Polygon implements GeometryInterface, \IteratorAggregate
     /**
      * The length of the perimeter of the outer-most polygon in unit specified.
      *
-     * @param int $formula defaults to Location::$defaultFormula
+     * @param int|null $formula defaults to Location::$defaultFormula
      */
     public function getPerimeter(string $unit = 'km', ?int $formula = null): float
     {

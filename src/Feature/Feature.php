@@ -9,10 +9,11 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Feature;
 
+use ArrayAccess;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryInterface;
 
-class Feature extends FeatureAbstract implements \ArrayAccess
+class Feature extends FeatureAbstract implements ArrayAccess
 {
     protected $id;
     protected ?GeometryInterface $geometry;
@@ -21,8 +22,8 @@ class Feature extends FeatureAbstract implements \ArrayAccess
     public function __construct(array $properties = [], ?GeometryInterface $geometry = null, bool $bbox = false)
     {
         $this->properties = $properties;
-        $this->geometry = $geometry;
-        $this->bbox = $bbox;
+        $this->geometry   = $geometry;
+        $this->bbox       = $bbox;
     }
 
     public function enableBBox(): void
@@ -109,7 +110,7 @@ class Feature extends FeatureAbstract implements \ArrayAccess
      *
      * @return mixed the value of the property
      */
-    public function getProperty($key)
+    public function getProperty(string $key)
     {
         return $this->properties[$key];
     }
@@ -125,7 +126,7 @@ class Feature extends FeatureAbstract implements \ArrayAccess
      *
      * @return $this
      */
-    public function setProperty($key, $value): self
+    public function setProperty(string $key, $value): self
     {
         $this->properties[$key] = $value;
 
