@@ -43,6 +43,8 @@ class GeoHash
 
     private string $hash;
 
+    private ?BoundingBox $bounds = null;
+
     public static function fromPoint(Point $point, int $resolution = 12): self
     {
         if (12 < $resolution || 1 > $resolution) {
@@ -50,8 +52,8 @@ class GeoHash
         }
 
         $longitude = $point->getLongitude();
-        $latitude = $point->getLatitude();
-        $idx = 0;
+        $latitude  = $point->getLatitude();
+        $idx       = 0;
         $bit = 0;
         $minLon = Point::MIN_LONGITUDE;
         $maxLon = Point::MAX_LONGITUDE;
@@ -126,13 +128,17 @@ class GeoHash
 
     public function getBounds(): BoundingBox
     {
+        if (null !== $this->bounds) {
+            return $this->bounds;
+        }
+
         $minLon = Point::MIN_LONGITUDE;
         $maxLon = Point::MAX_LONGITUDE;
         $minLat = Point::MIN_LATITUDE;
         $maxLat = Point::MAX_LATITUDE;
-        $i = 0;
+        $i      = 0;
 
-        $hash = \mb_str_split($this->hash);
+        $hash    = \mb_str_split($this->hash);
         $indexes = \array_flip(self::HASH_MAP);
         $evenBit = true;
 
@@ -164,7 +170,9 @@ class GeoHash
             }
         }
 
-        return new BoundingBox($minLon, $minLat, $maxLon, $maxLat);
+        $this->bounds = new BoundingBox($minLon, $minLat, $maxLon, $maxLat);
+
+        return $this->bounds;
     }
 
     public function getCenter(): Point

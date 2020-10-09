@@ -17,11 +17,6 @@ class Polygon implements GeometryInterface, IteratorAggregate
      */
     protected array $geometries = [];
 
-    /**
-     * @var bool|null whether this geometry is a bouding box
-     */
-    private ?bool $isBoundingBox;
-
     public static function getWktType(): string
     {
         return 'POLYGON';
@@ -47,9 +42,9 @@ class Polygon implements GeometryInterface, IteratorAggregate
     }
 
     /**
-     * Pass in an array of Points to create a Polygon or multiple arrays of points for a Polygon with holes in.
+     * Pass in a LineString to create a Polygon or multiple LineStrings for a Polygon with holes in.
      *
-     * @param LineString[]
+     * @param $lines LineString[]
      */
     public function __construct(array $lines)
     {
