@@ -41,8 +41,7 @@ class Point implements GeometryInterface
     public static function fromArray(array $point): self
     {
         if (2 !== $length = \count($point)) {
-            throw new InvalidArgumentException(\sprintf('Must be an array consisting of exactly 2 elements, %d passed',
-                $length));
+            throw new InvalidArgumentException(\sprintf('Must be an array consisting of exactly 2 elements, %d passed', $length));
         }
 
         return new self($point[0], $point[1]);
@@ -134,9 +133,9 @@ class Point implements GeometryInterface
      */
     public function getRelativePoint(float $distance, float $bearing, string $unit = 'km'): Point
     {
-        $rad     = Location::getEllipsoid()->radius($unit);
-        $lat1    = $this->latitudeToRad();
-        $lon1    = $this->longitudeToRad();
+        $rad = Location::getEllipsoid()->radius($unit);
+        $lat1 = $this->latitudeToRad();
+        $lon1 = $this->longitudeToRad();
         $bearing = \deg2rad($bearing);
 
         $lat2 = \sin($lat1) * \cos($distance / $rad) +
@@ -145,7 +144,7 @@ class Point implements GeometryInterface
 
         $lon2y = \sin($bearing) * \sin($distance / $rad) * \cos($lat1);
         $lon2x = \cos($distance / $rad) - \sin($lat1) * \sin($lat2);
-        $lon2  = $lon1 + \atan2($lon2y, $lon2x);
+        $lon2 = $lon1 + \atan2($lon2y, $lon2x);
 
         return new self(\rad2deg($lon2), \rad2deg($lat2));
     }
@@ -251,7 +250,7 @@ class Point implements GeometryInterface
      */
     public function toWkt(): string
     {
-        return \sprintf('%s(%s)', self::getWktType(), (string)$this);
+        return \sprintf('%s(%s)', self::getWktType(), (string) $this);
     }
 
     /**
@@ -306,9 +305,9 @@ class Point implements GeometryInterface
 
     public function round(int $precision): Point
     {
-        $point            = clone $this;
-        $point->latitude  = round($this->latitude, $precision);
-        $point->longitude = round($this->longitude, $precision);
+        $point = clone $this;
+        $point->latitude = \round($this->latitude, $precision);
+        $point->longitude = \round($this->longitude, $precision);
 
         return $point;
     }

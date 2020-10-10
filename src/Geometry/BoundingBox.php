@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use const M_PI;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Location;
-use const M_PI;
 
 class BoundingBox extends Polygon
 {
@@ -23,8 +23,8 @@ class BoundingBox extends Polygon
         $maxLat = $point->getRelativePoint($radius, 0, $unit)->getLatitude();
         $minLat = $point->getRelativePoint($radius, 180, $unit)->getLatitude();
 
-        $radDist  = $radius / Location::getEllipsoid()->radius($unit);
-        $radLon   = $point->longitudeToRad();
+        $radDist = $radius / Location::getEllipsoid()->radius($unit);
+        $radLon = $point->longitudeToRad();
         $deltaLon = \asin(\sin($radDist) / \cos($point->latitudeToRad()));
 
         if (\is_nan($deltaLon)) {

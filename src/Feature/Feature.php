@@ -22,8 +22,8 @@ class Feature extends FeatureAbstract implements ArrayAccess
     public function __construct(array $properties = [], ?GeometryInterface $geometry = null, bool $bbox = false)
     {
         $this->properties = $properties;
-        $this->geometry   = $geometry;
-        $this->bbox       = $bbox;
+        $this->geometry = $geometry;
+        $this->bbox = $bbox;
     }
 
     public function enableBBox(): void
