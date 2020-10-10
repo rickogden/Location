@@ -41,6 +41,20 @@ class GeoHash
         'z',
     ];
 
+    private const NEIGHBOUR = [
+        'n' => ['p0r21436x8zb9dcf5h7kjnmqesgutwvy', 'bc01fg45238967deuvhjyznpkmstqrwx'],
+        's' => ['14365h7k9dcfesgujnmqp0r2twvyx8zb', '238967debc01fg45kmstqrwxuvhjyznp'],
+        'e' => ['bc01fg45238967deuvhjyznpkmstqrwx', 'p0r21436x8zb9dcf5h7kjnmqesgutwvy'],
+        'w' => ['238967debc01fg45kmstqrwxuvhjyznp', '14365h7k9dcfesgujnmqp0r2twvyx8zb'],
+    ];
+
+    private const BORDER = [
+        'n' => ['prxz', 'bcfguvyz'],
+        's' => ['028b', '0145hjnp'],
+        'e' => ['bcfguvyz', 'prxz'],
+        'w' => ['0145hjnp', '028b'],
+    ];
+
     private string $hash;
 
     private ?BoundingBox $bounds = null;
@@ -52,8 +66,8 @@ class GeoHash
         }
 
         $longitude = $point->getLongitude();
-        $latitude  = $point->getLatitude();
-        $idx       = 0;
+        $latitude = $point->getLatitude();
+        $idx = 0;
         $bit = 0;
         $minLon = Point::MIN_LONGITUDE;
         $maxLon = Point::MAX_LONGITUDE;
@@ -126,6 +140,11 @@ class GeoHash
         return $this->hash;
     }
 
+    public function getLength(): int
+    {
+        return \mb_strlen($this->hash);
+    }
+
     public function getBounds(): BoundingBox
     {
         if (null !== $this->bounds) {
@@ -136,9 +155,9 @@ class GeoHash
         $maxLon = Point::MAX_LONGITUDE;
         $minLat = Point::MIN_LATITUDE;
         $maxLat = Point::MAX_LATITUDE;
-        $i      = 0;
+        $i = 0;
 
-        $hash    = \mb_str_split($this->hash);
+        $hash = \mb_str_split($this->hash);
         $indexes = \array_flip(self::HASH_MAP);
         $evenBit = true;
 
@@ -178,5 +197,83 @@ class GeoHash
     public function getCenter(): Point
     {
         return $this->getBounds()->getCenter();
+    }
+
+    public function getAdjacentNorth(): GeoHash
+    {
+        return self::getAdjacent($this->hash, 'n');
+    }
+
+    public function getAdjacentSouth(): GeoHash
+    {
+        return self::getAdjacent($this->hash, 's');
+    }
+
+    public function getAdjacentEast(): GeoHash
+    {
+        return self::getAdjacent($this->hash, 'e');
+    }
+
+    public function getAdjacentWest(): GeoHash
+    {
+        return self::getAdjacent($this->hash, 'w');
+    }
+
+    public function getAdjacentNorthWest(): GeoHash
+    {
+        return $this->getAdjacentNorth()->getAdjacentWest();
+    }
+
+    public function getAdjacentNorthEast(): GeoHash
+    {
+        return $this->getAdjacentNorth()->getAdjacentEast();
+    }
+
+    public function getAdjacentSouthWest(): GeoHash
+    {
+        return $this->getAdjacentSouth()->getAdjacentWest();
+    }
+
+    public function getAdjacentSouthEast(): GeoHash
+    {
+        return $this->getAdjacentSouth()->getAdjacentEast();
+    }
+
+    private static function getAdjacent($hash, $direction): GeoHash
+    {
+        $lastChar = \mb_substr($hash, -1);
+        $parent = \mb_substr($hash, 0, -1);
+        $type = \mb_strlen($hash) % 2;
+
+        if (false !== \mb_strpos(self::BORDER[$direction][$type], $lastChar) && '' !== $parent) {
+            $parent = self::getAdjacent($parent, $direction);
+        }
+
+        return new self($parent.self::HASH_MAP[\mb_strpos(self::NEIGHBOUR[$direction][$type], $lastChar)]);
+    }
+
+    public function getParent(): GeoHash
+    {
+        if ($this->getLength() < 2) {
+            throw new \LogicException('This GeoHash has no parent');
+        }
+
+        return new self(\mb_substr($this->hash, 0, -1));
+    }
+
+    public function equals(self $geoHash): bool
+    {
+        return $this->hash === $geoHash->hash;
+    }
+
+    public function contains(self $geoHash): bool
+    {
+        if ($this->getLength() >= $geoHash->getLength()) {
+            return $this->equals($geoHash);
+        }
+
+        $childSubstr = \mb_substr($geoHash->hash, 0, $this->getLength());
+
+        return $this->hash === $childSubstr;
     }
 }
