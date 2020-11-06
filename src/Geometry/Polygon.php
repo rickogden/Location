@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 use Ricklab\Location\Location;
 
-class Polygon implements GeometryInterface, \IteratorAggregate
+class Polygon implements GeometryInterface, IteratorAggregate
 {
     use GeometryTrait;
 
@@ -15,11 +16,6 @@ class Polygon implements GeometryInterface, \IteratorAggregate
      * @var LineString[]
      */
     private array $geometries = [];
-
-    /**
-     * @var bool|null whether this geometry is a bouding box
-     */
-    private ?bool $isBoundingBox;
 
     public static function getWktType(): string
     {
@@ -46,9 +42,9 @@ class Polygon implements GeometryInterface, \IteratorAggregate
     }
 
     /**
-     * Pass in an array of Points to create a Polygon or multiple arrays of points for a Polygon with holes in.
+     * Pass in a LineString to create a Polygon or multiple LineStrings for a Polygon with holes in.
      *
-     * @param LineString[]
+     * @param $lines LineString[]
      */
     public function __construct(array $lines)
     {
@@ -60,7 +56,7 @@ class Polygon implements GeometryInterface, \IteratorAggregate
     /**
      * The length of the perimeter of the outer-most polygon in unit specified.
      *
-     * @param int $formula defaults to Location::$defaultFormula
+     * @param int|null $formula defaults to Location::$defaultFormula
      */
     public function getPerimeter(string $unit = 'km', ?int $formula = null): float
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use const M_PI;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Location;
 
@@ -32,12 +33,12 @@ class BoundingBox extends Polygon
         $minLon = $radLon - $deltaLon;
 
         if ($minLon < \deg2rad(-180)) {
-            $minLon += 2 * \M_PI;
+            $minLon += 2 * M_PI;
         }
         $maxLon = $radLon + $deltaLon;
 
         if ($maxLon > \deg2rad(180)) {
-            $maxLon -= 2 * \M_PI;
+            $maxLon -= 2 * M_PI;
         }
 
         $minLon = \rad2deg($minLon);
@@ -55,7 +56,6 @@ class BoundingBox extends Polygon
 
         $points = $geometry->getPoints();
 
-        /** @var Point $point */
         foreach ($points as $point) {
             $maxLat = ($point->getLatitude() > $maxLat) ? $point->getLatitude() : $maxLat;
             $minLat = ($point->getLatitude() < $minLat) ? $point->getLatitude() : $minLat;
