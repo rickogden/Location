@@ -39,7 +39,7 @@ abstract class Ellipsoid implements EllipsoidInterface
      */
     public function getMultiplier(string $unit = Location::UNIT_METRES): float
     {
-        UnitConverter::getMultiplier($unit);
+        return UnitConverter::getMultiplier($unit);
     }
 
     /**
