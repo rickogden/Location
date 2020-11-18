@@ -11,7 +11,6 @@ use Ricklab\Location\Location;
 
 final class VincentyCalculator implements DistanceCalculatorInterface
 {
-
     public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {
         if (\function_exists('vincenty') && Location::$useSpatialExtension && $ellipsoid instanceof Earth) {

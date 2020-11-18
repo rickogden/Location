@@ -10,7 +10,6 @@ use Ricklab\Location\Location;
 
 final class HaversineCalculator implements DistanceCalculatorInterface
 {
-
     public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {
         if (\function_exists('haversine') && Location::$useSpatialExtension) {
