@@ -57,20 +57,6 @@ class LocationTest extends TestCase
         $this->assertEquals(8.047, \round(Location::convert(5, 'miles', 'km'), 3));
     }
 
-    public function testVincenty(): void
-    {
-        $flinders = new Geometry\Point(144.42486788888888, -37.95103341666667);
-
-        $buninyond = new Geometry\Point(143.92649552777777, -37.65282113888889);
-
-        Location::$useSpatialExtension = true;
-        $this->assertEquals(54972.271, \round(Location::vincenty($flinders, $buninyond), 3));
-
-        Location::$useSpatialExtension = false;
-        $this->assertEquals(54972.271, \round(Location::vincenty($flinders, $buninyond), 3));
-        Location::$useSpatialExtension = true;
-    }
-
     public function testDmsToDecimal(): void
     {
         $decimal = Location::dmsToDecimal(117, 29, 50.5);

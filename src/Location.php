@@ -374,7 +374,7 @@ class Location
 
             return Point::fromArray($result['coordinates']);
         }
-        $distance = DefaultDistanceCalculator::calculate($point1, $point2, self::getEllipsoid());
+        $distance = DefaultDistanceCalculator::calculate($point1, $point2, self::getEllipsoid()) / self::getEllipsoid()->radius();
 
         $lat1 = $point1->latitudeToRad();
         $lat2 = $point2->latitudeToRad();
