@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location;
 
+use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\HaversineCalculator;
 use Ricklab\Location\Calculator\UnitConverter;
 use Ricklab\Location\Calculator\VincentyCalculator;
@@ -373,7 +374,7 @@ class Location
 
             return Point::fromArray($result['coordinates']);
         }
-        $distance = self::haversine($point1, $point2);
+        $distance = DefaultDistanceCalculator::calculate($point1, $point2, self::getEllipsoid());
 
         $lat1 = $point1->latitudeToRad();
         $lat2 = $point2->latitudeToRad();
