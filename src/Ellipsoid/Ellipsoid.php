@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Ellipsoid;
 
+use Ricklab\Location\Calculator\UnitConverter;
 use Ricklab\Location\Location;
 
 abstract class Ellipsoid implements EllipsoidInterface
@@ -33,14 +34,12 @@ abstract class Ellipsoid implements EllipsoidInterface
      * @param string $unit The unit you want the multiplier of
      *
      * @return float The multiplier
+     *
+     * @deprecated use UnitConverter::getMultiplier();
      */
     public function getMultiplier(string $unit = Location::UNIT_METRES): float
     {
-        try {
-            return self::MULTIPLIERS[self::KEYS[\mb_strtolower($unit)]];
-        } catch (\Exception $e) {
-            throw new \InvalidArgumentException('Unit '.$unit.' is not a recognised unit.');
-        }
+        UnitConverter::getMultiplier($unit);
     }
 
     /**

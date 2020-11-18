@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Ricklab\Location;
 
+use Ricklab\Location\Calculator\HaversineCalculator;
+use Ricklab\Location\Calculator\UnitConverter;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Ellipsoid\Earth;
 use Ricklab\Location\Ellipsoid\Ellipsoid;
@@ -31,12 +33,23 @@ class Location
     public const FORMULA_HAVERSINE = 1;
     public const FORMULA_VINCENTY = 2;
 
-    public const UNIT_FEET = 'feet';
-    public const UNIT_KM = 'km';
-    public const UNIT_METRES = 'metres';
-    public const UNIT_MILES = 'miles';
-    public const UNIT_NAUTICAL_MILES = 'nautical miles';
-    public const UNIT_YARDS = 'yards';
+    /** @deprecated use UnitConverter::UNIT_FEET */
+    public const UNIT_FEET = UnitConverter::UNIT_FEET;
+
+    /** @deprecated use UnitConverter::UNIT_KM */
+    public const UNIT_KM = UnitConverter::UNIT_KM;
+
+    /** @deprecated use UnitConverter::UNIT_METERS */
+    public const UNIT_METRES = UnitConverter::UNIT_METERS;
+
+    /** @deprecated use UnitConverter::UNIT_MILES */
+    public const UNIT_MILES = UnitConverter::UNIT_MILES;
+
+    /** @deprecated use UnitConverter::UNIT_NAUTICAL_MILES */
+    public const UNIT_NAUTICAL_MILES = UnitConverter::UNIT_NAUTICAL_MILES;
+
+    /** @deprecated use UnitConverter::UNIT_YARDS */
+    public const UNIT_YARDS = UnitConverter::UNIT_YARDS;
 
     /**
      * @var bool Set to false if you have the pecl geospatial extension installed but do not want to use it
@@ -215,18 +228,12 @@ class Location
 
         if (self::FORMULA_VINCENTY === $formula) {
             $mDistance = VincentyCalculator::calculate($point1, $point2, self::getEllipsoid());
-
-            if ('m' === $unit) {
-                return $mDistance;
-            }
-
-            return self::convert($mDistance, 'm', $unit);
+        } else {
+            $mDistance = HaversineCalculator::calculate($point1, $point2, self::getEllipsoid());
         }
-        $radDistance = self::haversine($point1, $point2);
 
-        return $radDistance * self::getEllipsoid()->radius($unit);
+        return UnitConverter::convert($mDistance, self::UNIT_METRES, $unit);
     }
-
 
     /**
      * @return Earth|Ellipsoid the ellipsoid in use (generally Earth)
@@ -251,6 +258,8 @@ class Location
     /**
      * Converts distances from one unit of measurement to another.
      *
+     * @deprecated use UnitConverter::convert()
+     *
      * @param $distance float the distance measurement
      * @param $from string the unit the distance measurement is in
      * @param $to string the unit the distance should be converted into
@@ -259,11 +268,7 @@ class Location
      */
     public static function convert(float $distance, string $from, string $to): float
     {
-        $ellipsoid = self::getEllipsoid();
-
-        $m = $distance / $ellipsoid->getMultiplier($from);
-
-        return $m * $ellipsoid->getMultiplier($to);
+        return UnitConverter::convert($distance, $from, $to);
     }
 
     /**
