@@ -7,16 +7,16 @@ namespace Ricklab\Location\Calculator;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Geometry\Point;
 
-final class DefaultDistanceCalculator implements DistanceCalculatorInterface
+final class DefaultDistanceCalculator implements DistanceCalculator
 {
-    private static ?DistanceCalculatorInterface $defaultCalculator = null;
+    private static ?DistanceCalculator $defaultCalculator = null;
 
-    public static function setDefaultCalculator(DistanceCalculatorInterface $distanceCalculator): void
+    public static function setDefaultCalculator(DistanceCalculator $distanceCalculator): void
     {
         self::$defaultCalculator = $distanceCalculator;
     }
 
-    public static function getDefaultCalculator(): DistanceCalculatorInterface
+    public static function getDefaultCalculator(): DistanceCalculator
     {
         return self::$defaultCalculator ?? new HaversineCalculator();
     }

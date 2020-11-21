@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use const M_PI;
+use Ricklab\Location\Calculator\UnitConverter;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Location;
 
@@ -18,7 +19,7 @@ class BoundingBox extends Polygon
     /**
      * @throws BoundBoxRangeException currently cannot create a bounding box over the meridian
      */
-    public static function fromCenter(Point $point, float $radius, string $unit = Location::UNIT_KM): self
+    public static function fromCenter(Point $point, float $radius, string $unit = UnitConverter::UNIT_METERS): self
     {
         $maxLat = $point->getRelativePoint($radius, 0, $unit)->getLatitude();
         $minLat = $point->getRelativePoint($radius, 180, $unit)->getLatitude();

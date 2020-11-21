@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use PHPUnit\Framework\TestCase;
+use Ricklab\Location\Calculator\UnitConverter;
+use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Location;
 
 class PointTest extends TestCase
@@ -60,11 +62,11 @@ class PointTest extends TestCase
     public function testDistanceTo(): void
     {
         $newPoint = new Point(-2.23194, 53.48204);
-        $this->assertEquals(1.729, \round($this->point->distanceTo($newPoint, 'miles'), 3));
-        $this->assertEquals(2.783, \round($this->point->distanceTo($newPoint), 3));
+        $this->assertEquals(1.729, \round($this->point->distanceTo($newPoint, UnitConverter::UNIT_MILES), 3));
+        $this->assertEquals(2.783, \round($this->point->distanceTo($newPoint, UnitConverter::UNIT_KM), 3));
         $this->assertEquals(
             2.792,
-            \round($this->point->distanceTo($newPoint, 'km', Location::FORMULA_VINCENTY), 3)
+            \round($this->point->distanceTo($newPoint, UnitConverter::UNIT_KM, new VincentyCalculator()), 3)
         );
     }
 

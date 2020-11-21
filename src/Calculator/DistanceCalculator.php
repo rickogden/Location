@@ -7,7 +7,7 @@ namespace Ricklab\Location\Calculator;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Geometry\Point;
 
-interface DistanceCalculatorInterface
+interface DistanceCalculator
 {
     /**
      * @return float the distance in metres

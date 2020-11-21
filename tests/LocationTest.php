@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location;
 
 use PHPUnit\Framework\TestCase;
+use Ricklab\Location\Calculator\UnitConverter;
 use Ricklab\Location\Geometry\LineString;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Geometry\Polygon;
@@ -29,7 +30,7 @@ class LocationTest extends TestCase
         );
 
         $this->assertInstanceOf(LineString::class, $line);
-        $this->assertEquals(2.783, \round($line->getLength(), 3));
+        $this->assertEquals(2.783, \round($line->getLength(UnitConverter::UNIT_KM), 3));
 
         $multiPointLine = Location::fromGeoJson(
             '{"type":"LineString","coordinates":[[-2.27354,53.48575],[-2.23194,53.48204], [-2.23144,53.48254]]}'

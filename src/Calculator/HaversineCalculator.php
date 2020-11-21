@@ -8,7 +8,7 @@ use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Location;
 
-final class HaversineCalculator implements DistanceCalculatorInterface
+final class HaversineCalculator implements DistanceCalculator
 {
     public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {

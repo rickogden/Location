@@ -11,6 +11,9 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use InvalidArgumentException;
+use Ricklab\Location\Calculator\DefaultDistanceCalculator;
+use Ricklab\Location\Calculator\DistanceCalculator;
+use Ricklab\Location\Calculator\UnitConverter;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
 use Ricklab\Location\Location;
@@ -114,14 +117,20 @@ class Point implements GeometryInterface
     /**
      * Find distance to another point.
      *
-     * @param int $formula formula to use, should either be Location::HAVERSINE or Location::VINCENTY. Defaults to
-     *                     Location::$defaultFormula
+     * @param string                  $unit       Defaults to meters
+     * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator.
      *
      * @return float the distance
      */
-    public function distanceTo(Point $point2, string $unit = 'km', int $formula = Location::FORMULA_HAVERSINE): float
+    public function distanceTo(Point $point2, string $unit = UnitConverter::UNIT_METERS, ?DistanceCalculator $calculator = null): float
     {
-        return Location::calculateDistance($this, $point2, $unit, $formula);
+        if (null === $calculator) {
+            $result = DefaultDistanceCalculator::calculate($this, $point2, Location::getEllipsoid());
+        } else {
+            $result = $calculator::calculate($this, $point2, Location::getEllipsoid());
+        }
+
+        return UnitConverter::convert($result, UnitConverter::UNIT_METERS, $unit);
     }
 
     /**
@@ -131,7 +140,7 @@ class Point implements GeometryInterface
      * @param float  $bearing  initial bearing to other point
      * @param string $unit     The unit the distance is in
      */
-    public function getRelativePoint(float $distance, float $bearing, string $unit = 'km'): Point
+    public function getRelativePoint(float $distance, float $bearing, string $unit = UnitConverter::UNIT_METERS): Point
     {
         $rad = Location::getEllipsoid()->radius($unit);
         $lat1 = $this->latitudeToRad();
@@ -240,7 +249,7 @@ class Point implements GeometryInterface
     /**
      * @throws BoundBoxRangeException
      */
-    public function getBBoxByRadius(float $radius, string $unit = Location::UNIT_KM): BoundingBox
+    public function getBBoxByRadius(float $radius, string $unit = UnitConverter::UNIT_METERS): BoundingBox
     {
         return BoundingBox::fromCenter($this, $radius, $unit);
     }
@@ -306,8 +315,8 @@ class Point implements GeometryInterface
     public function round(int $precision): Point
     {
         $point = clone $this;
-        $point->latitude = \round($this->latitude, $precision);
-        $point->longitude = \round($this->longitude, $precision);
+        $point->latitude = round($this->latitude, $precision);
+        $point->longitude = round($this->longitude, $precision);
 
         return $point;
     }
