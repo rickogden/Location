@@ -10,6 +10,8 @@ use Ricklab\Location\Location;
 
 final class HaversineCalculator implements DistanceCalculator
 {
+    public const FORMULA = 'HAVERSINE';
+
     public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {
         if (\function_exists('haversine') && Location::$useSpatialExtension) {
@@ -33,5 +35,10 @@ final class HaversineCalculator implements DistanceCalculator
         }
 
         return $radDistance * $ellipsoid->radius();
+    }
+
+    public static function formula(): string
+    {
+        return self::FORMULA;
     }
 }

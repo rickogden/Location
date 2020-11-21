@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace Ricklab\Location;
 
+use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
+use Ricklab\Location\Calculator\FractionAlongLineCalculator;
 use Ricklab\Location\Calculator\HaversineCalculator;
 use Ricklab\Location\Calculator\UnitConverter;
 use Ricklab\Location\Calculator\VincentyCalculator;
@@ -334,63 +336,33 @@ class Location
         return [$deg, $min, $sec];
     }
 
+    /**
+     * @deprecated use BearingCalculator::calculateInitialBearing()
+     */
     public static function getInitialBearing(Point $point1, Point $point2): float
     {
-        if (
-            self::$useSpatialExtension &&
-            ($geospatialVersion = \phpversion('geospatial')) &&
-            \version_compare($geospatialVersion, '0.2.2-dev', '>=')
-        ) {
-            return \initial_bearing($point1->jsonSerialize(), $point2->jsonSerialize());
-        }
-        $y = \sin(
-            \deg2rad($point2->getLongitude() - $point1->getLongitude())
-        ) * \cos($point2->latitudeToRad());
-        $x = \cos($point1->latitudeToRad())
-            * \sin($point2->latitudeToRad()) - \sin(
-                $point1->latitudeToRad()
-            ) * \cos($point2->latitudeToRad()) *
-            \cos(
-                \deg2rad($point2->getLongitude() - $point1->getLongitude())
-            );
-        $result = \atan2($y, $x);
-
-        return \fmod(\rad2deg($result) + 360, 360);
+        return BearingCalculator::calculateInitialBearing($point1, $point2);
     }
 
+    /**
+     * @deprecated use BearingCalculator::calculateFinalBearing()
+     */
     public static function getFinalBearing(Point $point1, Point $point2): float
     {
-        return \fmod(self::getInitialBearing($point2, $point1) + 180, 360);
+        return BearingCalculator::calculateFinalBearing($point1, $point2);
     }
 
+    /**
+     * @deprecated use FractionAlongLineCalculator::calculate()
+     */
     public static function getFractionAlongLineBetween(Point $point1, Point $point2, float $fraction): Point
     {
-        if ($fraction < 0 || $fraction > 1) {
-            throw new \InvalidArgumentException('$fraction must be between 0 and 1');
-        }
-
-        if (self::$useSpatialExtension && \function_exists('fraction_along_gc_line')) {
-            $result = \fraction_along_gc_line($point1->jsonSerialize(), $point2->jsonSerialize(), $fraction);
-
-            return Point::fromArray($result['coordinates']);
-        }
-        $distance = DefaultDistanceCalculator::calculate($point1, $point2, self::getEllipsoid()) / self::getEllipsoid()->radius();
-
-        $lat1 = $point1->latitudeToRad();
-        $lat2 = $point2->latitudeToRad();
-        $lon1 = $point1->longitudeToRad();
-        $lon2 = $point2->longitudeToRad();
-
-        $a = \sin((1 - $fraction) * $distance) / \sin($distance);
-        $b = \sin($fraction * $distance) / \sin($distance);
-        $x = $a * \cos($lat1) * \cos($lon1) +
-            $b * \cos($lat2) * \cos($lon2);
-        $y = $a * \cos($lat1) * \sin($lon1) +
-            $b * \cos($lat2) * \sin($lon2);
-        $z = $a * \sin($lat1) + $b * \sin($lat2);
-        $res_lat = \atan2($z, \sqrt(($x ** 2) + ($y ** 2)));
-        $res_long = \atan2($y, $x);
-
-        return new Point(\rad2deg($res_long), \rad2deg($res_lat));
+        return FractionAlongLineCalculator::calculate(
+            $point1,
+            $point2,
+            $fraction,
+            DefaultDistanceCalculator::getDefaultCalculator(),
+            self::getEllipsoid()
+        );
     }
 }

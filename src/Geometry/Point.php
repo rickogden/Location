@@ -11,8 +11,10 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use InvalidArgumentException;
+use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\DistanceCalculator;
+use Ricklab\Location\Calculator\FractionAlongLineCalculator;
 use Ricklab\Location\Calculator\UnitConverter;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
@@ -185,7 +187,7 @@ class Point implements GeometryInterface
      */
     public function initialBearingTo(Point $point2): float
     {
-        return Location::getInitialBearing($this, $point2);
+        return BearingCalculator::calculateInitialBearing($this, $point2);
     }
 
     /**
@@ -195,7 +197,7 @@ class Point implements GeometryInterface
      */
     public function finalBearingTo(Point $point2): float
     {
-        return Location::getFinalBearing($this, $point2);
+        return BearingCalculator::calculateFinalBearing($this, $point2);
     }
 
     /**
@@ -221,9 +223,9 @@ class Point implements GeometryInterface
      *
      * @return Point the mid point
      */
-    public function getMidpoint(Point $point): Point
+    public function getMidpoint(Point $point, ?DistanceCalculator $calculator = null): Point
     {
-        return $this->getFractionAlongLineTo($point, 0.5);
+        return $this->getFractionAlongLineTo($point, 0.5, $calculator);
     }
 
     /**
@@ -233,9 +235,15 @@ class Point implements GeometryInterface
      *
      * @throw \InvalidArgumentException
      */
-    public function getFractionAlongLineTo(Point $point, float $fraction): self
+    public function getFractionAlongLineTo(Point $point, float $fraction, ?DistanceCalculator $calculator = null): self
     {
-        return Location::getFractionAlongLineBetween($this, $point, $fraction);
+        return FractionAlongLineCalculator::calculate(
+            $this,
+            $point,
+            $fraction,
+            $calculator ?? DefaultDistanceCalculator::getDefaultCalculator(),
+            Location::getEllipsoid()
+        );
     }
 
     /**
@@ -315,8 +323,8 @@ class Point implements GeometryInterface
     public function round(int $precision): Point
     {
         $point = clone $this;
-        $point->latitude = round($this->latitude, $precision);
-        $point->longitude = round($this->longitude, $precision);
+        $point->latitude = \round($this->latitude, $precision);
+        $point->longitude = \round($this->longitude, $precision);
 
         return $point;
     }

@@ -25,4 +25,9 @@ final class DefaultDistanceCalculator implements DistanceCalculator
     {
         return self::getDefaultCalculator()::calculate($point1, $point2, $ellipsoid);
     }
+
+    public static function formula(): string
+    {
+        return self::getDefaultCalculator()::formula();
+    }
 }

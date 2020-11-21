@@ -11,6 +11,8 @@ use Ricklab\Location\Location;
 
 final class VincentyCalculator implements DistanceCalculator
 {
+    public const FORMULA = 'VINCENTY';
+
     public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {
         if (\function_exists('vincenty') && Location::$useSpatialExtension && $ellipsoid instanceof Earth) {
@@ -58,5 +60,10 @@ final class VincentyCalculator implements DistanceCalculator
         $s = $ellipsoid->getMinorSemiAxis() * $A * ($sigma - $deltaSigma);
 
         return $s * 1000;
+    }
+
+    public static function formula(): string
+    {
+        return self::FORMULA;
     }
 }
