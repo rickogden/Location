@@ -13,7 +13,7 @@ use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\FractionAlongLineCalculator;
 use Ricklab\Location\Calculator\HaversineCalculator;
-use Ricklab\Location\Calculator\UnitConverter;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Ellipsoid\Earth;
 use Ricklab\Location\Ellipsoid\Ellipsoid;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ricklab\Location\Calculator;
+namespace Ricklab\Location\Converter;
 
 final class UnitConverter
 {

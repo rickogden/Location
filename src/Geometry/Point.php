@@ -15,7 +15,7 @@ use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Calculator\FractionAlongLineCalculator;
-use Ricklab\Location\Calculator\UnitConverter;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
 use Ricklab\Location\Location;
@@ -323,8 +323,8 @@ class Point implements GeometryInterface
     public function round(int $precision): Point
     {
         $point = clone $this;
-        $point->latitude = \round($this->latitude, $precision);
-        $point->longitude = \round($this->longitude, $precision);
+        $point->latitude = round($this->latitude, $precision);
+        $point->longitude = round($this->longitude, $precision);
 
         return $point;
     }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use const M_PI;
-use Ricklab\Location\Calculator\UnitConverter;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Location;
 

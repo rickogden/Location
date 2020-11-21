@@ -6,7 +6,7 @@ namespace Ricklab\Location\Geometry;
 
 use IteratorAggregate;
 use Ricklab\Location\Calculator\DistanceCalculator;
-use Ricklab\Location\Calculator\UnitConverter;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 class Polygon implements GeometryInterface, IteratorAggregate

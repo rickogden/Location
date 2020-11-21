@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Calculator\UnitConverter;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Location;
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Calculator\UnitConverter;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\LineString;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Geometry\Polygon;

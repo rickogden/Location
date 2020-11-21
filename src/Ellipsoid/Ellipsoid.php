@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Ellipsoid;
 
-use Ricklab\Location\Calculator\UnitConverter;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Location;
 
 abstract class Ellipsoid implements EllipsoidInterface
