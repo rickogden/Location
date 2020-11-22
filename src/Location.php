@@ -20,16 +20,11 @@ use Ricklab\Location\Ellipsoid\Earth;
 use Ricklab\Location\Ellipsoid\Ellipsoid;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Exception\BoundBoxRangeException;
-use Ricklab\Location\Feature\Feature;
+use Ricklab\Location\Factory\GeoJsonFactory;
+use Ricklab\Location\Factory\WktFactory;
 use Ricklab\Location\Feature\FeatureAbstract;
-use Ricklab\Location\Feature\FeatureCollection;
 use Ricklab\Location\Geometry\BoundingBox;
-use Ricklab\Location\Geometry\GeometryCollection;
 use Ricklab\Location\Geometry\GeometryInterface;
-use Ricklab\Location\Geometry\LineString;
-use Ricklab\Location\Geometry\MultiLineString;
-use Ricklab\Location\Geometry\MultiPoint;
-use Ricklab\Location\Geometry\MultiPolygon;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Geometry\Polygon;
 
@@ -75,153 +70,46 @@ class Location
      * @throws \ErrorException
      *
      * @return GeometryInterface|FeatureAbstract
+     *
+     * @deprecated use GeoJsonFactory
      */
     public static function fromGeoJson($geojson)
     {
+        if (\is_array($geojson)) {
+            return GeoJsonFactory::fromArray($geojson);
+        }
+
         if (\is_string($geojson)) {
-            $geojson = \json_decode($geojson, true);
+            return GeoJsonFactory::fromString($geojson);
         }
 
         if (\is_object($geojson)) {
-            $geojson = \json_decode(\json_encode($geojson), true);
+            return GeoJsonFactory::fromObject($geojson);
         }
 
-        $type = $geojson['type'];
-
-        if ('GeometryCollection' === $type) {
-            $geometries = [];
-            foreach ($geojson['geometries'] as $geom) {
-                $geometries[] = self::fromGeoJson($geom);
-            }
-
-            $geometry = self::createGeometry($type, $geometries);
-        } elseif ('feature' === \mb_strtolower($type)) {
-            $geometry = new Feature();
-
-            if (isset($geojson['geometry'])) {
-                $decodedGeo = self::fromGeoJson($geojson['geometry']);
-
-                if ($decodedGeo instanceof GeometryInterface) {
-                    $geometry->setGeometry($decodedGeo);
-                }
-            }
-
-            if (isset($geojson['properties'])) {
-                $geometry->setProperties($geojson['properties']);
-            }
-        } elseif ('featurecollection' === \mb_strtolower($type)) {
-            $geometry = new FeatureCollection();
-
-            foreach ($geojson['features'] as $feature) {
-                $decodedFeature = self::fromGeoJson($feature);
-
-                if ($decodedFeature instanceof Feature) {
-                    $geometry->addFeature($decodedFeature);
-                }
-            }
-        } else {
-            $coordinates = $geojson['coordinates'];
-            $geometry = self::createGeometry($type, $coordinates);
-        }
-
-        return $geometry;
-    }
-
-    /**
-     * @param $type string the geometry type to create
-     * @param $coordinates array the coordinates for the geometry type
-     */
-    protected static function createGeometry(string $type, array $coordinates): GeometryInterface
-    {
-        switch (\mb_strtolower($type)) {
-            case 'point':
-                $result = Point::fromArray($coordinates);
-                break;
-            case 'linestring':
-                $result = LineString::fromArray($coordinates);
-                break;
-            case 'polygon':
-                $result = Polygon::fromArray($coordinates);
-                break;
-            case 'multipoint':
-                $result = MultiPoint::fromArray($coordinates);
-                break;
-            case 'multilinestring':
-                $result = MultiLineString::fromArray($coordinates);
-                break;
-            case 'multipolygon':
-                $result = MultiPolygon::fromArray($coordinates);
-                break;
-            case 'geometrycollection':
-                $result = GeometryCollection::fromArray($coordinates);
-                break;
-            default:
-                throw new \InvalidArgumentException('This type is not supported');
-        }
-
-        return $result;
+        throw new \InvalidArgumentException('Must be an instance of array, object or string.');
     }
 
     /**
      * Creates a geometry object from Well-Known Text.
      *
      * @param string $wkt The WKT to create the geometry from
+     *
+     * @deprecated use WktFactory::fromString()
      */
     public static function fromWkt(string $wkt): GeometryInterface
     {
-        $type = \trim(\mb_substr($wkt, 0, \mb_strpos($wkt, '(') ?: 0));
-        $wkt = \trim(\str_replace($type, '', $wkt));
-
-        if ('geometrycollection' === \mb_strtolower($type)) {
-            $geocol = \preg_replace('/,?\s*([A-Za-z]+\()/', ':$1', $wkt);
-            $geocol = \trim($geocol);
-            $geocol = \preg_replace('/^\(/', '', $geocol);
-            $geocol = \preg_replace('/\)$/', '', $geocol);
-
-            $arrays = [];
-            foreach (\explode(':', $geocol) as $subwkt) {
-                if ('' !== $subwkt) {
-                    $arrays[] = self::fromWkt($subwkt);
-                }
-            }
-        } else {
-            $json = \str_replace([', ', ' ,', '(', ')'], [',', ',', '[', ']'], $wkt);
-
-            if ('point' === \mb_strtolower($type)) {
-                $json = \preg_replace('/(-?\d+\.?\d*) (-?\d+\.?\d*)/', '$1, $2', $json);
-            } else {
-                $json = \preg_replace('/(-?\d+\.?\d*) (-?\d+\.?\d*)/', '[$1, $2]', $json);
-            }
-
-            if (null === $json) {
-                throw new \InvalidArgumentException('This is not recognised WKT.');
-            }
-            $arrays = \json_decode($json, true);
-
-            if (!$arrays) {
-                throw new \InvalidArgumentException('This is not recognised WKT.');
-            }
-
-            if ('multipoint' === \mb_strtolower($type)) {
-                foreach ($arrays as $index => $points) {
-                    if (\is_array($points[0])) {
-                        $arrays[$index] = $points[0];
-                    }
-                }
-            }
-        }
-
-        return self::createGeometry($type, $arrays);
+        return WktFactory::fromString($wkt);
     }
 
     /**
-     * @deprecated use the Point::distanceTo()
-     *
      * @param Point    $point1  distance from this point
      * @param Point    $point2  distance to this point
      * @param string   $unit    of measurement in which to return the result
      * @param int|null $formula formula to use, either Location::VINCENTY or Location::HAVERSINE. Defaults to
      *                          Location::$defaultFormula
+     *
+     * @deprecated use the Point::distanceTo()
      */
     public static function calculateDistance(
         Point $point1,
@@ -243,9 +131,9 @@ class Location
     }
 
     /**
-     * @deprecated use DefaultEllipsoid::get()
-     *
      * @return Earth|EllipsoidInterface the ellipsoid in use (generally Earth)
+     *
+     * @deprecated use DefaultEllipsoid::get()
      */
     public static function getEllipsoid(): EllipsoidInterface
     {
@@ -265,13 +153,13 @@ class Location
     /**
      * Converts distances from one unit of measurement to another.
      *
-     * @deprecated use UnitConverter::convert()
-     *
      * @param $distance float the distance measurement
      * @param $from string the unit the distance measurement is in
      * @param $to string the unit the distance should be converted into
      *
      * @return float the distance in the new unit of measurement
+     *
+     * @deprecated use UnitConverter::convert()
      */
     public static function convert(float $distance, string $from, string $to): float
     {
@@ -279,8 +167,6 @@ class Location
     }
 
     /**
-     * @deprecated use BoundingBox::fromCenter() instead
-     *
      * @param Point  $point  the centre of the bounding box
      * @param float  $radius minimum radius from $point
      * @param string $unit   unit of the radius (default is kilometres)
@@ -288,6 +174,8 @@ class Location
      * @throws BoundBoxRangeException
      *
      * @return BoundingBox the BBox
+     *
+     * @deprecated use BoundingBox::fromCenter() instead
      */
     public static function getBBoxByRadius(Point $point, float $radius, $unit = 'km'): BoundingBox
     {
@@ -303,9 +191,9 @@ class Location
     }
 
     /**
-     * @deprecated Use BoundingBox::fromGeometry($geometry)->getBounds() instead
-     *
      * @return array of coordinates in the order of: minimum longitude, minimum latitude, maximum longitude and maximum latitude
+     *
+     * @deprecated Use BoundingBox::fromGeometry($geometry)->getBounds() instead
      */
     public static function getBBoxArray(GeometryInterface $geometry): array
     {

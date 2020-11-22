@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Feature;
 
-abstract class FeatureAbstract implements \JsonSerializable
+abstract class FeatureAbstract implements FeatureInterface
 {
     protected bool $bbox = false;
 
