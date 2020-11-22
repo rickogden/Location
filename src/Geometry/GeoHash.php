@@ -239,7 +239,7 @@ class GeoHash
         return $this->getAdjacentSouth()->getAdjacentEast();
     }
 
-    private static function getAdjacent($hash, $direction): GeoHash
+    private static function getAdjacent(string $hash, string $direction): GeoHash
     {
         $lastChar = \mb_substr($hash, -1);
         $parent = \mb_substr($hash, 0, -1);
