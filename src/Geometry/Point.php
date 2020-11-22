@@ -17,6 +17,7 @@ use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Calculator\FractionAlongLineCalculator;
 use Ricklab\Location\Converter\DegreesMinutesSeconds;
 use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
 use Ricklab\Location\Location;
@@ -137,9 +138,9 @@ class Point implements GeometryInterface
         ?DistanceCalculator $calculator = null
     ): float {
         if (null === $calculator) {
-            $result = DefaultDistanceCalculator::calculate($this, $point2, Location::getEllipsoid());
+            $result = DefaultDistanceCalculator::calculate($this, $point2, DefaultEllipsoid::get());
         } else {
-            $result = $calculator::calculate($this, $point2, Location::getEllipsoid());
+            $result = $calculator::calculate($this, $point2, DefaultEllipsoid::get());
         }
 
         return UnitConverter::convert($result, UnitConverter::UNIT_METERS, $unit);
@@ -154,7 +155,7 @@ class Point implements GeometryInterface
      */
     public function getRelativePoint(float $distance, float $bearing, string $unit = UnitConverter::UNIT_METERS): Point
     {
-        $rad = Location::getEllipsoid()->radius($unit);
+        $rad = DefaultEllipsoid::get()->radius($unit);
         $lat1 = $this->latitudeToRad();
         $lon1 = $this->longitudeToRad();
         $bearing = \deg2rad($bearing);
@@ -252,7 +253,7 @@ class Point implements GeometryInterface
             $point,
             $fraction,
             $calculator ?? DefaultDistanceCalculator::getDefaultCalculator(),
-            Location::getEllipsoid()
+            DefaultEllipsoid::get()
         );
     }
 
@@ -333,8 +334,8 @@ class Point implements GeometryInterface
     public function round(int $precision): Point
     {
         $point = clone $this;
-        $point->latitude = round($this->latitude, $precision);
-        $point->longitude = round($this->longitude, $precision);
+        $point->latitude = \round($this->latitude, $precision);
+        $point->longitude = \round($this->longitude, $precision);
 
         return $point;
     }

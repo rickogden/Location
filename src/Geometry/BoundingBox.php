@@ -6,8 +6,8 @@ namespace Ricklab\Location\Geometry;
 
 use const M_PI;
 use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
-use Ricklab\Location\Location;
 
 class BoundingBox extends Polygon
 {
@@ -24,7 +24,7 @@ class BoundingBox extends Polygon
         $maxLat = $point->getRelativePoint($radius, 0, $unit)->getLatitude();
         $minLat = $point->getRelativePoint($radius, 180, $unit)->getLatitude();
 
-        $radDist = $radius / Location::getEllipsoid()->radius($unit);
+        $radDist = $radius / DefaultEllipsoid::get()->radius($unit);
         $radLon = $point->longitudeToRad();
         $deltaLon = \asin(\sin($radDist) / \cos($point->latitudeToRad()));
 

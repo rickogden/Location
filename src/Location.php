@@ -15,8 +15,10 @@ use Ricklab\Location\Calculator\FractionAlongLineCalculator;
 use Ricklab\Location\Calculator\HaversineCalculator;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Ellipsoid\Earth;
 use Ricklab\Location\Ellipsoid\Ellipsoid;
+use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Feature\Feature;
 use Ricklab\Location\Feature\FeatureAbstract;
@@ -213,6 +215,8 @@ class Location
     }
 
     /**
+     * @deprecated use the Point::distanceTo()
+     *
      * @param Point    $point1  distance from this point
      * @param Point    $point2  distance to this point
      * @param string   $unit    of measurement in which to return the result
@@ -230,32 +234,32 @@ class Location
         }
 
         if (self::FORMULA_VINCENTY === $formula) {
-            $mDistance = VincentyCalculator::calculate($point1, $point2, self::getEllipsoid());
+            $mDistance = VincentyCalculator::calculate($point1, $point2, DefaultEllipsoid::get());
         } else {
-            $mDistance = HaversineCalculator::calculate($point1, $point2, self::getEllipsoid());
+            $mDistance = HaversineCalculator::calculate($point1, $point2, DefaultEllipsoid::get());
         }
 
-        return UnitConverter::convert($mDistance, self::UNIT_METRES, $unit);
+        return UnitConverter::convert($mDistance, UnitConverter::UNIT_METERS, $unit);
     }
 
     /**
-     * @return Earth|Ellipsoid the ellipsoid in use (generally Earth)
+     * @deprecated use DefaultEllipsoid::get()
+     *
+     * @return Earth|EllipsoidInterface the ellipsoid in use (generally Earth)
      */
-    public static function getEllipsoid(): Ellipsoid
+    public static function getEllipsoid(): EllipsoidInterface
     {
-        if (null === self::$ellipsoid) {
-            self::$ellipsoid = new Earth();
-        }
-
-        return self::$ellipsoid;
+        return DefaultEllipsoid::get();
     }
 
     /**
      * Set the ellipsoid to perform the calculations on.
+     *
+     * @deprecated use DefaultEllipsiod::set()
      */
     public static function setEllipsoid(Ellipsoid $ellipsoid): void
     {
-        self::$ellipsoid = $ellipsoid;
+        DefaultEllipsoid::set($ellipsoid);
     }
 
     /**
@@ -334,7 +338,7 @@ class Location
             $point2,
             $fraction,
             DefaultDistanceCalculator::getDefaultCalculator(),
-            self::getEllipsoid()
+            DefaultEllipsoid::get()
         );
     }
 }

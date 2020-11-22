@@ -6,6 +6,7 @@ namespace Ricklab\Location\Psalm\Calculator;
 
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\VincentyCalculator;
+use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Location;
 
@@ -18,10 +19,10 @@ class VincentyCalculatorTest extends TestCase
         $buninyond = new Point(143.92649552777777, -37.65282113888889);
 
         Location::$useSpatialExtension = true;
-        $this->assertSame(54972.271, \round(VincentyCalculator::calculate($flinders, $buninyond, Location::getEllipsoid()), 3));
+        $this->assertSame(54972.271, \round(VincentyCalculator::calculate($flinders, $buninyond, DefaultEllipsoid::get()), 3));
 
         Location::$useSpatialExtension = false;
-        $this->assertSame(54972.271, \round(VincentyCalculator::calculate($flinders, $buninyond, Location::getEllipsoid()), 3));
+        $this->assertSame(54972.271, \round(VincentyCalculator::calculate($flinders, $buninyond, DefaultEllipsoid::get()), 3));
         Location::$useSpatialExtension = true;
     }
 }
