@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Factory;
 
+use Ricklab\Location\Factory\Traits\CreateGeometryTrait;
 use Ricklab\Location\Feature\Feature;
 use Ricklab\Location\Feature\FeatureCollection;
-use Ricklab\Location\Factory\Traits\CreateGeometryTrait;
 use Ricklab\Location\Geometry\GeometryInterface;
 
 final class GeoJsonFactory
