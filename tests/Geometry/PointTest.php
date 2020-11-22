@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Calculator\VincentyCalculator;
+use Ricklab\Location\Converter\DegreesMinutesSeconds;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Location;
 
 class PointTest extends TestCase
@@ -86,11 +87,24 @@ class PointTest extends TestCase
 
     public function testFromDms(): void
     {
-        $point = Point::fromDms([1, 2, 3.45], [0, 6, 9, 'S']);
+        $point = Point::fromDms(
+            new DegreesMinutesSeconds(1, 2, 3.45, 'N'),
+            new DegreesMinutesSeconds(0, 6, 9, 'W')
+        );
 
-        $this->assertEquals(1.0342916666667, $point->getLatitude());
+        $this->assertSame(1.0342916666667, $point->getLatitude());
+        $this->assertSame(-0.1025, $point->getLongitude());
+    }
 
-        $this->assertEquals(-0.1025, $point->getLongitude());
+    public function testFromDmsInverted(): void
+    {
+        $point = Point::fromDms(
+            new DegreesMinutesSeconds(0, 6, 9, 'W'),
+            new DegreesMinutesSeconds(1, 2, 3.45, 'N')
+        );
+
+        $this->assertSame(1.0342916666667, $point->getLatitude());
+        $this->assertSame(-0.1025, $point->getLongitude());
     }
 
     public function testFractionAlongLine(): void

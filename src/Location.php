@@ -13,8 +13,8 @@ use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\FractionAlongLineCalculator;
 use Ricklab\Location\Calculator\HaversineCalculator;
-use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Calculator\VincentyCalculator;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Ellipsoid\Earth;
 use Ricklab\Location\Ellipsoid\Ellipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
@@ -306,34 +306,6 @@ class Location
     public static function getBBoxArray(GeometryInterface $geometry): array
     {
         return BoundingBox::fromGeometry($geometry)->getBounds();
-    }
-
-    /**
-     * @param string|null $direction use "S" for south and "W" for west. Defaults to East/North.
-     */
-    public static function dmsToDecimal(int $degrees, int $minutes, float $seconds, ?string $direction = null): float
-    {
-        $decimal = $degrees + ($minutes / 60) + ($seconds / 3600);
-
-        if ('S' === $direction || 'W' === $direction) {
-            $decimal *= -1;
-        }
-
-        return $decimal;
-    }
-
-    /**
-     * @param float $decimal the decimal longitude/latitude
-     *
-     * @return array{0: int, 1: int, 2: float} of degrees, minutes, seconds from North/East
-     */
-    public static function decimalToDms(float $decimal): array
-    {
-        $deg = (int) \floor($decimal);
-        $min = (int) \floor(($decimal - $deg) * 60);
-        $sec = ($decimal - $deg - $min / 60) * 3600;
-
-        return [$deg, $min, $sec];
     }
 
     /**

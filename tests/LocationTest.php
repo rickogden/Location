@@ -58,24 +58,6 @@ class LocationTest extends TestCase
         $this->assertEquals(8.047, \round(Location::convert(5, 'miles', 'km'), 3));
     }
 
-    public function testDmsToDecimal(): void
-    {
-        $decimal = Location::dmsToDecimal(117, 29, 50.5);
-
-        $this->assertEquals(117.49736, \round($decimal, 5));
-
-        $decimal2 = Location::dmsToDecimal(1, 2, 3.45, 'W');
-
-        $this->assertEquals(-1.0342916666667, $decimal2);
-    }
-
-    public function testDecimalToDms(): void
-    {
-        $dms = Location::decimalToDms(1.0342916666667);
-        $dms[2] = \round($dms[2], 5);
-        $this->assertEquals([1, 2, 3.45], $dms);
-    }
-
     public function testFromWkt(): void
     {
         $multipolywkt = 'MULTIPOLYGON(((1.432 -1.543, 5 1, 5 5, 1 5, 1.432 -1.543), (2 2, 3 2, 3 3, 2 3, 2 2)), ((3 3, 6 2, 6 4, 3 3)))';

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Psalm\Calculator;
 
-use Ricklab\Location\Calculator\BearingCalculator;
 use PHPUnit\Framework\TestCase;
+use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Location;
 

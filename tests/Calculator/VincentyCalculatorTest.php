@@ -6,12 +6,11 @@ namespace Ricklab\Location\Psalm\Calculator;
 
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\VincentyCalculator;
-use Ricklab\Location\Location;
 use Ricklab\Location\Geometry\Point;
+use Ricklab\Location\Location;
 
 class VincentyCalculatorTest extends TestCase
 {
-
     public function testCalculate(): void
     {
         $flinders = new Point(144.42486788888888, -37.95103341666667);

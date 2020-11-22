@@ -15,6 +15,7 @@ use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Calculator\FractionAlongLineCalculator;
+use Ricklab\Location\Converter\DegreesMinutesSeconds;
 use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
@@ -53,20 +54,32 @@ class Point implements GeometryInterface
     }
 
     /**
-     * Create a new point from Degrees, minutes and seconds.
-     *
-     * @param array $lat Latitude in the order of degrees, minutes, seconds[, direction]
-     * @param array $lon Longitude in the order of degrees, minutes, seconds[, direction]
-     *
-     * @return Point
+     * Create a new point from 2 DegreesMinutesSeconds objects. The actual order they are passed in does not matter as
+     * the axis can be determined from the direction.
      */
-    public static function fromDms(array $lat, array $lon): self
+    public static function fromDms(DegreesMinutesSeconds $lat, DegreesMinutesSeconds $lon): self
     {
-        $decLat = Location::dmsToDecimal($lat[0], $lat[1], $lat[2], $lat[3] ?? 'N');
+        foreach ([$lat, $lon] as $dms) {
+            if (DegreesMinutesSeconds::AXIS_LONGITUDE === $dms->getAxis()) {
+                $longitude = $dms;
 
-        $decLon = Location::dmsToDecimal($lon[0], $lon[1], $lon[2], $lon[3] ?? 'E');
+                continue;
+            }
 
-        return new self($decLon, $decLat);
+            if (DegreesMinutesSeconds::AXIS_LATITUDE === $dms->getAxis()) {
+                $latitude = $dms;
+            }
+        }
+
+        if (!isset($longitude)) {
+            throw new InvalidArgumentException('Longitude coordinates missing');
+        }
+
+        if (!isset($latitude)) {
+            throw new InvalidArgumentException('Latitude coordinates missing');
+        }
+
+        return new self($longitude->toDecimal(), $latitude->toDecimal());
     }
 
     /**
@@ -84,20 +97,14 @@ class Point implements GeometryInterface
         $this->setLongitude($long);
     }
 
-    /**
-     * Latitude in an array of [degrees, minutes, seconds].
-     */
-    public function getLatitudeInDms(): array
+    public function getLatitudeInDms(): DegreesMinutesSeconds
     {
-        return Location::decimalToDms($this->latitude);
+        return DegreesMinutesSeconds::fromDecimal($this->latitude, DegreesMinutesSeconds::AXIS_LATITUDE);
     }
 
-    /**
-     * Latitude in an array of [degrees, minutes, seconds].
-     */
-    public function getLongitudeInDms(): array
+    public function getLongitudeInDms(): DegreesMinutesSeconds
     {
-        return Location::decimalToDms($this->longitude);
+        return DegreesMinutesSeconds::fromDecimal($this->longitude, DegreesMinutesSeconds::AXIS_LONGITUDE);
     }
 
     /**
@@ -124,8 +131,11 @@ class Point implements GeometryInterface
      *
      * @return float the distance
      */
-    public function distanceTo(Point $point2, string $unit = UnitConverter::UNIT_METERS, ?DistanceCalculator $calculator = null): float
-    {
+    public function distanceTo(
+        Point $point2,
+        string $unit = UnitConverter::UNIT_METERS,
+        ?DistanceCalculator $calculator = null
+    ): float {
         if (null === $calculator) {
             $result = DefaultDistanceCalculator::calculate($this, $point2, Location::getEllipsoid());
         } else {
@@ -150,7 +160,7 @@ class Point implements GeometryInterface
         $bearing = \deg2rad($bearing);
 
         $lat2 = \sin($lat1) * \cos($distance / $rad) +
-                \cos($lat1) * \sin($distance / $rad) * \cos($bearing);
+            \cos($lat1) * \sin($distance / $rad) * \cos($bearing);
         $lat2 = \asin($lat2);
 
         $lon2y = \sin($bearing) * \sin($distance / $rad) * \cos($lat1);
@@ -311,8 +321,8 @@ class Point implements GeometryInterface
     public function equals(GeometryInterface $geometry): bool
     {
         return $geometry instanceof self
-               && $geometry->latitude === $this->latitude
-               && $geometry->longitude === $this->longitude;
+            && $geometry->latitude === $this->latitude
+            && $geometry->longitude === $this->longitude;
     }
 
     public function getGeoHash(int $resolution = 12): GeoHash
