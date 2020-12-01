@@ -21,13 +21,13 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^7.1",
+        "php": "^7.1|8.0",
         "ext-json": "*"
     },
     "require-dev": {
         "ext-simplexml": "*",
         "friendsofphp/php-cs-fixer": "^2.13",
-        "phpunit/phpunit": "^7.5|^8.0",
+        "phpunit/phpunit": "^7.5|^8.0|^9.0",
         "vimeo/psalm": "^3.4"
     },
     "autoload": {
