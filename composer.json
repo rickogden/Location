@@ -28,7 +28,7 @@
         "ext-simplexml": "*",
         "friendsofphp/php-cs-fixer": "^2.13",
         "phpunit/phpunit": "^7.5|^8.0|^9.0",
-        "vimeo/psalm": "^3.4"
+        "vimeo/psalm": "^4.2"
     },
     "autoload": {
         "psr-4": {
