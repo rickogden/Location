@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ricklab\Location\Factory;
+namespace Ricklab\Location\Decoder;
 
-use Ricklab\Location\Factory\Traits\CreateGeometryTrait;
+use Ricklab\Location\Decoder\Traits\CreateGeometryTrait;
 use Ricklab\Location\Geometry\GeometryInterface;
 
-final class WktFactory
+final class WktDecoder
 {
     use CreateGeometryTrait;
 

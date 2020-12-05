@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Ricklab\Location\Factory;
+namespace Ricklab\Location\Decoder;
 
-use Ricklab\Location\Factory\Traits\CreateGeometryTrait;
+use Ricklab\Location\Decoder\Traits\CreateGeometryTrait;
 use Ricklab\Location\Feature\Feature;
 use Ricklab\Location\Feature\FeatureCollection;
 use Ricklab\Location\Geometry\GeometryInterface;
 
-final class GeoJsonFactory
+final class GeoJsonDecoder
 {
     use CreateGeometryTrait;
 
     /**
-     * @throws \ErrorException
      * @throws \JsonException
+     * @throws \ErrorException
      *
      * @return GeometryInterface|FeatureCollection|Feature
      */
@@ -25,8 +25,8 @@ final class GeoJsonFactory
     }
 
     /**
-     * @throws \ErrorException
      * @throws \JsonException
+     * @throws \ErrorException
      *
      * @return GeometryInterface|FeatureCollection|Feature
      */
@@ -59,28 +59,20 @@ final class GeoJsonFactory
 
         $type = \mb_strtolower($type);
 
-        if ('geometrycollection' === $type) {
-            $geometries = [];
-            foreach ($geojson['geometries'] as $geom) {
-                $geometries[] = self::fromArray($geom);
-            }
+        switch ($type) {
+            case 'geometrycollection':
+                $geometries = \array_map(
+                    static fn (array $geom) => self::fromArray($geom),
+                    $geojson['geometries'] ?? []
+                );
 
-            $geometry = self::createGeometry($type, $geometries);
-        } elseif ('feature' === $type) {
-            $geometry = Feature::fromGeoJson($geojson);
-        } elseif ('featurecollection' === $type) {
-            $geometry = FeatureCollection::fromGeoJson($geojson);
-        } else {
-            $geometry = self::decodeGeometry($type, $geojson);
+                return self::createGeometry($type, $geometries);
+            case 'feature':
+                return Feature::fromGeoJson($geojson);
+            case 'featurecollection':
+                return FeatureCollection::fromGeoJson($geojson);
+            default:
+                return self::createGeometry($type, $geojson['coordinates']);
         }
-
-        return $geometry;
-    }
-
-    private static function decodeGeometry($type, array $geojson): GeometryInterface
-    {
-        $coordinates = $geojson['coordinates'];
-
-        return self::createGeometry($type, $coordinates);
     }
 }

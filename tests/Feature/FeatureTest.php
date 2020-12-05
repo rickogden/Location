@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Feature;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Factory\GeoJsonFactory;
+use Ricklab\Location\Decoder\GeoJsonDecoder;
 use Ricklab\Location\Geometry\LineString;
 use Ricklab\Location\Geometry\Polygon;
 
@@ -36,7 +36,7 @@ class FeatureTest extends TestCase
       }
     }';
         /** @var Feature $feature */
-        $feature = GeoJsonFactory::fromString($initialjson);
+        $feature = GeoJsonDecoder::fromString($initialjson);
         $this->assertInstanceOf(Feature::class, $feature);
         $this->assertInstanceOf(Polygon::class, $feature->getGeometry());
         $this->assertEquals('bar', $feature->getProperties()['foo']);

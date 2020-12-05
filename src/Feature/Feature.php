@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Feature;
 
-use Ricklab\Location\Factory\GeoJsonFactory;
+use Ricklab\Location\Decoder\GeoJsonDecoder;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryInterface;
 
@@ -24,7 +24,7 @@ class Feature implements \JsonSerializable
     public static function fromGeoJson(array $geojson): self
     {
         if (isset($geojson['geometry'])) {
-            $decodedGeo = GeoJsonFactory::fromArray($geojson['geometry']);
+            $decodedGeo = GeoJsonDecoder::fromArray($geojson['geometry']);
 
             if (!$decodedGeo instanceof GeometryInterface) {
                 throw new \InvalidArgumentException('Cannot parse geometry in feature');

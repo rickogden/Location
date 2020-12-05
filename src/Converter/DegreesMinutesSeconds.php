@@ -81,7 +81,7 @@ final class DegreesMinutesSeconds
         $success = \preg_match(self::REGEX, $string, $results);
 
         if ($success && 5 === \count($results)) {
-            return new self((int) $results[1], (int) $results[2], (float) $results[3], (string) $results[4]);
+            return new self((int) $results[1], (int) $results[2], (float) $results[3], $results[4]);
         }
 
         throw new \InvalidArgumentException('Unable to determine Degrees minutes seconds from string.');
