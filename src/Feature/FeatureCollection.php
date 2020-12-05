@@ -10,86 +10,117 @@ declare(strict_types=1);
 namespace Ricklab\Location\Feature;
 
 use Ricklab\Location\Geometry\BoundingBox;
-use Ricklab\Location\Geometry\LineString;
+use Ricklab\Location\Geometry\MultiPoint;
 
-class FeatureCollection extends FeatureAbstract implements \IteratorAggregate
+class FeatureCollection implements \IteratorAggregate, \JsonSerializable
 {
     /**
      * @var Feature[]
      */
     protected array $features = [];
+    private bool $bbox;
+    private ?BoundingBox $bboxCache = null;
+
+    public static function fromGeoJson(array $geojson): self
+    {
+        $features = \array_map(
+            static fn (array $feature): Feature => Feature::fromGeoJson($feature),
+            $geojson['features'] ?? []
+        );
+
+        $collection = new FeatureCollection($features, isset($geojson['bbox']));
+
+        if (isset($geojson['bbox'])) {
+            $collection->bboxCache = BoundingBox::fromArray($geojson['bbox']);
+        }
+
+        return $collection;
+    }
 
     /**
      * FeatureCollection constructor.
      *
      * @param Feature[] $features
-     * @param bool      $bbox
      */
-    public function __construct(array $features = [], $bbox = false)
+    public function __construct(array $features = [], bool $bbox = false)
     {
-        $this->setFeatures($features);
-        $this->bbox = (bool) $bbox;
+        $this->features = (static fn (Feature ...$features): array => $features)(...$features);
+        $this->bbox = $bbox;
     }
 
-    /**
-     * @param Feature[] $features
-     */
-    public function setFeatures(array $features): void
+    public function getBbox(): ?BoundingBox
     {
-        foreach ($features as $feature) {
-            if (!$feature instanceof Feature) {
-                throw new \InvalidArgumentException('Only instances of Feature can be passed in the array.');
-            }
+        if (false === $this->bbox) {
+            return null;
         }
-        $this->features = $features;
+
+        if (null === $this->bboxCache) {
+            $points = [];
+            foreach ($this->features as $feature) {
+                $geometry = $feature->getGeometry();
+
+                if ($this->bbox && null !== $geometry) {
+                    $points[] = $geometry->getPoints();
+                }
+            }
+
+            if (0 < \count($points)) {
+                $points = \array_merge(...$points);
+            }
+            $this->bboxCache = BoundingBox::fromGeometry(new MultiPoint($points));
+        }
+
+        return $this->bboxCache;
     }
 
-    public function enableBBox(): void
+    public function withBbox(): self
     {
-        $this->bbox = true;
+        return $this->bbox ? $this : new self(
+            $this->features,
+            true
+        );
     }
 
-    public function disableBBox(): void
+    public function withoutBbox(): self
     {
-        $this->bbox = false;
+        return !$this->bbox ? $this : new self(
+            $this->features,
+            false
+        );
     }
 
-    public function addFeature(Feature $feature): void
+    public function withFeature(Feature $feature): self
     {
-        $this->features[] = $feature;
+        return new self(
+            \array_merge($this->features, [$feature]),
+            $this->bbox
+        );
     }
 
-    public function removeFeature(Feature $feature): void
+    public function withoutFeature(Feature $feature): self
     {
-        foreach ($this->features as $i => $f) {
+        $features = $this->features;
+        foreach ($features as $i => $f) {
             if ($f === $feature) {
                 unset($this->features[$i]);
+                break;
             }
         }
+
+        return new self($features, $this->bbox);
     }
 
     public function jsonSerialize(): array
     {
-        $features = [];
-        $points = [];
-        foreach ($this->features as $feature) {
-            $features[] = $feature->jsonSerialize();
-            $geometry = $feature->getGeometry();
-
-            if ($this->bbox && null !== $geometry) {
-                $points[] = $geometry->getPoints();
-            }
-        }
-
-        if ($points) {
-            $points = \array_merge(...$points);
-        }
+        $features = \array_map(static fn (Feature $f): array => $f->jsonSerialize(), $this->features);
 
         $return = [];
         $return['type'] = 'FeatureCollection';
 
-        if ($this->bbox) {
-            $return['bbox'] = BoundingBox::fromGeometry(new LineString($points))->getBounds();
+        $bbox = $this->getBbox();
+
+        if (null !== $bbox) {
+            $return['bbox'] = $bbox->getBounds();
         }
 
         $return['features'] = $features;

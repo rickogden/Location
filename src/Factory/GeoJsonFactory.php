@@ -14,8 +14,8 @@ final class GeoJsonFactory
     use CreateGeometryTrait;
 
     /**
-     * @throws \JsonException
      * @throws \ErrorException
+     * @throws \JsonException
      *
      * @return GeometryInterface|FeatureCollection|Feature
      */
@@ -25,8 +25,8 @@ final class GeoJsonFactory
     }
 
     /**
-     * @throws \JsonException
      * @throws \ErrorException
+     * @throws \JsonException
      *
      * @return GeometryInterface|FeatureCollection|Feature
      */
@@ -67,34 +67,20 @@ final class GeoJsonFactory
 
             $geometry = self::createGeometry($type, $geometries);
         } elseif ('feature' === $type) {
-            $geometry = new Feature();
-
-            if (isset($geojson['geometry'])) {
-                $decodedGeo = self::fromArray($geojson['geometry']);
-
-                if ($decodedGeo instanceof GeometryInterface) {
-                    $geometry->setGeometry($decodedGeo);
-                }
-            }
-
-            if (isset($geojson['properties'])) {
-                $geometry->setProperties($geojson['properties']);
-            }
+            $geometry = Feature::fromGeoJson($geojson);
         } elseif ('featurecollection' === $type) {
-            $geometry = new FeatureCollection();
-
-            foreach ($geojson['features'] as $feature) {
-                $decodedFeature = self::fromArray($feature);
-
-                if ($decodedFeature instanceof Feature) {
-                    $geometry->addFeature($decodedFeature);
-                }
-            }
+            $geometry = FeatureCollection::fromGeoJson($geojson);
         } else {
-            $coordinates = $geojson['coordinates'];
-            $geometry = self::createGeometry($type, $coordinates);
+            $geometry = self::decodeGeometry($type, $geojson);
         }
 
         return $geometry;
+    }
+
+    private static function decodeGeometry($type, array $geojson): GeometryInterface
+    {
+        $coordinates = $geojson['coordinates'];
+
+        return self::createGeometry($type, $coordinates);
     }
 }

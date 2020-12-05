@@ -22,7 +22,8 @@ use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Factory\GeoJsonFactory;
 use Ricklab\Location\Factory\WktFactory;
-use Ricklab\Location\Feature\FeatureAbstract;
+use Ricklab\Location\Feature\Feature;
+use Ricklab\Location\Feature\FeatureCollection;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\Point;
@@ -69,7 +70,7 @@ class Location
      *
      * @throws \ErrorException
      *
-     * @return GeometryInterface|FeatureAbstract
+     * @return GeometryInterface|Feature|FeatureCollection
      *
      * @deprecated use GeoJsonFactory
      */
