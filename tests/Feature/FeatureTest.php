@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Ricklab\Location\Feature;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Decoder\GeoJsonDecoder;
 use Ricklab\Location\Geometry\LineString;
 use Ricklab\Location\Geometry\Polygon;
+use Ricklab\Location\Transformer\GeoJsonTransformer;
 
 class FeatureTest extends TestCase
 {
@@ -36,7 +36,7 @@ class FeatureTest extends TestCase
       }
     }';
         /** @var Feature $feature */
-        $feature = GeoJsonDecoder::fromString($initialjson);
+        $feature = GeoJsonTransformer::decode($initialjson);
         $this->assertInstanceOf(Feature::class, $feature);
         $this->assertInstanceOf(Polygon::class, $feature->getGeometry());
         $this->assertEquals('bar', $feature->getProperties()['foo']);

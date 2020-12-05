@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Transformer\WktTransformer;
+
 /**
  * The interface for all the Geometry objects.
  *
@@ -22,6 +24,8 @@ interface GeometryInterface extends \JsonSerializable
 
     /**
      * Representation of the geometry in Well-Known Text.
+     *
+     * @deprecated use WktTransformer::encode();
      */
     public function toWkt(): string;
 

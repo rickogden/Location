@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ricklab\Location\Decoder\Traits;
+namespace Ricklab\Location\Transformer\Traits;
 
 use Ricklab\Location\Geometry\GeometryCollection;
 use Ricklab\Location\Geometry\GeometryInterface;

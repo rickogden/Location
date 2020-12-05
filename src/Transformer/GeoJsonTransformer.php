@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Ricklab\Location\Decoder;
+namespace Ricklab\Location\Transformer;
 
-use Ricklab\Location\Decoder\Traits\CreateGeometryTrait;
 use Ricklab\Location\Feature\Feature;
 use Ricklab\Location\Feature\FeatureCollection;
 use Ricklab\Location\Geometry\GeometryInterface;
+use Ricklab\Location\Transformer\Traits\CreateGeometryTrait;
 
-final class GeoJsonDecoder
+final class GeoJsonTransformer
 {
     use CreateGeometryTrait;
 
@@ -19,7 +19,7 @@ final class GeoJsonDecoder
      *
      * @return GeometryInterface|FeatureCollection|Feature
      */
-    public static function fromString(string $geojson)
+    public static function decode(string $geojson)
     {
         return self::fromArray(\json_decode($geojson, true, 512, \JSON_THROW_ON_ERROR));
     }
@@ -74,5 +74,17 @@ final class GeoJsonDecoder
             default:
                 return self::createGeometry($type, $geojson['coordinates']);
         }
+    }
+
+    /**
+     * @param GeometryInterface|Feature|FeatureCollection $object
+     */
+    public static function encode($object): string
+    {
+        if (!$object instanceof \JsonSerializable) {
+            throw new \InvalidArgumentException('Cannot serialize object.');
+        }
+
+        return \json_encode($object);
     }
 }

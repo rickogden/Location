@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Ricklab\Location\Feature;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Decoder\GeoJsonDecoder;
 use Ricklab\Location\Location;
+use Ricklab\Location\Transformer\GeoJsonTransformer;
 
 class FeatureCollectionTest extends TestCase
 {
@@ -53,7 +53,7 @@ class FeatureCollectionTest extends TestCase
       ]
     }';
         /** @var FeatureCollection $featureCollection */
-        $featureCollection = GeoJsonDecoder::fromString($initialjson);
+        $featureCollection = GeoJsonTransformer::decode($initialjson);
 
         $this->assertInstanceOf(FeatureCollection::class, $featureCollection);
         $this->assertJsonStringEqualsJsonString($initialjson, \json_encode($featureCollection));
@@ -94,7 +94,7 @@ class FeatureCollectionTest extends TestCase
     }';
 
         /** @var FeatureCollection $featureCollection */
-        $featureCollection = GeoJsonDecoder::fromString($initialjson)->withBbox();
+        $featureCollection = GeoJsonTransformer::decode($initialjson)->withBbox();
 
         $this->assertInstanceOf(FeatureCollection::class, $featureCollection);
         $this->assertJsonStringEqualsJsonString($jsonWithBbox, \json_encode($featureCollection));

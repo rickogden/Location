@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Ricklab\Location\Decoder;
+namespace Ricklab\Location\Transformer;
 
-use Ricklab\Location\Decoder\Traits\CreateGeometryTrait;
 use Ricklab\Location\Geometry\GeometryInterface;
+use Ricklab\Location\Transformer\Traits\CreateGeometryTrait;
 
-final class WktDecoder
+final class WktTransformer
 {
     use CreateGeometryTrait;
 
-    public static function fromString(string $wkt): GeometryInterface
+    public static function decode(string $wkt): GeometryInterface
     {
         $type = \trim(\mb_substr($wkt, 0, \mb_strpos($wkt, '(') ?: 0));
         $wkt = \trim(\str_replace($type, '', $wkt));
@@ -25,7 +25,7 @@ final class WktDecoder
             $arrays = [];
             foreach (\explode(':', $geocol) as $subwkt) {
                 if ('' !== $subwkt) {
-                    $arrays[] = self::fromString($subwkt);
+                    $arrays[] = self::decode($subwkt);
                 }
             }
         } else {
@@ -56,5 +56,10 @@ final class WktDecoder
         }
 
         return self::createGeometry($type, $arrays);
+    }
+
+    public static function encode(GeometryInterface $geometry): string
+    {
+        return $geometry::getWktType().$geometry;
     }
 }

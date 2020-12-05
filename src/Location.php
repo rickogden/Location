@@ -15,8 +15,6 @@ use Ricklab\Location\Calculator\FractionAlongLineCalculator;
 use Ricklab\Location\Calculator\HaversineCalculator;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Converter\UnitConverter;
-use Ricklab\Location\Decoder\GeoJsonDecoder;
-use Ricklab\Location\Decoder\WktDecoder;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Ellipsoid\Earth;
 use Ricklab\Location\Ellipsoid\Ellipsoid;
@@ -28,6 +26,8 @@ use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Geometry\Polygon;
+use Ricklab\Location\Transformer\GeoJsonTransformer;
+use Ricklab\Location\Transformer\WktTransformer;
 
 class Location
 {
@@ -77,15 +77,15 @@ class Location
     public static function fromGeoJson($geojson)
     {
         if (\is_array($geojson)) {
-            return GeoJsonDecoder::fromArray($geojson);
+            return GeoJsonTransformer::fromArray($geojson);
         }
 
         if (\is_string($geojson)) {
-            return GeoJsonDecoder::fromString($geojson);
+            return GeoJsonTransformer::decode($geojson);
         }
 
         if (\is_object($geojson)) {
-            return GeoJsonDecoder::fromObject($geojson);
+            return GeoJsonTransformer::fromObject($geojson);
         }
 
         throw new \InvalidArgumentException('Must be an instance of array, object or string.');
@@ -96,11 +96,11 @@ class Location
      *
      * @param string $wkt The WKT to create the geometry from
      *
-     * @deprecated use WktDecoder::fromString()
+     * @deprecated use WktTransformer::fromString()
      */
     public static function fromWkt(string $wkt): GeometryInterface
     {
-        return WktDecoder::fromString($wkt);
+        return WktTransformer::decode($wkt);
     }
 
     /**
