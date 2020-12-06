@@ -5,11 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Ellipsoid;
 
 use Ricklab\Location\Converter\UnitConverter;
-use Ricklab\Location\Location;
 
-/**
- * @author Rick Ogden <rick@rickogden.com>
- */
 interface EllipsoidInterface
 {
     /**
@@ -26,13 +22,13 @@ interface EllipsoidInterface
      */
     public const KEYS = UnitConverter::KEYS;
 
-    public function radius(string $unit = Location::UNIT_METRES): float;
+    public static function radius(string $unit = UnitConverter::UNIT_METERS): float;
 
-    public function getMultiplier(string $unit = Location::UNIT_METRES): float;
+    public static function getMultiplier(string $unit = UnitConverter::UNIT_METERS): float;
 
-    public function getMajorSemiAxis(string $unit = Location::UNIT_METRES): float;
+    public static function getMajorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float;
 
-    public function getMinorSemiAxis(string $unit = Location::UNIT_METRES): float;
+    public static function getMinorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float;
 
-    public function getFlattening(): float;
+    public static function getFlattening(): float;
 }

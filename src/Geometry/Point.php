@@ -155,7 +155,7 @@ class Point implements GeometryInterface
      */
     public function getRelativePoint(float $distance, float $bearing, string $unit = UnitConverter::UNIT_METERS): Point
     {
-        $rad = DefaultEllipsoid::get()->radius($unit);
+        $rad = DefaultEllipsoid::get()::radius($unit);
         $lat1 = $this->latitudeToRad();
         $lon1 = $this->longitudeToRad();
         $bearing = \deg2rad($bearing);
@@ -334,8 +334,8 @@ class Point implements GeometryInterface
     public function round(int $precision): Point
     {
         $point = clone $this;
-        $point->latitude = \round($this->latitude, $precision);
-        $point->longitude = \round($this->longitude, $precision);
+        $point->latitude = round($this->latitude, $precision);
+        $point->longitude = round($this->longitude, $precision);
 
         return $point;
     }

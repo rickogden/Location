@@ -47,6 +47,14 @@ final class UnitConverter
     }
 
     /**
+     * A micro-optimised static method for converting from meters.
+     */
+    public static function convertFromMeters(float $distance, string $to): float
+    {
+        return $distance * self::getMultiplier($to);
+    }
+
+    /**
      * @param string $unit The unit you want the multiplier of
      *
      * @return float The multiplier

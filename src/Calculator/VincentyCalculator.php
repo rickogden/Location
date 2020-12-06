@@ -24,7 +24,9 @@ final class VincentyCalculator implements DistanceCalculator, UsesGeoSpatialExte
             return \vincenty($from, $to);
         }
 
-        $flattening = $ellipsoid->getFlattening();
+        $flattening = $ellipsoid::getFlattening();
+        $majorSemiAxis = $ellipsoid::getMajorSemiAxis();
+        $minorSemiAxis = $ellipsoid::getMinorSemiAxis();
         $U1 = \atan((1.0 - $flattening) * \tan($point1->latitudeToRad()));
         $U2 = \atan((1.0 - $flattening) * \tan($point2->latitudeToRad()));
         $L = $point2->longitudeToRad() - $point1->longitudeToRad();
@@ -53,15 +55,14 @@ final class VincentyCalculator implements DistanceCalculator, UsesGeoSpatialExte
                 ($sigma + $C * $sinSigma * ($cosof2sigma + $C * $cosSigma * (-1 + 2 * ($cosof2sigma ** 2))));
         } while (\abs($lambda - $lambdaP) > 1e-12 && --$looplimit > 0);
 
-        $uSq = $cos2Alpha * (($ellipsoid->getMajorSemiAxis() ** 2) - ($ellipsoid->getMinorSemiAxis() ** 2)) / ($ellipsoid->getMinorSemiAxis() ** 2);
+        $uSq = $cos2Alpha * (($majorSemiAxis ** 2) - ($minorSemiAxis ** 2)) / ($minorSemiAxis ** 2);
         $A = 1 + $uSq / 16384 * (4096 + $uSq * (-768 + $uSq * (320 - 175 * $uSq)));
         $B = $uSq / 1024 * (256 + $uSq * (-128 + $uSq * (74 - 47 * $uSq)));
         $deltaSigma = $B * $sinSigma * ($cosof2sigma + $B / 4 * ($cosSigma * (-1 + 2 * ($cosof2sigma ** 2)) -
                     $B / 6 * $cosof2sigma * (-3 + 4 * ($sinSigma ** 2))
                     * (-3 + 4 * ($cosof2sigma ** 2))));
-        $s = $ellipsoid->getMinorSemiAxis() * $A * ($sigma - $deltaSigma);
 
-        return $s * 1000;
+        return $minorSemiAxis * $A * ($sigma - $deltaSigma);
     }
 
     public static function formula(): string

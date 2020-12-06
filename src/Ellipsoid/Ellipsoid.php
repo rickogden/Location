@@ -10,24 +10,23 @@ declare(strict_types=1);
 namespace Ricklab\Location\Ellipsoid;
 
 use Ricklab\Location\Converter\UnitConverter;
-use Ricklab\Location\Location;
 
 abstract class Ellipsoid implements EllipsoidInterface
 {
-    abstract protected function getRadiusInMetres(): float;
+    abstract protected static function getRadiusInMeters(): float;
 
-    abstract protected function getMinorSemiAxisInMetres(): float;
+    abstract protected static function getMinorSemiAxisInMeters(): float;
 
-    abstract protected function getMajorSemiAxisInMetres(): float;
+    abstract protected static function getMajorSemiAxisInMeters(): float;
 
     /**
      * Returns the average radius of the ellipsoid in specified units.
      *
      * @param string $unit can be 'km', 'miles', 'metres', 'feet', 'yards', 'nautical miles'
      */
-    public function radius(string $unit = Location::UNIT_METRES): float
+    public static function radius(string $unit = UnitConverter::UNIT_METERS): float
     {
-        return $this->unitConversion($this->getRadiusInMetres(), $unit);
+        return UnitConverter::convertFromMeters(static::getRadiusInMeters(), $unit);
     }
 
     /**
@@ -37,48 +36,29 @@ abstract class Ellipsoid implements EllipsoidInterface
      *
      * @deprecated use UnitConverter::getMultiplier();
      */
-    public function getMultiplier(string $unit = Location::UNIT_METRES): float
+    public static function getMultiplier(string $unit = UnitConverter::UNIT_METERS): float
     {
         return UnitConverter::getMultiplier($unit);
     }
 
     /**
-     * @param $distance float The distance in kilometres, can be 'km', 'miles', 'metres', 'feet', 'yards', 'nautical miles'
-     * @param $unit string the unit to be converted to
-     *
-     * @return float the distance in the new unit
+     * @param string $unit unit of measurement
      */
-    protected function unitConversion(float $distance, string $unit): float
+    public static function getMajorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float
     {
-        return $distance * $this->getMultiplier($unit);
+        return UnitConverter::convertFromMeters(static::getMajorSemiAxisInMeters(), $unit);
     }
 
     /**
      * @param string $unit unit of measurement
      */
-    public function getMajorSemiAxis(string $unit = Location::UNIT_METRES): float
+    public static function getMinorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float
     {
-        if ('m' !== $unit) {
-            return $this->unitConversion($this->getMajorSemiAxisInMetres() / 1000, $unit);
-        }
-
-        return $this->getMajorSemiAxisInMetres();
+        return UnitConverter::convertFromMeters(static::getMinorSemiAxisInMeters(), $unit);
     }
 
-    /**
-     * @param string $unit unit of measurement
-     */
-    public function getMinorSemiAxis(string $unit = Location::UNIT_METRES): float
+    public static function getFlattening(): float
     {
-        if ('m' !== $unit) {
-            return $this->unitConversion($this->getMinorSemiAxisInMetres() / 1000, $unit);
-        }
-
-        return $this->getMinorSemiAxisInMetres();
-    }
-
-    public function getFlattening(): float
-    {
-        return ($this->getMajorSemiAxis() - $this->getMinorSemiAxis()) / $this->getMajorSemiAxis();
+        return (static::getMajorSemiAxisInMeters() - static::getMinorSemiAxisInMeters()) / static::getMajorSemiAxisInMeters();
     }
 }
