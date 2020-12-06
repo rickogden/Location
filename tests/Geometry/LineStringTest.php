@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use PHPUnit\Framework\TestCase;
+use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Converter\UnitConverter;
-use Ricklab\Location\Location;
 
 class LineStringTest extends TestCase
 {
@@ -56,9 +56,9 @@ class LineStringTest extends TestCase
 
     public function testInitialBearing(): void
     {
-        Location::$useSpatialExtension = false;
+        BearingCalculator::disableGeoSpatialExtension();
         $this->assertEquals(98.50702, \round($this->line->getInitialBearing(), 5));
-        Location::$useSpatialExtension = true;
+        BearingCalculator::enableGeoSpatialExtension();
         $this->assertEquals(98.50702, \round($this->line->getInitialBearing(), 5));
     }
 

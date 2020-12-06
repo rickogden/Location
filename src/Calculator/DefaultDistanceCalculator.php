@@ -7,7 +7,7 @@ namespace Ricklab\Location\Calculator;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Geometry\Point;
 
-final class DefaultDistanceCalculator implements DistanceCalculator
+final class DefaultDistanceCalculator implements DistanceCalculator, UsesGeoSpatialExtensionInterface
 {
     private static ?DistanceCalculator $defaultCalculator = null;
 
@@ -18,7 +18,11 @@ final class DefaultDistanceCalculator implements DistanceCalculator
 
     public static function getDefaultCalculator(): DistanceCalculator
     {
-        return self::$defaultCalculator ?? new HaversineCalculator();
+        if (null === self::$defaultCalculator) {
+            self::$defaultCalculator = new HaversineCalculator();
+        }
+
+        return self::$defaultCalculator;
     }
 
     public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
@@ -29,5 +33,23 @@ final class DefaultDistanceCalculator implements DistanceCalculator
     public static function formula(): string
     {
         return self::getDefaultCalculator()::formula();
+    }
+
+    public static function enableGeoSpatialExtension(): void
+    {
+        $calculator = self::getDefaultCalculator();
+
+        if ($calculator instanceof UsesGeoSpatialExtensionInterface) {
+            $calculator::enableGeoSpatialExtension();
+        }
+    }
+
+    public static function disableGeoSpatialExtension(): void
+    {
+        $calculator = self::getDefaultCalculator();
+
+        if ($calculator instanceof UsesGeoSpatialExtensionInterface) {
+            $calculator::disableGeoSpatialExtension();
+        }
     }
 }

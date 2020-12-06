@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Calculator;
 
+use Ricklab\Location\Calculator\Traits\GeoSpatialExtensionTrait;
 use Ricklab\Location\Ellipsoid\Earth;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Geometry\Point;
-use Ricklab\Location\Location;
 
-final class VincentyCalculator implements DistanceCalculator
+final class VincentyCalculator implements DistanceCalculator, UsesGeoSpatialExtensionInterface
 {
+    use GeoSpatialExtensionTrait;
+
     public const FORMULA = 'VINCENTY';
 
     public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {
-        if (\function_exists('vincenty') && Location::$useSpatialExtension && $ellipsoid instanceof Earth) {
+        if (\function_exists('vincenty') && self::$useSpatialExtension && $ellipsoid instanceof Earth) {
             $from = $point1->jsonSerialize();
             $to = $point2->jsonSerialize();
 

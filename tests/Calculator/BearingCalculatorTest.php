@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ricklab\Location\Psalm\Calculator;
+namespace Ricklab\Location\Calculator;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Geometry\Point;
-use Ricklab\Location\Location;
 
 class BearingCalculatorTest extends TestCase
 {
@@ -15,10 +13,10 @@ class BearingCalculatorTest extends TestCase
     {
         $point1 = new Point(0.119, 52.205);
         $point2 = new Point(2.351, 48.857);
-        Location::$useSpatialExtension = false;
+        BearingCalculator::disableGeoSpatialExtension();
         $finalBearing = BearingCalculator::calculateFinalBearing($point1, $point2);
         $this->assertSame(157.9, \round($finalBearing, 1));
-        Location::$useSpatialExtension = true;
+        BearingCalculator::enableGeoSpatialExtension();
         $finalBearing = BearingCalculator::calculateFinalBearing($point1, $point2);
         $this->assertSame(157.9, \round($finalBearing, 1));
     }

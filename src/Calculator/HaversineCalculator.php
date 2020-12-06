@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Calculator;
 
+use Ricklab\Location\Calculator\Traits\GeoSpatialExtensionTrait;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Geometry\Point;
-use Ricklab\Location\Location;
 
-final class HaversineCalculator implements DistanceCalculator
+final class HaversineCalculator implements DistanceCalculator, UsesGeoSpatialExtensionInterface
 {
+    use GeoSpatialExtensionTrait;
+
     public const FORMULA = 'HAVERSINE';
 
     public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {
-        if (\function_exists('haversine') && Location::$useSpatialExtension) {
+        if (self::$useSpatialExtension && \function_exists('haversine')) {
             $from = $point1->jsonSerialize();
             $to = $point2->jsonSerialize();
 

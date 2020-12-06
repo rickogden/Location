@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Calculator;
 
+use Ricklab\Location\Calculator\Traits\GeoSpatialExtensionTrait;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Geometry\Point;
-use Ricklab\Location\Location;
 
-final class FractionAlongLineCalculator
+final class FractionAlongLineCalculator implements UsesGeoSpatialExtensionInterface
 {
+    use GeoSpatialExtensionTrait;
+
     public static function calculate(
         Point $point1,
         Point $point2,
@@ -22,9 +24,9 @@ final class FractionAlongLineCalculator
         }
 
         if (
-            Location::$useSpatialExtension
-            && HaversineCalculator::FORMULA === $calculator::formula()
+            self::$useSpatialExtension
             && \function_exists('fraction_along_gc_line')
+            && HaversineCalculator::FORMULA === $calculator::formula()
         ) {
             $result = \fraction_along_gc_line($point1->jsonSerialize(), $point2->jsonSerialize(), $fraction);
 

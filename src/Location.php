@@ -29,6 +29,9 @@ use Ricklab\Location\Geometry\Polygon;
 use Ricklab\Location\Transformer\GeoJsonTransformer;
 use Ricklab\Location\Transformer\WktTransformer;
 
+/**
+ * @deprecated This has been split out into various classes. Please see the individual methods for replacements.
+ */
 class Location
 {
     public const FORMULA_HAVERSINE = 1;
@@ -53,11 +56,6 @@ class Location
     public const UNIT_YARDS = UnitConverter::UNIT_YARDS;
 
     /**
-     * @var bool Set to false if you have the pecl geospatial extension installed but do not want to use it
-     */
-    public static bool $useSpatialExtension = true;
-
-    /**
      * @var int Set to either Location::HAVERSINE or Location::VICENTY. Defaults to Location::HAVERSINE
      */
     public static int $defaultFormula = self::FORMULA_HAVERSINE;
@@ -72,7 +70,7 @@ class Location
      *
      * @return GeometryInterface|Feature|FeatureCollection
      *
-     * @deprecated use GeoJsonFactory
+     * @deprecated use GeoJsonTransformer::decode()
      */
     public static function fromGeoJson($geojson)
     {
@@ -96,7 +94,7 @@ class Location
      *
      * @param string $wkt The WKT to create the geometry from
      *
-     * @deprecated use WktTransformer::fromString()
+     * @deprecated use WktTransformer::decode()
      */
     public static function fromWkt(string $wkt): GeometryInterface
     {

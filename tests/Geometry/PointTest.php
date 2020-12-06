@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use PHPUnit\Framework\TestCase;
+use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Converter\DegreesMinutesSeconds;
 use Ricklab\Location\Converter\UnitConverter;
-use Ricklab\Location\Location;
 
 class PointTest extends TestCase
 {
@@ -109,9 +109,9 @@ class PointTest extends TestCase
 
     public function testFractionAlongLine(): void
     {
-        Location::$useSpatialExtension = false;
+        DefaultDistanceCalculator::disableGeoSpatialExtension();
         $this->fractionAlongLine();
-        Location::$useSpatialExtension = true;
+        DefaultDistanceCalculator::enableGeoSpatialExtension();
         $this->fractionAlongLine();
     }
 

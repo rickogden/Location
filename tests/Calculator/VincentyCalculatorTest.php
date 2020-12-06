@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Geometry\Point;
-use Ricklab\Location\Location;
 
 class VincentyCalculatorTest extends TestCase
 {
@@ -18,11 +17,11 @@ class VincentyCalculatorTest extends TestCase
 
         $buninyond = new Point(143.92649552777777, -37.65282113888889);
 
-        Location::$useSpatialExtension = true;
+        VincentyCalculator::enableGeoSpatialExtension();
         $this->assertSame(54972.271, \round(VincentyCalculator::calculate($flinders, $buninyond, DefaultEllipsoid::get()), 3));
 
-        Location::$useSpatialExtension = false;
+        VincentyCalculator::disableGeoSpatialExtension();
         $this->assertSame(54972.271, \round(VincentyCalculator::calculate($flinders, $buninyond, DefaultEllipsoid::get()), 3));
-        Location::$useSpatialExtension = true;
+        VincentyCalculator::enableGeoSpatialExtension();
     }
 }
