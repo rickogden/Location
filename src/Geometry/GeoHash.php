@@ -112,7 +112,7 @@ class GeoHash
         return new self(\implode($hash));
     }
 
-    public static function fromString(string $hash): self
+    public function __construct(string $hash)
     {
         $hash = \mb_strtolower($hash);
         $h = \mb_str_split($hash);
@@ -122,11 +122,6 @@ class GeoHash
             }
         }
 
-        return new self($hash);
-    }
-
-    private function __construct(string $hash)
-    {
         $this->hash = $hash;
     }
 
