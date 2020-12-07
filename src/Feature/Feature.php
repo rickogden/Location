@@ -15,7 +15,11 @@ use Ricklab\Location\Transformer\GeoJsonTransformer;
 
 class Feature implements \JsonSerializable
 {
+    /**
+     * @var string|int|float|null
+     */
     protected $id;
+
     protected ?GeometryInterface $geometry;
     protected array $properties = [];
     private bool $bbox;
@@ -31,7 +35,7 @@ class Feature implements \JsonSerializable
             }
         }
 
-        $feature = new self($geojson['properties'] ?? [], $decodedGeo ?? null, isset($geojson['bbox']));
+        $feature = new self($geojson['properties'] ?? [], $decodedGeo ?? null, $geojson['id'] ?? null, isset($geojson['bbox']));
 
         if (isset($geojson['bbox'])) {
             $feature->bboxCache = BoundingBox::fromArray($geojson['bbox']);
@@ -40,11 +44,19 @@ class Feature implements \JsonSerializable
         return $feature;
     }
 
-    public function __construct(array $properties = [], ?GeometryInterface $geometry = null, bool $bbox = false)
+    /**
+     * @param string|int|float|null $id
+     */
+    public function __construct(array $properties = [], ?GeometryInterface $geometry = null, $id = null, bool $bbox = false)
     {
+        if (null !== $id && !\is_string($id) && !\is_numeric($id)) {
+            throw new \InvalidArgumentException('$id must be either a string or number.');
+        }
+
         $this->properties = $properties;
         $this->geometry = $geometry;
         $this->bbox = $bbox;
+        $this->id = $id;
     }
 
     public function withBbox(): self
@@ -52,6 +64,7 @@ class Feature implements \JsonSerializable
         return $this->bbox ? $this : new self(
             $this->properties,
             $this->geometry,
+            $this->id,
             true
         );
     }
@@ -61,6 +74,7 @@ class Feature implements \JsonSerializable
         return !$this->bbox ? $this : new self(
             $this->properties,
             $this->geometry,
+            $this->id,
             false
         );
     }
@@ -75,6 +89,7 @@ class Feature implements \JsonSerializable
         return new self(
             $this->properties,
             $geometry,
+            $this->id,
             $this->bbox
         );
     }
@@ -92,6 +107,7 @@ class Feature implements \JsonSerializable
         $self = new self(
             $properties,
             $this->geometry,
+            $this->id,
             $this->bbox
         );
 
@@ -137,5 +153,24 @@ class Feature implements \JsonSerializable
         $array['properties'] = $this->properties;
 
         return $array;
+    }
+
+    /**
+     * @return float|int|string|null
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param float|int|string|null $id
+     */
+    public function withId($id): self
+    {
+        $new = new self($this->properties, $this->geometry, $id, $this->bbox);
+        $new->bboxCache = $this->bboxCache;
+
+        return $new;
     }
 }
