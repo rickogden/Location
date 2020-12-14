@@ -334,8 +334,8 @@ class Point implements GeometryInterface
     public function round(int $precision): Point
     {
         $point = clone $this;
-        $point->latitude = round($this->latitude, $precision);
-        $point->longitude = round($this->longitude, $precision);
+        $point->latitude = \round($this->latitude, $precision);
+        $point->longitude = \round($this->longitude, $precision);
 
         return $point;
     }
