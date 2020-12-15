@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Transformer;
 
 use Ricklab\Location\Geometry\GeometryInterface;
+use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Transformer\Traits\CreateGeometryTrait;
 
 final class WktTransformer
@@ -60,6 +61,9 @@ final class WktTransformer
 
     public static function encode(GeometryInterface $geometry): string
     {
+        if ($geometry instanceof Point) {
+            return \sprintf('%s(%s)', $geometry::getWktType(), (string) $geometry);
+        }
         return $geometry::getWktType().$geometry;
     }
 }
