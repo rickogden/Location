@@ -64,6 +64,7 @@ final class WktTransformer
         if ($geometry instanceof Point) {
             return \sprintf('%s(%s)', $geometry::getWktType(), (string) $geometry);
         }
+
         return $geometry::getWktType().$geometry;
     }
 }
