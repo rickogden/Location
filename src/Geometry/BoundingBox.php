@@ -147,4 +147,23 @@ class BoundingBox extends Polygon
     {
         return $this->maxLat;
     }
+
+    public function contains(GeometryInterface $geometry): bool
+    {
+        foreach ($geometry->getPoints() as $point) {
+            $lat = $point->getLatitude();
+            $lon = $point->getLongitude();
+
+            if (
+                $lat < $this->minLat
+                || $lat > $this->maxLat
+                || $lon < $this->minLon
+                || $lon > $this->maxLon
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
