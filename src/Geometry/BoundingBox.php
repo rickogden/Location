@@ -166,4 +166,23 @@ class BoundingBox extends Polygon
 
         return true;
     }
+
+    public function intersects(GeometryInterface $geometry): bool
+    {
+        foreach ($geometry->getPoints() as $point) {
+            $lat = $point->getLatitude();
+            $lon = $point->getLongitude();
+
+            if (
+                $lat > $this->minLat
+                && $lat < $this->maxLat
+                && $lon > $this->minLon
+                && $lon < $this->maxLon
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
