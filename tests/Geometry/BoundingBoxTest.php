@@ -50,10 +50,9 @@ class BoundingBoxTest extends TestCase
         $this->assertTrue($boundingBox->contains($geometry));
     }
 
-    public function falseContains(): \Generator
+    public function intersectingProvider(): \Generator
     {
         $bbox = new BoundingBox(-2, 50, 1, 52);
-        yield [$bbox, new Point(0, 54)];
         yield [
             $bbox,
             new LineString([
@@ -76,11 +75,36 @@ class BoundingBoxTest extends TestCase
         ];
     }
 
+    public function doesNotIntersectProvider(): \Generator
+    {
+        $bbox = new BoundingBox(-2, 50, 1, 52);
+        yield [$bbox, new Point(0, 54)];
+        yield [$bbox, new LineString([new Point(0, 53), new Point(0, 55)])];
+    }
+
     /**
-     * @dataProvider falseContains
+     * @dataProvider intersectingProvider
+     * @dataProvider doesNotIntersectProvider
      */
     public function testContainsFalse(BoundingBox $boundingBox, GeometryInterface $geometry): void
     {
         $this->assertFalse($boundingBox->contains($geometry));
+    }
+
+    /**
+     * @dataProvider trueContains
+     * @dataProvider intersectingProvider
+     */
+    public function testIntersects(BoundingBox $boundingBox, GeometryInterface $geometry): void
+    {
+        $this->assertTrue($boundingBox->intersects($geometry));
+    }
+
+    /**
+     * @dataProvider doesNotIntersectProvider
+     */
+    public function testNotIntersects(BoundingBox $boundingBox, GeometryInterface $geometry): void
+    {
+        $this->assertFalse($boundingBox->intersects($geometry));
     }
 }

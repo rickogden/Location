@@ -4,14 +4,14 @@ php:
   - 7.4
   - 8.0
 before_script:
-  - if [ $TRAVIS_PHP_VERSION != "8.0" ]; then git clone https://github.com/php-geospatial/geospatial.git
-  - if [ $TRAVIS_PHP_VERSION != "8.0" ]; then cd geospatial
-  - if [ $TRAVIS_PHP_VERSION != "8.0" ]; then phpize
-  - if [ $TRAVIS_PHP_VERSION != "8.0" ]; then ./configure --enable-geospatial
-  - if [ $TRAVIS_PHP_VERSION != "8.0" ]; then make
-  - if [ $TRAVIS_PHP_VERSION != "8.0" ]; then sudo make install
-  - if [ $TRAVIS_PHP_VERSION != "8.0" ]; then echo "extension=geospatial.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - if [ $TRAVIS_PHP_VERSION != "8.0" ]; then cd ..
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then git clone https://github.com/php-geospatial/geospatial.git; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then cd geospatial; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then phpize; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then ./configure --enable-geospatial; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then make; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then sudo make install; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then echo "extension=geospatial.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then cd ..; fi
 install:
   - composer install --ignore-platform-reqs
 script:
