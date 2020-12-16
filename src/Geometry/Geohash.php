@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
-class GeoHash
+class Geohash
 {
     private const HASH_MAP = [
         '0',
@@ -194,47 +194,47 @@ class GeoHash
         return $this->getBounds()->getCenter();
     }
 
-    public function getAdjacentNorth(): GeoHash
+    public function getAdjacentNorth(): Geohash
     {
         return self::getAdjacent($this->hash, 'n');
     }
 
-    public function getAdjacentSouth(): GeoHash
+    public function getAdjacentSouth(): Geohash
     {
         return self::getAdjacent($this->hash, 's');
     }
 
-    public function getAdjacentEast(): GeoHash
+    public function getAdjacentEast(): Geohash
     {
         return self::getAdjacent($this->hash, 'e');
     }
 
-    public function getAdjacentWest(): GeoHash
+    public function getAdjacentWest(): Geohash
     {
         return self::getAdjacent($this->hash, 'w');
     }
 
-    public function getAdjacentNorthWest(): GeoHash
+    public function getAdjacentNorthWest(): Geohash
     {
         return $this->getAdjacentNorth()->getAdjacentWest();
     }
 
-    public function getAdjacentNorthEast(): GeoHash
+    public function getAdjacentNorthEast(): Geohash
     {
         return $this->getAdjacentNorth()->getAdjacentEast();
     }
 
-    public function getAdjacentSouthWest(): GeoHash
+    public function getAdjacentSouthWest(): Geohash
     {
         return $this->getAdjacentSouth()->getAdjacentWest();
     }
 
-    public function getAdjacentSouthEast(): GeoHash
+    public function getAdjacentSouthEast(): Geohash
     {
         return $this->getAdjacentSouth()->getAdjacentEast();
     }
 
-    private static function getAdjacent(string $hash, string $direction): GeoHash
+    private static function getAdjacent(string $hash, string $direction): Geohash
     {
         $lastChar = \mb_substr($hash, -1);
         $parent = \mb_substr($hash, 0, -1);
@@ -247,7 +247,7 @@ class GeoHash
         return new self($parent.self::HASH_MAP[\mb_strpos(self::NEIGHBOUR[$direction][$type], $lastChar)]);
     }
 
-    public function getParent(): GeoHash
+    public function getParent(): Geohash
     {
         if ($this->getLength() < 2) {
             throw new \LogicException('This GeoHash has no parent');

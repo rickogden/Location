@@ -326,9 +326,9 @@ class Point implements GeometryInterface
             && $geometry->longitude === $this->longitude;
     }
 
-    public function getGeoHash(int $resolution = 12): GeoHash
+    public function getGeoHash(int $resolution = 12): Geohash
     {
-        return GeoHash::fromPoint($this, $resolution);
+        return Geohash::fromPoint($this, $resolution);
     }
 
     public function round(int $precision): Point
