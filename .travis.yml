@@ -13,7 +13,7 @@ before_script:
   - if [ $TRAVIS_PHP_VERSION != "8.0" ]; then echo "extension=geospatial.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - if [ $TRAVIS_PHP_VERSION != "8.0" ]; then cd ..
 install:
-  - composer install
+  - composer install --ignore-platform-reqs
 script:
   - php vendor/bin/psalm --show-info=false
   - php vendor/bin/phpunit --coverage-text
