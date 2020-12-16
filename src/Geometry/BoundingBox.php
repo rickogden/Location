@@ -174,10 +174,10 @@ class BoundingBox extends Polygon
             $lon = $point->getLongitude();
 
             if (
-                $lat > $this->minLat
-                && $lat < $this->maxLat
-                && $lon > $this->minLon
-                && $lon < $this->maxLon
+                $lat >= $this->minLat
+                && $lat <= $this->maxLat
+                && $lon >= $this->minLon
+                && $lon <= $this->maxLon
             ) {
                 return true;
             }
