@@ -13,6 +13,10 @@ final class DefaultDistanceCalculator implements DistanceCalculator, UsesGeoSpat
 
     public static function setDefaultCalculator(DistanceCalculator $distanceCalculator): void
     {
+        if ($distanceCalculator instanceof self) {
+            throw new \InvalidArgumentException('Cannot pass an instance of DefaultDistanceCalculator in as a default calculator.');
+        }
+
         self::$defaultCalculator = $distanceCalculator;
     }
 
