@@ -1,4 +1,4 @@
-# Upgrading to Version 6
+# Upgrading from Version 5 to Version 6
 
 Version 6 a plethora of new features.
 
@@ -23,9 +23,30 @@ Additionally, all geometries now have a `getBbox()` method.
 
 The GeoHash class can be used to handle Geohash strings, and allows conversion to and from geometries.
 
+```injectablephp
+
+use Ricklab\Location\Geometry\Geohash;
+use Ricklab\Location\Geometry\Point;
+$geohash1 = new Geohash('gbsuv7s0m');
+$geohash2 = Geohash::fromPoint(new Point(-4.33387, 48.666751), 9);
+$geohash1->equals($geohash2); // true
+$geohash1->contains($geohash2);
+$geohash3 = $geohash2->getAdjacentNorthEast(); // gets the next grid element.
+```
+
 ### Degrees, Minutes, Seconds
 
-This converter will convert between decimal longitude and latitude and degrees, minutes, seconds.
+This converter can be used to handle degrees, minutes, seconds with a direction and can be instantiated directly, or from a a string or deceminal (with an axis).
+
+```injectablephp
+use Ricklab\Location\Converter\DegreesMinutesSeconds;
+use Ricklab\Location\Geometry\Point;
+
+$dmsLatitude = DegreesMinutesSeconds::fromString('40° 26′ 46.2345″ S');
+$dmsLongitude = DegreesMinutesSeconds::fromDecimal(23.32232, DegreesMinutesSeconds::AXIS_LONGITUDE);
+
+$point = Point::fromDms($dmsLatitude, $dmsLongitude); // Because the direction is stored in the DMS object it doesn't matter on argument order.
+```
 
 ## Deprecations
 
@@ -62,7 +83,7 @@ The `Location::$useGeospatialExtension` property has been removed, and can now b
 
 ```injectablephp
 // Disable the geospatial extension for every use
-\Ricklab\Location\Calculator\HaversineCalculator::disableGeoSpatialExtension();
+use Ricklab\Location\Calculator\HaversineCalculator;HaversineCalculator::disableGeoSpatialExtension();
 ```
 
 ### Unit Converter
@@ -72,10 +93,10 @@ There is now a dedicated `UnitConverter` class, which handles all the unit conve
 ```injectablephp
 
 // Deprecated
-\Ricklab\Location\Location::UNIT_METRES;
+use Ricklab\Location\Converter\UnitConverter;use Ricklab\Location\Location;Location::UNIT_METRES;
 
 // From version 6
-\Ricklab\Location\Converter\UnitConverter::UNIT_METERS;
+UnitConverter::UNIT_METERS;
 ```
 
 ### Immutable Features
@@ -83,6 +104,5 @@ There is now a dedicated `UnitConverter` class, which handles all the unit conve
 GeoJSON features are now immutable, which allows for caching of the calculations. This means the `set` methods have been replaced with `with` methods.
 
 ```injectablephp
-/** @var \Ricklab\Location\Feature\Feature */
 $newFeature = $feature->withBbox();
 ```
