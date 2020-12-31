@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Location;
+use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 
 class PolygonTest extends TestCase
 {
@@ -16,7 +16,7 @@ class PolygonTest extends TestCase
 
     protected function setUp(): void
     {
-        Location::$useSpatialExtension = false;
+        DefaultDistanceCalculator::disableGeoSpatialExtension();
         $this->polygon = Polygon::fromArray([[new Point(3, 2), new Point(4, 2), new Point(4, 3)]]);
     }
 

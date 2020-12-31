@@ -9,17 +9,17 @@ namespace Ricklab\Location\Ellipsoid;
  */
 trait EllipsoidTrait
 {
-    protected function getRadiusInMetres(): float
+    protected static function getRadiusInMeters(): float
     {
         return self::RADIUS;
     }
 
-    protected function getMinorSemiAxisInMetres(): float
+    protected static function getMinorSemiAxisInMeters(): float
     {
         return self::MINOR_SEMI_AXIS;
     }
 
-    protected function getMajorSemiAxisInMetres(): float
+    protected static function getMajorSemiAxisInMeters(): float
     {
         return self::MAJOR_SEMI_AXIS;
     }

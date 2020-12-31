@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location;
 
 use PHPUnit\Framework\TestCase;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\LineString;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Geometry\Polygon;
@@ -29,7 +30,7 @@ class LocationTest extends TestCase
         );
 
         $this->assertInstanceOf(LineString::class, $line);
-        $this->assertEquals(2.783, \round($line->getLength(), 3));
+        $this->assertEquals(2.783, \round($line->getLength(UnitConverter::UNIT_KM), 3));
 
         $multiPointLine = Location::fromGeoJson(
             '{"type":"LineString","coordinates":[[-2.27354,53.48575],[-2.23194,53.48204], [-2.23144,53.48254]]}'
@@ -57,38 +58,6 @@ class LocationTest extends TestCase
         $this->assertEquals(8.047, \round(Location::convert(5, 'miles', 'km'), 3));
     }
 
-    public function testVincenty(): void
-    {
-        $flinders = new Geometry\Point(144.42486788888888, -37.95103341666667);
-
-        $buninyond = new Geometry\Point(143.92649552777777, -37.65282113888889);
-
-        Location::$useSpatialExtension = true;
-        $this->assertEquals(54972.271, \round(Location::vincenty($flinders, $buninyond), 3));
-
-        Location::$useSpatialExtension = false;
-        $this->assertEquals(54972.271, \round(Location::vincenty($flinders, $buninyond), 3));
-        Location::$useSpatialExtension = true;
-    }
-
-    public function testDmsToDecimal(): void
-    {
-        $decimal = Location::dmsToDecimal(117, 29, 50.5);
-
-        $this->assertEquals(117.49736, \round($decimal, 5));
-
-        $decimal2 = Location::dmsToDecimal(1, 2, 3.45, 'W');
-
-        $this->assertEquals(-1.0342916666667, $decimal2);
-    }
-
-    public function testDecimalToDms(): void
-    {
-        $dms = Location::decimalToDms(1.0342916666667);
-        $dms[2] = \round($dms[2], 5);
-        $this->assertEquals([1, 2, 3.45], $dms);
-    }
-
     public function testFromWkt(): void
     {
         $multipolywkt = 'MULTIPOLYGON(((1.432 -1.543, 5 1, 5 5, 1 5, 1.432 -1.543), (2 2, 3 2, 3 3, 2 3, 2 2)), ((3 3, 6 2, 6 4, 3 3)))';
@@ -112,17 +81,5 @@ class LocationTest extends TestCase
         $bbox = Location::getBBoxByRadius($point, 2, 'km');
 
         $this->assertCount(5, $bbox->getPoints());
-    }
-
-    public function testFinalBearing(): void
-    {
-        $point1 = new Point(0.119, 52.205);
-        $point2 = new Point(2.351, 48.857);
-        Location::$useSpatialExtension = false;
-        $finalBearing = Location::getFinalBearing($point1, $point2);
-        $this->assertSame(157.9, \round($finalBearing, 1));
-        Location::$useSpatialExtension = true;
-        $finalBearing = Location::getFinalBearing($point1, $point2);
-        $this->assertSame(157.9, \round($finalBearing, 1));
     }
 }

@@ -7,7 +7,7 @@ namespace Ricklab\Location\Feature;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Geometry\LineString;
 use Ricklab\Location\Geometry\Polygon;
-use Ricklab\Location\Location;
+use Ricklab\Location\Transformer\GeoJsonTransformer;
 
 class FeatureTest extends TestCase
 {
@@ -15,8 +15,7 @@ class FeatureTest extends TestCase
     {
         $line = LineString::fromArray([[2, 3], [4, 5]]);
         $feature = new Feature();
-        $feature->setGeometry($line);
-        $feature->enableBBox();
+        $feature = $feature->withGeometry($line)->withBbox();
 
         $json = $feature->jsonSerialize();
         $this->assertIsArray($json['bbox']);
@@ -37,13 +36,11 @@ class FeatureTest extends TestCase
       }
     }';
         /** @var Feature $feature */
-        $feature = Location::fromGeoJson($initialjson);
-        $feature->enableBBox();
-
+        $feature = GeoJsonTransformer::decode($initialjson);
         $this->assertInstanceOf(Feature::class, $feature);
         $this->assertInstanceOf(Polygon::class, $feature->getGeometry());
-        $this->assertEquals('bar', $feature['foo']);
+        $this->assertEquals('bar', $feature->getProperties()['foo']);
 
-        $this->assertEquals(\json_encode(\json_decode($initialjson)), \json_encode($feature));
+        $this->assertJsonStringEqualsJsonString($initialjson, \json_encode($feature));
     }
 }

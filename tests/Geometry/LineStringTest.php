@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Location;
+use Ricklab\Location\Calculator\BearingCalculator;
+use Ricklab\Location\Calculator\VincentyCalculator;
+use Ricklab\Location\Converter\UnitConverter;
 
 class LineStringTest extends TestCase
 {
-    /**
-     * @var LineString
-     */
-    protected $line;
+    protected LineString $line;
 
     protected function setUp(): void
     {
@@ -51,15 +50,15 @@ class LineStringTest extends TestCase
 
     public function testGetLength(): void
     {
-        $this->assertEquals(2.783, \round($this->line->getLength(), 3));
-        $this->assertEquals(2.792, \round($this->line->getLength('km', Location::FORMULA_VINCENTY), 3));
+        $this->assertEquals(2.783, \round($this->line->getLength(UnitConverter::UNIT_KM), 3));
+        $this->assertEquals(2.792, \round($this->line->getLength(UnitConverter::UNIT_KM, new VincentyCalculator()), 3));
     }
 
     public function testInitialBearing(): void
     {
-        Location::$useSpatialExtension = false;
+        BearingCalculator::disableGeoSpatialExtension();
         $this->assertEquals(98.50702, \round($this->line->getInitialBearing(), 5));
-        Location::$useSpatialExtension = true;
+        BearingCalculator::enableGeoSpatialExtension();
         $this->assertEquals(98.50702, \round($this->line->getInitialBearing(), 5));
     }
 

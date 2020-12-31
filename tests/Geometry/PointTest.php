@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Location;
+use Ricklab\Location\Calculator\DefaultDistanceCalculator;
+use Ricklab\Location\Calculator\VincentyCalculator;
+use Ricklab\Location\Converter\DegreesMinutesSeconds;
+use Ricklab\Location\Converter\UnitConverter;
 
 class PointTest extends TestCase
 {
-    /**
-     * @var Point
-     */
-    public $point;
-    public $lat = 53.48575;
-    public $lon = -2.27354;
+    public Point $point;
+    public float $lat = 53.48575;
+    public float $lon = -2.27354;
 
     protected function setUp(): void
     {
@@ -63,11 +63,11 @@ class PointTest extends TestCase
     public function testDistanceTo(): void
     {
         $newPoint = new Point(-2.23194, 53.48204);
-        $this->assertEquals(1.729, \round($this->point->distanceTo($newPoint, 'miles'), 3));
-        $this->assertEquals(2.783, \round($this->point->distanceTo($newPoint), 3));
+        $this->assertEquals(1.729, \round($this->point->distanceTo($newPoint, UnitConverter::UNIT_MILES), 3));
+        $this->assertEquals(2.783, \round($this->point->distanceTo($newPoint, UnitConverter::UNIT_KM), 3));
         $this->assertEquals(
             2.792,
-            \round($this->point->distanceTo($newPoint, 'km', Location::FORMULA_VINCENTY), 3)
+            \round($this->point->distanceTo($newPoint, UnitConverter::UNIT_KM, new VincentyCalculator()), 3)
         );
     }
 
@@ -87,18 +87,31 @@ class PointTest extends TestCase
 
     public function testFromDms(): void
     {
-        $point = Point::fromDms([1, 2, 3.45], [0, 6, 9, 'S']);
+        $point = Point::fromDms(
+            new DegreesMinutesSeconds(1, 2, 3.45, 'N'),
+            new DegreesMinutesSeconds(0, 6, 9, 'W')
+        );
 
-        $this->assertEquals(1.0342916666667, $point->getLatitude());
+        $this->assertSame(1.0342916666667, $point->getLatitude());
+        $this->assertSame(-0.1025, $point->getLongitude());
+    }
 
-        $this->assertEquals(-0.1025, $point->getLongitude());
+    public function testFromDmsInverted(): void
+    {
+        $point = Point::fromDms(
+            new DegreesMinutesSeconds(0, 6, 9, 'W'),
+            new DegreesMinutesSeconds(1, 2, 3.45, 'N')
+        );
+
+        $this->assertSame(1.0342916666667, $point->getLatitude());
+        $this->assertSame(-0.1025, $point->getLongitude());
     }
 
     public function testFractionAlongLine(): void
     {
-        Location::$useSpatialExtension = false;
+        DefaultDistanceCalculator::disableGeoSpatialExtension();
         $this->fractionAlongLine();
-        Location::$useSpatialExtension = true;
+        DefaultDistanceCalculator::enableGeoSpatialExtension();
         $this->fractionAlongLine();
     }
 
@@ -115,6 +128,20 @@ class PointTest extends TestCase
         $this->assertFalse($point1->equals(new Point(1.1, 1.3)));
         $this->assertFalse($point1->equals(new Point(1.1, -1.31)));
         $this->assertFalse($point1->equals(new LineString([new Point(1.1, -1.3), new Point(1.1, -1.31)])));
+    }
+
+    public function geoHahProvider(): \Generator
+    {
+        yield ['u4pruydqqvj', 10.40744, 57.64911];
+    }
+
+    /**
+     * @dataProvider geoHahProvider
+     */
+    public function testGetGeoHash(string $hash, float $lon, float $lat): void
+    {
+        $point = new Point($lon, $lat);
+        $this->assertSame($hash, (string) $point->getGeoHash(11));
     }
 
     private function fractionAlongLine(): void

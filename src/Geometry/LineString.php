@@ -9,8 +9,9 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Calculator\DistanceCalculator;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
-use Ricklab\Location\Location;
 
 /**
  * Class LineString.
@@ -22,12 +23,8 @@ class LineString implements GeometryInterface, \IteratorAggregate
     /**
      * @var Point[]
      */
-    protected $geometries = [];
-
-    /**
-     * @var int
-     */
-    protected $position = 0;
+    protected array $geometries = [];
+    protected int $position = 0;
 
     public static function getWktType(): string
     {
@@ -74,12 +71,16 @@ class LineString implements GeometryInterface, \IteratorAggregate
         return $this->geometries[0]->initialBearingTo($this->geometries[1]);
     }
 
-    public function getLength(string $unit = 'km', int $formula = Location::FORMULA_HAVERSINE): float
+    /**
+     * @param string                  $unit       defaults to "meters"
+     * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator
+     */
+    public function getLength(string $unit = UnitConverter::UNIT_METERS, ?DistanceCalculator $calculator = null): float
     {
         $distance = 0;
 
         for ($i = 1, $iMax = \count($this->geometries); $i < $iMax; ++$i) {
-            $distance += $this->geometries[$i - 1]->distanceTo($this->geometries[$i], $unit, $formula);
+            $distance += $this->geometries[$i - 1]->distanceTo($this->geometries[$i], $unit, $calculator);
         }
 
         return $distance;
@@ -106,7 +107,7 @@ class LineString implements GeometryInterface, \IteratorAggregate
      */
     public function getBBox(): Polygon
     {
-        return Location::getBBox($this);
+        return BoundingBox::fromGeometry($this);
     }
 
     /**
@@ -152,6 +153,17 @@ class LineString implements GeometryInterface, \IteratorAggregate
     public function isClosedShape(): bool
     {
         return $this->getFirst()->equals($this->getLast());
+    }
+
+    public function contains(Point $point): bool
+    {
+        foreach ($this->geometries as $geo) {
+            if ($geo->equals($point)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function getGeometryArray(): array

@@ -1,21 +1,19 @@
 language: php
 
 php:
-  - 7.1
-  - 7.2
-  - 7.3
   - 7.4
+  - 8.0
 before_script:
-  - git clone https://github.com/php-geospatial/geospatial.git
-  - cd geospatial
-  - phpize
-  - ./configure --enable-geospatial
-  - make
-  - sudo make install
-  - echo "extension=geospatial.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - cd ..
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then git clone https://github.com/php-geospatial/geospatial.git; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then cd geospatial; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then phpize; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then ./configure --enable-geospatial; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then make; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then sudo make install; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then echo "extension=geospatial.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
+  - if [[ $TRAVIS_PHP_VERSION != "8.0" ]]; then cd ..; fi
 install:
-  - composer install
+  - composer install --ignore-platform-reqs
 script:
   - php vendor/bin/psalm --show-info=false
   - php vendor/bin/phpunit --coverage-text

@@ -21,7 +21,7 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface,
     /**
      * @var LineString[]
      */
-    protected $geometries = [];
+    protected array $geometries = [];
 
     public static function getGeoJsonType(): string
     {

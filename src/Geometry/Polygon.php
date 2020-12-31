@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use IteratorAggregate;
+use Ricklab\Location\Calculator\DistanceCalculator;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
-use Ricklab\Location\Location;
 
-class Polygon implements GeometryInterface, \IteratorAggregate
+class Polygon implements GeometryInterface, IteratorAggregate
 {
     use GeometryTrait;
 
     /**
      * @var LineString[]
      */
-    protected $geometries = [];
+    private array $geometries = [];
 
     public static function getWktType(): string
     {
@@ -41,9 +43,9 @@ class Polygon implements GeometryInterface, \IteratorAggregate
     }
 
     /**
-     * Pass in an array of Points to create a Polygon or multiple arrays of points for a Polygon with holes in.
+     * Pass in a LineString to create a Polygon or multiple LineStrings for a Polygon with holes in.
      *
-     * @param LineString[]
+     * @param $lines LineString[]
      */
     public function __construct(array $lines)
     {
@@ -55,16 +57,17 @@ class Polygon implements GeometryInterface, \IteratorAggregate
     /**
      * The length of the perimeter of the outer-most polygon in unit specified.
      *
-     * @param int $formula defaults to Location::$defaultFormula
+     * @param string                  $unit       defaults to "meters"
+     * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator.
      */
-    public function getPerimeter(string $unit = 'km', ?int $formula = null): float
+    public function getPerimeter(string $unit = UnitConverter::UNIT_METERS, ?DistanceCalculator $calculator = null): float
     {
-        return $this->geometries[0]->getLength($unit, $formula ?? Location::$defaultFormula);
+        return $this->geometries[0]->getLength($unit, $calculator);
     }
 
-    public function getBBox(): self
+    public function getBBox(): BoundingBox
     {
-        return Location::getBBox($this);
+        return BoundingBox::fromGeometry($this);
     }
 
     /**

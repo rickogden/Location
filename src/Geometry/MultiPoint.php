@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
-use Ricklab\Location\Location;
 
 class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \IteratorAggregate
 {
@@ -19,7 +18,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \Ite
     /**
      * @var Point[]
      */
-    protected $geometries = [];
+    protected array $geometries = [];
 
     public static function getWktType(): string
     {
@@ -78,7 +77,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \Ite
 
     public function getBBox(): Polygon
     {
-        return Location::getBBox($this);
+        return BoundingBox::fromGeometry($this);
     }
 
     protected function getGeometryArray(): array

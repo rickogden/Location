@@ -10,9 +10,18 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use InvalidArgumentException;
+use Ricklab\Location\Calculator\BearingCalculator;
+use Ricklab\Location\Calculator\DefaultDistanceCalculator;
+use Ricklab\Location\Calculator\DistanceCalculator;
+use Ricklab\Location\Calculator\FractionAlongLineCalculator;
+use Ricklab\Location\Converter\DegreesMinutesSeconds;
+use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
 use Ricklab\Location\Location;
+use function round;
 
 class Point implements GeometryInterface
 {
@@ -23,15 +32,8 @@ class Point implements GeometryInterface
     public const MAX_LONGITUDE = 180;
     public const MIN_LONGITUDE = -180;
 
-    /**
-     * @var float
-     */
-    protected $longitude;
-
-    /**
-     * @var float
-     */
-    protected $latitude;
+    protected float $longitude;
+    protected float $latitude;
 
     public static function getWktType(): string
     {
@@ -46,27 +48,39 @@ class Point implements GeometryInterface
     public static function fromArray(array $point): self
     {
         if (2 !== $length = \count($point)) {
-            throw new \InvalidArgumentException(\sprintf('Must be an array consisting of exactly 2 elements, %d passed', $length));
+            throw new InvalidArgumentException(\sprintf('Must be an array consisting of exactly 2 elements, %d passed', $length));
         }
 
         return new self($point[0], $point[1]);
     }
 
     /**
-     * Create a new point from Degrees, minutes and seconds.
-     *
-     * @param array $lat Latitude in the order of degrees, minutes, seconds[, direction]
-     * @param array $lon Longitude in the order of degrees, minutes, seconds[, direction]
-     *
-     * @return Point
+     * Create a new point from 2 DegreesMinutesSeconds objects. The actual order they are passed in does not matter as
+     * the axis can be determined from the direction.
      */
-    public static function fromDms(array $lat, array $lon): self
+    public static function fromDms(DegreesMinutesSeconds $lat, DegreesMinutesSeconds $lon): self
     {
-        $decLat = Location::dmsToDecimal($lat[0], $lat[1], $lat[2], $lat[3] ?? 'N');
+        foreach ([$lat, $lon] as $dms) {
+            if (DegreesMinutesSeconds::AXIS_LONGITUDE === $dms->getAxis()) {
+                $longitude = $dms;
 
-        $decLon = Location::dmsToDecimal($lon[0], $lon[1], $lon[2], $lon[3] ?? 'E');
+                continue;
+            }
 
-        return new self($decLon, $decLat);
+            if (DegreesMinutesSeconds::AXIS_LATITUDE === $dms->getAxis()) {
+                $latitude = $dms;
+            }
+        }
+
+        if (!isset($longitude)) {
+            throw new InvalidArgumentException('Longitude coordinates missing');
+        }
+
+        if (!isset($latitude)) {
+            throw new InvalidArgumentException('Latitude coordinates missing');
+        }
+
+        return new self($longitude->toDecimal(), $latitude->toDecimal());
     }
 
     /**
@@ -84,20 +98,14 @@ class Point implements GeometryInterface
         $this->setLongitude($long);
     }
 
-    /**
-     * Latitude in an array of [degrees, minutes, seconds].
-     */
-    public function getLatitudeInDms(): array
+    public function getLatitudeInDms(): DegreesMinutesSeconds
     {
-        return Location::decimalToDms($this->latitude);
+        return DegreesMinutesSeconds::fromDecimal($this->latitude, DegreesMinutesSeconds::AXIS_LATITUDE);
     }
 
-    /**
-     * Latitude in an array of [degrees, minutes, seconds].
-     */
-    public function getLongitudeInDms(): array
+    public function getLongitudeInDms(): DegreesMinutesSeconds
     {
-        return Location::decimalToDms($this->longitude);
+        return DegreesMinutesSeconds::fromDecimal($this->longitude, DegreesMinutesSeconds::AXIS_LONGITUDE);
     }
 
     /**
@@ -119,14 +127,23 @@ class Point implements GeometryInterface
     /**
      * Find distance to another point.
      *
-     * @param int $formula formula to use, should either be Location::HAVERSINE or Location::VINCENTY. Defaults to
-     *                     Location::$defaultFormula
+     * @param string                  $unit       Defaults to meters
+     * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator.
      *
      * @return float the distance
      */
-    public function distanceTo(Point $point2, string $unit = 'km', int $formula = Location::FORMULA_HAVERSINE): float
-    {
-        return Location::calculateDistance($this, $point2, $unit, $formula);
+    public function distanceTo(
+        Point $point2,
+        string $unit = UnitConverter::UNIT_METERS,
+        ?DistanceCalculator $calculator = null
+    ): float {
+        if (null === $calculator) {
+            $result = DefaultDistanceCalculator::calculate($this, $point2, DefaultEllipsoid::get());
+        } else {
+            $result = $calculator::calculate($this, $point2, DefaultEllipsoid::get());
+        }
+
+        return UnitConverter::convert($result, UnitConverter::UNIT_METERS, $unit);
     }
 
     /**
@@ -136,9 +153,9 @@ class Point implements GeometryInterface
      * @param float  $bearing  initial bearing to other point
      * @param string $unit     The unit the distance is in
      */
-    public function getRelativePoint(float $distance, float $bearing, string $unit = 'km'): Point
+    public function getRelativePoint(float $distance, float $bearing, string $unit = UnitConverter::UNIT_METERS): Point
     {
-        $rad = Location::getEllipsoid()->radius($unit);
+        $rad = DefaultEllipsoid::get()::radius($unit);
         $lat1 = $this->latitudeToRad();
         $lon1 = $this->longitudeToRad();
         $bearing = \deg2rad($bearing);
@@ -181,7 +198,7 @@ class Point implements GeometryInterface
      */
     public function initialBearingTo(Point $point2): float
     {
-        return Location::getInitialBearing($this, $point2);
+        return BearingCalculator::calculateInitialBearing($this, $point2);
     }
 
     /**
@@ -191,7 +208,7 @@ class Point implements GeometryInterface
      */
     public function finalBearingTo(Point $point2): float
     {
-        return Location::getFinalBearing($this, $point2);
+        return BearingCalculator::calculateFinalBearing($this, $point2);
     }
 
     /**
@@ -217,9 +234,9 @@ class Point implements GeometryInterface
      *
      * @return Point the mid point
      */
-    public function getMidpoint(Point $point): Point
+    public function getMidpoint(Point $point, ?DistanceCalculator $calculator = null): Point
     {
-        return $this->getFractionAlongLineTo($point, 0.5);
+        return $this->getFractionAlongLineTo($point, 0.5, $calculator);
     }
 
     /**
@@ -229,9 +246,15 @@ class Point implements GeometryInterface
      *
      * @throw \InvalidArgumentException
      */
-    public function getFractionAlongLineTo(Point $point, float $fraction): self
+    public function getFractionAlongLineTo(Point $point, float $fraction, ?DistanceCalculator $calculator = null): self
     {
-        return Location::getFractionAlongLineBetween($this, $point, $fraction);
+        return FractionAlongLineCalculator::calculate(
+            $this,
+            $point,
+            $fraction,
+            $calculator ?? DefaultDistanceCalculator::getDefaultCalculator(),
+            DefaultEllipsoid::get()
+        );
     }
 
     /**
@@ -243,13 +266,11 @@ class Point implements GeometryInterface
     }
 
     /**
-     * @param string $unit
-     *
      * @throws BoundBoxRangeException
      */
-    public function getBBoxByRadius(float $radius, $unit = 'km'): Polygon
+    public function getBBoxByRadius(float $radius, string $unit = UnitConverter::UNIT_METERS): BoundingBox
     {
-        return Location::getBBoxByRadius($this, $radius, $unit);
+        return BoundingBox::fromCenter($this, $radius, $unit);
     }
 
     /**
@@ -283,7 +304,7 @@ class Point implements GeometryInterface
     private function setLatitude(float $lat): void
     {
         if ($lat > self::MAX_LATITUDE || $lat < self::MIN_LATITUDE || \is_nan($lat)) {
-            throw new \InvalidArgumentException('latitude must be a valid number between -90 and 90.');
+            throw new InvalidArgumentException('latitude must be a valid number between -90 and 90.');
         }
 
         $this->latitude = $lat;
@@ -292,7 +313,7 @@ class Point implements GeometryInterface
     private function setLongitude(float $long): void
     {
         if ($long > self::MAX_LONGITUDE || $long < self::MIN_LONGITUDE || \is_nan($long)) {
-            throw new \InvalidArgumentException('longitude must be a valid number between -180 and 180.');
+            throw new InvalidArgumentException('longitude must be a valid number between -180 and 180.');
         }
 
         $this->longitude = $long;
@@ -303,5 +324,19 @@ class Point implements GeometryInterface
         return $geometry instanceof self
             && $geometry->latitude === $this->latitude
             && $geometry->longitude === $this->longitude;
+    }
+
+    public function getGeoHash(int $resolution = 12): Geohash
+    {
+        return Geohash::fromPoint($this, $resolution);
+    }
+
+    public function round(int $precision): Point
+    {
+        $point = clone $this;
+        $point->latitude = \round($this->latitude, $precision);
+        $point->longitude = \round($this->longitude, $precision);
+
+        return $point;
     }
 }

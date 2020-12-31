@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Location;
+use Ricklab\Location\Transformer\GeoJsonTransformer;
+use Ricklab\Location\Transformer\WktTransformer;
 
 class GeometryCollectionTest extends TestCase
 {
@@ -21,14 +22,12 @@ class GeometryCollectionTest extends TestCase
         }
     ]
   }';
-        $geojson = \json_encode(\json_decode($json, true));
-
         $point = Point::fromArray([100.0, 0.0]);
         $lineString = LineString::fromArray([[101.0, 0.0], [102.0, 1.0]]);
 
         $geometryCollection = new GeometryCollection([$point, $lineString]);
 
-        $this->assertEquals($geojson, \json_encode($geometryCollection));
+        $this->assertJsonStringEqualsJsonString($json, \json_encode($geometryCollection));
     }
 
     public function testToWkt(): void
@@ -57,7 +56,7 @@ class GeometryCollectionTest extends TestCase
   }';
 
         /** @var GeometryCollection $geomCollection */
-        $geomCollection = Location::fromGeoJson($json);
+        $geomCollection = GeoJsonTransformer::decode($json);
 
         $this->assertInstanceOf(GeometryCollection::class, $geomCollection);
         $this->assertEquals([100.0, 0.0], $geomCollection->getGeometries()[0]->toArray());
@@ -69,7 +68,7 @@ class GeometryCollectionTest extends TestCase
         $wkt = 'GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6, 7 10))';
 
         /** @var GeometryCollection $geomCollection */
-        $geomCollection = Location::fromWkt($wkt);
+        $geomCollection = WktTransformer::decode($wkt);
 
         $this->assertInstanceOf(GeometryCollection::class, $geomCollection);
         $this->assertEquals([4, 6], $geomCollection->getGeometries()[0]->toArray());

@@ -18,7 +18,7 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, \I
     /**
      * @var Polygon[]
      */
-    protected $geometries = [];
+    protected array $geometries = [];
 
     public static function getWktType(): string
     {

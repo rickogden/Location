@@ -21,7 +21,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     /**
      * @var GeometryInterface[]
      */
-    protected $geometries = [];
+    protected array $geometries = [];
 
     public static function getWktType(): string
     {
