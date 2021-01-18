@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Ricklab\Location\Psalm\Calculator;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Calculator\EquirectangleCalculator;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Converter\UnitConverter;
-use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Geometry\Point;
 
 class VincentyCalculatorTest extends TestCase
