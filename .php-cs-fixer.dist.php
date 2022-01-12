@@ -3,10 +3,9 @@
 $finder = PhpCsFixer\Finder::create()
     ->in(['src', 'tests'])
 ;
-
-return PhpCsFixer\Config::create()
-    ->setRules([
-        '@PSR2' => true,
+$config = new PhpCsFixer\Config();
+return $config->setRules([
+        '@PSR12' => true,
         '@Symfony' => true,
         'align_multiline_comment' => ['comment_type' => 'phpdocs_only'],
         'array_indentation' => true,
@@ -32,7 +31,8 @@ return PhpCsFixer\Config::create()
         'no_alternative_syntax' => true,
         'no_binary_string' => true,
         'no_null_property_initialization' => true,
-        'no_short_echo_tag' => true,
+        'echo_tag_syntax' => ['format' => 'long'],
+        'global_namespace_import' => ['import_classes' => false, 'import_constants' => false, 'import_functions' => false],
         'no_singleline_whitespace_before_semicolons' => false,
         'no_superfluous_elseif' => true,
         'no_superfluous_phpdoc_tags' => true,
