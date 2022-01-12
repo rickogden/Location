@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use InvalidArgumentException;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
@@ -47,7 +48,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     {
         foreach ($geometries as $geometry) {
             if (!$geometry instanceof GeometryInterface) {
-                throw new \InvalidArgumentException('Array must contain geometries only');
+                throw new InvalidArgumentException('Array must contain geometries only');
             }
         }
         $this->geometries = $geometries;
@@ -77,7 +78,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
             $collection[] = $geometry->toWkt();
         }
 
-        return '('.\implode(', ', $collection).')';
+        return '('.implode(', ', $collection).')';
     }
 
     /**

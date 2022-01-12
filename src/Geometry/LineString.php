@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use function count;
+use InvalidArgumentException;
+use IteratorAggregate;
 use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
@@ -16,7 +19,7 @@ use Ricklab\Location\Geometry\Traits\GeometryTrait;
 /**
  * Class LineString.
  */
-class LineString implements GeometryInterface, \IteratorAggregate
+class LineString implements GeometryInterface, IteratorAggregate
 {
     use GeometryTrait;
 
@@ -55,8 +58,8 @@ class LineString implements GeometryInterface, \IteratorAggregate
      */
     public function __construct(array $points)
     {
-        if (\count($points) < 2) {
-            throw new \InvalidArgumentException('array must have 2 or more elements.');
+        if (count($points) < 2) {
+            throw new InvalidArgumentException('array must have 2 or more elements.');
         }
         foreach ($points as $point) {
             $this->add($point);
@@ -79,7 +82,7 @@ class LineString implements GeometryInterface, \IteratorAggregate
     {
         $distance = 0;
 
-        for ($i = 1, $iMax = \count($this->geometries); $i < $iMax; ++$i) {
+        for ($i = 1, $iMax = count($this->geometries); $i < $iMax; ++$i) {
             $distance += $this->geometries[$i - 1]->distanceTo($this->geometries[$i], $unit, $calculator);
         }
 
@@ -99,7 +102,7 @@ class LineString implements GeometryInterface, \IteratorAggregate
      */
     public function getLast(): Point
     {
-        return \end($this->geometries);
+        return end($this->geometries);
     }
 
     /**
@@ -131,7 +134,7 @@ class LineString implements GeometryInterface, \IteratorAggregate
      */
     public function reverse(): self
     {
-        return new self(\array_reverse($this->geometries));
+        return new self(array_reverse($this->geometries));
     }
 
     private function add(Point $point): void

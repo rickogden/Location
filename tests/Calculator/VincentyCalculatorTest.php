@@ -18,10 +18,10 @@ class VincentyCalculatorTest extends TestCase
         $buninyond = new Point(143.92649552777777, -37.65282113888889);
 
         VincentyCalculator::enableGeoSpatialExtension();
-        $this->assertSame(54972.271, \round(VincentyCalculator::calculate($flinders, $buninyond, DefaultEllipsoid::get()), 3));
+        $this->assertSame(54972.271, round(VincentyCalculator::calculate($flinders, $buninyond, DefaultEllipsoid::get()), 3));
 
         VincentyCalculator::disableGeoSpatialExtension();
-        $this->assertSame(54972.271, \round(VincentyCalculator::calculate($flinders, $buninyond, DefaultEllipsoid::get()), 3));
+        $this->assertSame(54972.271, round(VincentyCalculator::calculate($flinders, $buninyond, DefaultEllipsoid::get()), 3));
         VincentyCalculator::enableGeoSpatialExtension();
     }
 }

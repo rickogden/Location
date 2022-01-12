@@ -15,9 +15,9 @@ class BearingCalculatorTest extends TestCase
         $point2 = new Point(2.351, 48.857);
         BearingCalculator::disableGeoSpatialExtension();
         $finalBearing = BearingCalculator::calculateFinalBearing($point1, $point2);
-        $this->assertSame(157.9, \round($finalBearing, 1));
+        $this->assertSame(157.9, round($finalBearing, 1));
         BearingCalculator::enableGeoSpatialExtension();
         $finalBearing = BearingCalculator::calculateFinalBearing($point1, $point2);
-        $this->assertSame(157.9, \round($finalBearing, 1));
+        $this->assertSame(157.9, round($finalBearing, 1));
     }
 }

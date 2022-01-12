@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Generator;
 use PHPUnit\Framework\TestCase;
 
 class BoundingBoxTest extends TestCase
@@ -16,7 +17,7 @@ class BoundingBoxTest extends TestCase
         $this->assertCount(5, $bbox->getPoints());
     }
 
-    public function trueContains(): \Generator
+    public function trueContains(): Generator
     {
         $bbox = new BoundingBox(-1, 50, 1, 52);
         yield [$bbox, new Point(0, 51)];
@@ -50,7 +51,7 @@ class BoundingBoxTest extends TestCase
         $this->assertTrue($boundingBox->contains($geometry));
     }
 
-    public function intersectingProvider(): \Generator
+    public function intersectingProvider(): Generator
     {
         $bbox = new BoundingBox(-2, 50, 1, 52);
         yield [
@@ -75,7 +76,7 @@ class BoundingBoxTest extends TestCase
         ];
     }
 
-    public function doesNotIntersectProvider(): \Generator
+    public function doesNotIntersectProvider(): Generator
     {
         $bbox = new BoundingBox(-2, 50, 1, 52);
         yield [$bbox, new Point(0, 54)];

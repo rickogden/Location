@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Generator;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -11,7 +12,7 @@ use PHPUnit\Framework\TestCase;
  */
 class GeohashTest extends TestCase
 {
-    public function geoHahProvider(): \Generator
+    public function geoHahProvider(): Generator
     {
         yield ['u4pruydqqvj', 10.40744, 57.64911, 5];
         yield ['gbsuv7s0k', -4.333913, 48.666751, 6];
@@ -26,7 +27,7 @@ class GeohashTest extends TestCase
     public function testGeoHashFromPoint(string $hash, float $lon, float $lat, float $precision): void
     {
         $point = new Point($lon, $lat);
-        $geoHash = Geohash::fromPoint($point, \mb_strlen($hash));
+        $geoHash = Geohash::fromPoint($point, mb_strlen($hash));
         $this->assertSame($hash, $geoHash->getHash());
     }
 
@@ -42,11 +43,11 @@ class GeohashTest extends TestCase
         $expected = new Point($lon, $lat);
         $this->assertTrue(
             $expected->equals($centrePoint->round($precision)),
-            \sprintf('Expected: %s, Actual: %s', (string) $expected, (string) $centrePoint)
+            sprintf('Expected: %s, Actual: %s', (string) $expected, (string) $centrePoint)
         );
     }
 
-    public function geoHashNeighborProvider(): \Generator
+    public function geoHashNeighborProvider(): Generator
     {
         yield 'Arbitrary 5 character geohash' => [
             'gbsuv',
@@ -142,7 +143,7 @@ class GeohashTest extends TestCase
         $this->assertTrue($geoHash2->equals($geoHash), 'True is not returned for equals.');
     }
 
-    public function notEqualsProvider(): \Generator
+    public function notEqualsProvider(): Generator
     {
         yield 'Not equals' => [new Geohash('gcqryemv'), new Geohash('gcqryemy')];
         yield 'Contains' => [new Geohash('gcqryemv'), new Geohash('gcqryem')];
@@ -157,7 +158,7 @@ class GeohashTest extends TestCase
         $this->assertFalse($geoHash2->equals($geoHash), 'False is not returned for equals.');
     }
 
-    public function containsProvider(): \Generator
+    public function containsProvider(): Generator
     {
         yield 'Direct parent' => [new Geohash('gcqryem'), new Geohash('gcqryemy')];
         yield 'Very high parent' => [new Geohash('gcq'), new Geohash('gcqryemy')];

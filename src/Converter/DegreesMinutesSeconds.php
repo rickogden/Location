@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Converter;
 
+use function count;
+use function in_array;
+use InvalidArgumentException;
+
 final class DegreesMinutesSeconds
 {
     public const DIRECTION_N = 'N';
@@ -56,7 +60,7 @@ final class DegreesMinutesSeconds
 
     public static function fromString(string $string): self
     {
-        $string = \trim($string);
+        $string = trim($string);
 
         $degreesMatch = [];
         $minuteMatch = [];
@@ -64,36 +68,36 @@ final class DegreesMinutesSeconds
         $directionMatch = [];
 
         if (
-            \preg_match('/(-?\d+)°/u', $string, $degreesMatch)
-            && \preg_match('/([NSEW])/', $string, $directionMatch)
+            preg_match('/(-?\d+)°/u', $string, $degreesMatch)
+            && preg_match('/([NSEW])/', $string, $directionMatch)
         ) {
-            \preg_match('/(\d+)[\'′]/u', $string, $minuteMatch);
-            \preg_match('/(\d+.?\d+)["″]/u', $string, $secondMatch);
+            preg_match('/(\d+)[\'′]/u', $string, $minuteMatch);
+            preg_match('/(\d+.?\d+)["″]/u', $string, $secondMatch);
             $degrees = (int) $degreesMatch[1];
             $minutes = (int) ($minuteMatch[1] ?? 0);
             $seconds = (float) ($secondMatch[1] ?? 0);
-            $direction = (string) \end($directionMatch);
+            $direction = (string) end($directionMatch);
 
             return new self($degrees, $minutes, $seconds, $direction);
         }
 
         $results = [];
-        $success = \preg_match(self::REGEX, $string, $results);
+        $success = preg_match(self::REGEX, $string, $results);
 
-        if ($success && 5 === \count($results)) {
+        if ($success && 5 === count($results)) {
             return new self((int) $results[1], (int) $results[2], (float) $results[3], $results[4]);
         }
 
-        throw new \InvalidArgumentException('Unable to determine Degrees minutes seconds from string.');
+        throw new InvalidArgumentException('Unable to determine Degrees minutes seconds from string.');
     }
 
     /**
-     * @param self::AXIS_LONGITUDE | self::AXIS_LATITUDE $axis
+     * @param self::AXIS_LONGITUDE|self::AXIS_LATITUDE $axis
      */
     public static function fromDecimal(float $decimal, string $axis): self
     {
-        if (!\in_array($axis, self::AXES)) {
-            throw new \InvalidArgumentException('Axis must either be "LONGITUDE" or "LATITUDE"');
+        if (!in_array($axis, self::AXES)) {
+            throw new InvalidArgumentException('Axis must either be "LONGITUDE" or "LATITUDE"');
         }
 
         $direction = self::AXIS_TO_DIRECTION[$axis];
@@ -103,8 +107,8 @@ final class DegreesMinutesSeconds
             $decimal *= -1;
         }
 
-        $deg = (int) \floor($decimal);
-        $min = (int) \floor(($decimal - $deg) * 60);
+        $deg = (int) floor($decimal);
+        $min = (int) floor(($decimal - $deg) * 60);
         $sec = ($decimal - $deg - $min / 60) * 3600;
 
         return new self($deg, $min, $sec, $direction);
@@ -112,8 +116,8 @@ final class DegreesMinutesSeconds
 
     public function __construct(int $degrees, int $minutes, float $seconds, string $direction)
     {
-        if (!\in_array($direction, self::DIRECTIONS, true)) {
-            throw new \InvalidArgumentException(\sprintf('Direction must be one of: "N", "S", "E", "W", %s passed', $direction));
+        if (!in_array($direction, self::DIRECTIONS, true)) {
+            throw new InvalidArgumentException(sprintf('Direction must be one of: "N", "S", "E", "W", %s passed', $direction));
         }
 
         $this->degrees = $degrees;
@@ -138,7 +142,7 @@ final class DegreesMinutesSeconds
     }
 
     /**
-     * @return self::DIRECTION_N | self::DIRECTION_S | self::DIRECTION_E | self::DIRECTION_W
+     * @return self::DIRECTION_N|self::DIRECTION_S|self::DIRECTION_E|self::DIRECTION_W
      */
     public function getDirection(): string
     {
@@ -146,7 +150,7 @@ final class DegreesMinutesSeconds
     }
 
     /**
-     * @return self::AXIS_LONGITUDE | self::AXIS_LATITUDE
+     * @return self::AXIS_LONGITUDE|self::AXIS_LATITUDE
      */
     public function getAxis(): string
     {
@@ -179,7 +183,7 @@ final class DegreesMinutesSeconds
 
     public function toString(): string
     {
-        return \sprintf(
+        return sprintf(
             '%d° %d′ %s″ %s',
             $this->degrees,
             $this->minutes,

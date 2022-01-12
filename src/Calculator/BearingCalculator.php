@@ -15,28 +15,28 @@ final class BearingCalculator implements UsesGeoSpatialExtensionInterface
     {
         if (
             self::$useSpatialExtension &&
-            ($geospatialVersion = \phpversion('geospatial')) &&
-            \version_compare($geospatialVersion, '0.2.2-dev', '>=')
+            ($geospatialVersion = phpversion('geospatial')) &&
+            version_compare($geospatialVersion, '0.2.2-dev', '>=')
         ) {
-            return \initial_bearing($point1->jsonSerialize(), $point2->jsonSerialize());
+            return initial_bearing($point1->jsonSerialize(), $point2->jsonSerialize());
         }
-        $y = \sin(
-            \deg2rad($point2->getLongitude() - $point1->getLongitude())
-        ) * \cos($point2->latitudeToRad());
-        $x = \cos($point1->latitudeToRad())
-            * \sin($point2->latitudeToRad()) - \sin(
+        $y = sin(
+            deg2rad($point2->getLongitude() - $point1->getLongitude())
+        ) * cos($point2->latitudeToRad());
+        $x = cos($point1->latitudeToRad())
+            * sin($point2->latitudeToRad()) - sin(
                 $point1->latitudeToRad()
-            ) * \cos($point2->latitudeToRad()) *
-            \cos(
-                \deg2rad($point2->getLongitude() - $point1->getLongitude())
+            ) * cos($point2->latitudeToRad()) *
+            cos(
+                deg2rad($point2->getLongitude() - $point1->getLongitude())
             );
-        $result = \atan2($y, $x);
+        $result = atan2($y, $x);
 
-        return \fmod(\rad2deg($result) + 360, 360);
+        return fmod(rad2deg($result) + 360, 360);
     }
 
     public static function calculateFinalBearing(Point $point1, Point $point2): float
     {
-        return \fmod(self::calculateInitialBearing($point2, $point1) + 180, 360);
+        return fmod(self::calculateInitialBearing($point2, $point1) + 180, 360);
     }
 }

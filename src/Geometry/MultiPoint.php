@@ -9,9 +9,10 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
-class MultiPoint implements GeometryInterface, GeometryCollectionInterface, \IteratorAggregate
+class MultiPoint implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
     use GeometryTrait;
 

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Converter\UnitConverter;
+use TypeError;
 
 class LineStringTest extends TestCase
 {
@@ -34,7 +36,7 @@ class LineStringTest extends TestCase
 
     public function testInvalidPointException(): void
     {
-        $this->expectException(\TypeError::class);
+        $this->expectException(TypeError::class);
         $point1 = new Point(-2.27354, 53.48575);
 
         $line = new LineString([$point1, 'foo']);
@@ -42,7 +44,7 @@ class LineStringTest extends TestCase
 
     public function testOnePointInArrayException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $point1 = new Point(-2.27354, 53.48575);
 
         $line = new LineString([$point1]);
@@ -50,21 +52,21 @@ class LineStringTest extends TestCase
 
     public function testGetLength(): void
     {
-        $this->assertEquals(2.783, \round($this->line->getLength(UnitConverter::UNIT_KM), 3));
-        $this->assertEquals(2.792, \round($this->line->getLength(UnitConverter::UNIT_KM, new VincentyCalculator()), 3));
+        $this->assertEquals(2.783, round($this->line->getLength(UnitConverter::UNIT_KM), 3));
+        $this->assertEquals(2.792, round($this->line->getLength(UnitConverter::UNIT_KM, new VincentyCalculator()), 3));
     }
 
     public function testInitialBearing(): void
     {
         BearingCalculator::disableGeoSpatialExtension();
-        $this->assertEquals(98.50702, \round($this->line->getInitialBearing(), 5));
+        $this->assertEquals(98.50702, round($this->line->getInitialBearing(), 5));
         BearingCalculator::enableGeoSpatialExtension();
-        $this->assertEquals(98.50702, \round($this->line->getInitialBearing(), 5));
+        $this->assertEquals(98.50702, round($this->line->getInitialBearing(), 5));
     }
 
     public function testGeoJson(): void
     {
-        $retval = \json_encode($this->line);
+        $retval = json_encode($this->line);
         $this->assertEquals('{"type":"LineString","coordinates":[[-2.27354,53.48575],[-2.23194,53.48204]]}', $retval);
     }
 
@@ -85,7 +87,7 @@ class LineStringTest extends TestCase
     {
         $this->assertJsonStringEqualsJsonString(
             '{"type":"Polygon","coordinates":[[[-2.27354,53.48575],[-2.23194,53.48575],[-2.23194,53.48204],[-2.27354,53.48204],[-2.27354,53.48575]]]}',
-            \json_encode($this->line->getBBox())
+            json_encode($this->line->getBBox())
         );
     }
 

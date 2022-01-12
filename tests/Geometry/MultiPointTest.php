@@ -22,9 +22,9 @@ class MultiPointTest extends TestCase
         $this->assertEquals([100.0, 0.0], $multipoint->getGeometries()[0]->toArray());
         $this->assertEquals([101.0, 1.0], $multipoint->getGeometries()[1]->toArray());
 
-        $geojson = \json_encode(\json_decode($geojson));
+        $geojson = json_encode(json_decode($geojson));
 
-        $this->assertEquals($geojson, \json_encode($multipoint));
+        $this->assertEquals($geojson, json_encode($multipoint));
     }
 
     public function testWkt(): void
@@ -58,7 +58,7 @@ class MultiPointTest extends TestCase
         $original = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
 
         $multiPoint = MultiPoint::fromArray($original);
-        $multiPoint2 = MultiPoint::fromArray(\array_reverse($original));
+        $multiPoint2 = MultiPoint::fromArray(array_reverse($original));
         $this->assertFalse($multiPoint->equals($multiPoint2));
 
         $newGeom = $original;

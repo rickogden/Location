@@ -9,6 +9,11 @@ declare(strict_types=1);
 
 namespace Ricklab\Location;
 
+use ErrorException;
+use InvalidArgumentException;
+use function is_array;
+use function is_object;
+use function is_string;
 use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\FractionAlongLineCalculator;
@@ -66,7 +71,7 @@ class Location
      *
      * @param string|array|object $geojson the GeoJSON object either in a JSON string or a pre-parsed array/object
      *
-     * @throws \ErrorException
+     * @throws ErrorException
      *
      * @return GeometryInterface|Feature|FeatureCollection
      *
@@ -74,19 +79,19 @@ class Location
      */
     public static function fromGeoJson($geojson)
     {
-        if (\is_array($geojson)) {
+        if (is_array($geojson)) {
             return GeoJsonTransformer::fromArray($geojson);
         }
 
-        if (\is_string($geojson)) {
+        if (is_string($geojson)) {
             return GeoJsonTransformer::decode($geojson);
         }
 
-        if (\is_object($geojson)) {
+        if (is_object($geojson)) {
             return GeoJsonTransformer::fromObject($geojson);
         }
 
-        throw new \InvalidArgumentException('Must be an instance of array, object or string.');
+        throw new InvalidArgumentException('Must be an instance of array, object or string.');
     }
 
     /**

@@ -18,18 +18,21 @@
         "role":"developer"
     }],
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
     },
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^7.4 || ^8.0",
         "ext-json": "*"
     },
     "require-dev": {
         "ext-simplexml": "*",
-        "friendsofphp/php-cs-fixer": "^2.16",
-        "phpbench/phpbench": "^0.17.1",
-        "phpunit/phpunit": "^9.3",
-        "vimeo/psalm": "^4.2"
+        "friendsofphp/php-cs-fixer": "^3.4",
+        "phpbench/phpbench": "^1.2",
+        "phpunit/phpunit": "^9.5",
+        "vimeo/psalm": "^4.18"
     },
     "autoload": {
         "psr-4": {

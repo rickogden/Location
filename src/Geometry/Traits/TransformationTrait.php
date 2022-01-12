@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry\Traits;
 
+use LogicException;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Transformer\WktTransformer;
 
@@ -23,7 +24,7 @@ trait TransformationTrait
     public function toWkt(): string
     {
         if (!$this instanceof GeometryInterface) {
-            throw new \LogicException('Cannot convert non-geometry to WKT.');
+            throw new LogicException('Cannot convert non-geometry to WKT.');
         }
 
         return WktTransformer::encode($this);

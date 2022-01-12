@@ -17,13 +17,13 @@ class MultiLineStringTest extends TestCase
       ]
     }';
 
-        $geojson = \json_encode(\json_decode($geojson));
+        $geojson = json_encode(json_decode($geojson));
 
         $lineString1 = new LineString([Point::fromArray([100.0, 0.0]), Point::fromArray([101.0, 1.0])]);
         $lineString2 = new LineString([Point::fromArray([102.0, 2.0]), Point::fromArray([103.0, 3.0])]);
         $multiLineString = new MultiLineString([$lineString1, $lineString2]);
 
-        $this->assertEquals($geojson, \json_encode($multiLineString));
+        $this->assertEquals($geojson, json_encode($multiLineString));
     }
 
     public function testToWkt(): void

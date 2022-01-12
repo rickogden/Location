@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Calculator;
 
+use function function_exists;
 use Ricklab\Location\Calculator\Traits\GeoSpatialExtensionTrait;
 use Ricklab\Location\Ellipsoid\Earth;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
@@ -17,33 +18,33 @@ final class VincentyCalculator implements DistanceCalculator, UsesGeoSpatialExte
 
     public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {
-        if (\function_exists('vincenty') && self::$useSpatialExtension && $ellipsoid instanceof Earth) {
+        if (function_exists('vincenty') && self::$useSpatialExtension && $ellipsoid instanceof Earth) {
             $from = $point1->jsonSerialize();
             $to = $point2->jsonSerialize();
 
-            return \vincenty($from, $to);
+            return vincenty($from, $to);
         }
 
         $flattening = $ellipsoid::getFlattening();
         $majorSemiAxis = $ellipsoid::getMajorSemiAxis();
         $minorSemiAxis = $ellipsoid::getMinorSemiAxis();
-        $U1 = \atan((1.0 - $flattening) * \tan($point1->latitudeToRad()));
-        $U2 = \atan((1.0 - $flattening) * \tan($point2->latitudeToRad()));
+        $U1 = atan((1.0 - $flattening) * tan($point1->latitudeToRad()));
+        $U2 = atan((1.0 - $flattening) * tan($point2->latitudeToRad()));
         $L = $point2->longitudeToRad() - $point1->longitudeToRad();
-        $sinU1 = \sin($U1);
-        $cosU1 = \cos($U1);
-        $sinU2 = \sin($U2);
-        $cosU2 = \cos($U2);
+        $sinU1 = sin($U1);
+        $cosU1 = cos($U1);
+        $sinU2 = sin($U2);
+        $cosU2 = cos($U2);
         $lambda = $L;
         $looplimit = 100;
 
         do {
-            $sinLambda = \sin($lambda);
-            $cosLambda = \cos($lambda);
-            $sinSigma = \sqrt((($cosU2 * $sinLambda) ** 2) +
+            $sinLambda = sin($lambda);
+            $cosLambda = cos($lambda);
+            $sinSigma = sqrt((($cosU2 * $sinLambda) ** 2) +
                 (($cosU1 * $sinU2 - $sinU1 * $cosU2 * $cosLambda) ** 2));
             $cosSigma = $sinU1 * $sinU2 + $cosU1 * $cosU2 * $cosLambda;
-            $sigma = \atan2($sinSigma, $cosSigma);
+            $sigma = atan2($sinSigma, $cosSigma);
             $sinAlpha = $cosU1 * $cosU2 * $sinLambda / $sinSigma;
             $cos2Alpha = 1 - ($sinAlpha ** 2);
             $cosof2sigma = $cosSigma - 2 * $sinU1 * $sinU2 / $cos2Alpha;
@@ -53,7 +54,7 @@ final class VincentyCalculator implements DistanceCalculator, UsesGeoSpatialExte
             $lambdaP = $lambda;
             $lambda = $L + (1 - $C) * $flattening * $sinAlpha *
                 ($sigma + $C * $sinSigma * ($cosof2sigma + $C * $cosSigma * (-1 + 2 * ($cosof2sigma ** 2))));
-        } while (\abs($lambda - $lambdaP) > 1e-12 && --$looplimit > 0);
+        } while (abs($lambda - $lambdaP) > 1e-12 && --$looplimit > 0);
 
         $uSq = $cos2Alpha * (($majorSemiAxis ** 2) - ($minorSemiAxis ** 2)) / ($minorSemiAxis ** 2);
         $A = 1 + $uSq / 16384 * (4096 + $uSq * (-768 + $uSq * (320 - 175 * $uSq)));

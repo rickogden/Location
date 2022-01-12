@@ -9,11 +9,14 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Feature;
 
+use InvalidArgumentException;
+use function is_string;
+use JsonSerializable;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Transformer\GeoJsonTransformer;
 
-class Feature implements \JsonSerializable
+class Feature implements JsonSerializable
 {
     /**
      * @var string|int|float|null
@@ -31,7 +34,7 @@ class Feature implements \JsonSerializable
             $decodedGeo = GeoJsonTransformer::fromArray($geojson['geometry']);
 
             if (!$decodedGeo instanceof GeometryInterface) {
-                throw new \InvalidArgumentException('Cannot parse geometry in feature');
+                throw new InvalidArgumentException('Cannot parse geometry in feature');
             }
         }
 
@@ -49,8 +52,8 @@ class Feature implements \JsonSerializable
      */
     public function __construct(array $properties = [], ?GeometryInterface $geometry = null, $id = null, bool $bbox = false)
     {
-        if (null !== $id && !\is_string($id) && !\is_numeric($id)) {
-            throw new \InvalidArgumentException('$id must be either a string or number.');
+        if (null !== $id && !is_string($id) && !is_numeric($id)) {
+            throw new InvalidArgumentException('$id must be either a string or number.');
         }
 
         $this->properties = $properties;

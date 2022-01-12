@@ -30,7 +30,7 @@ class LocationTest extends TestCase
         );
 
         $this->assertInstanceOf(LineString::class, $line);
-        $this->assertEquals(2.783, \round($line->getLength(UnitConverter::UNIT_KM), 3));
+        $this->assertEquals(2.783, round($line->getLength(UnitConverter::UNIT_KM), 3));
 
         $multiPointLine = Location::fromGeoJson(
             '{"type":"LineString","coordinates":[[-2.27354,53.48575],[-2.23194,53.48204], [-2.23144,53.48254]]}'
@@ -51,11 +51,11 @@ class LocationTest extends TestCase
 
     public function testConvert(): void
     {
-        $this->assertEquals(5.754, \round(Location::convert(5, 'nm', 'miles'), 3));
+        $this->assertEquals(5.754, round(Location::convert(5, 'nm', 'miles'), 3));
 
-        $this->assertEquals(300, \round(Location::convert(100, 'yards', 'ft'), 3));
+        $this->assertEquals(300, round(Location::convert(100, 'yards', 'ft'), 3));
 
-        $this->assertEquals(8.047, \round(Location::convert(5, 'miles', 'km'), 3));
+        $this->assertEquals(8.047, round(Location::convert(5, 'miles', 'km'), 3));
     }
 
     public function testFromWkt(): void

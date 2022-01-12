@@ -9,9 +9,10 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
-class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, \IteratorAggregate
+class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
     use GeometryTrait;
 
