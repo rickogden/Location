@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Converter;
 
+use Exception;
+use InvalidArgumentException;
+
 final class UnitConverter
 {
     public const UNIT_FEET = 'feet';
@@ -62,9 +65,9 @@ final class UnitConverter
     public static function getMultiplier(string $unit = self::UNIT_METERS): float
     {
         try {
-            return self::MULTIPLIERS[self::KEYS[\mb_strtolower($unit)]];
-        } catch (\Exception $e) {
-            throw new \InvalidArgumentException('Unit '.$unit.' is not a recognised unit.');
+            return self::MULTIPLIERS[self::KEYS[mb_strtolower($unit)]];
+        } catch (Exception $e) {
+            throw new InvalidArgumentException('Unit '.$unit.' is not a recognised unit.');
         }
     }
 }

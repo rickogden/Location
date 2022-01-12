@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use function count;
+use function in_array;
+use InvalidArgumentException;
+use LogicException;
+
 class Geohash
 {
     private const HASH_MAP = [
@@ -62,7 +67,7 @@ class Geohash
     public static function fromPoint(Point $point, int $resolution = 12): self
     {
         if (12 < $resolution || 1 > $resolution) {
-            throw new \InvalidArgumentException('Resolution must be between 1 and 12.');
+            throw new InvalidArgumentException('Resolution must be between 1 and 12.');
         }
 
         $longitude = $point->getLongitude();
@@ -77,7 +82,7 @@ class Geohash
 
         $hash = [];
 
-        while (\count($hash) < $resolution) {
+        while (count($hash) < $resolution) {
             if (0 === $i % 2) {
                 $midLon = ($minLon + $maxLon) / 2;
 
@@ -109,16 +114,16 @@ class Geohash
             ++$i;
         }
 
-        return new self(\implode($hash));
+        return new self(implode($hash));
     }
 
     public function __construct(string $hash)
     {
-        $hash = \mb_strtolower($hash);
-        $h = \mb_str_split($hash);
+        $hash = mb_strtolower($hash);
+        $h = mb_str_split($hash);
         foreach ($h as $i => $char) {
-            if (!\in_array($char, self::HASH_MAP, true)) {
-                throw new \InvalidArgumentException(\sprintf('Invalid character "%s" at position %d', $char, $i));
+            if (!in_array($char, self::HASH_MAP, true)) {
+                throw new InvalidArgumentException(sprintf('Invalid character "%s" at position %d', $char, $i));
             }
         }
 
@@ -137,7 +142,7 @@ class Geohash
 
     public function getLength(): int
     {
-        return \mb_strlen($this->hash);
+        return mb_strlen($this->hash);
     }
 
     public function getBounds(): BoundingBox
@@ -152,8 +157,8 @@ class Geohash
         $maxLat = Point::MAX_LATITUDE;
         $i = 0;
 
-        $hash = \mb_str_split($this->hash);
-        $indexes = \array_flip(self::HASH_MAP);
+        $hash = mb_str_split($this->hash);
+        $indexes = array_flip(self::HASH_MAP);
         $evenBit = true;
 
         foreach ($hash as $char) {
@@ -236,24 +241,24 @@ class Geohash
 
     private static function getAdjacent(string $hash, string $direction): Geohash
     {
-        $lastChar = \mb_substr($hash, -1);
-        $parent = \mb_substr($hash, 0, -1);
-        $type = \mb_strlen($hash) % 2;
+        $lastChar = mb_substr($hash, -1);
+        $parent = mb_substr($hash, 0, -1);
+        $type = mb_strlen($hash) % 2;
 
-        if (false !== \mb_strpos(self::BORDER[$direction][$type], $lastChar) && '' !== $parent) {
+        if (false !== mb_strpos(self::BORDER[$direction][$type], $lastChar) && '' !== $parent) {
             $parent = self::getAdjacent($parent, $direction);
         }
 
-        return new self($parent.self::HASH_MAP[\mb_strpos(self::NEIGHBOUR[$direction][$type], $lastChar)]);
+        return new self($parent.self::HASH_MAP[mb_strpos(self::NEIGHBOUR[$direction][$type], $lastChar)]);
     }
 
     public function getParent(): Geohash
     {
         if ($this->getLength() < 2) {
-            throw new \LogicException('This GeoHash has no parent');
+            throw new LogicException('This GeoHash has no parent');
         }
 
-        return new self(\mb_substr($this->hash, 0, -1));
+        return new self(mb_substr($this->hash, 0, -1));
     }
 
     public function equals(self $geoHash): bool
@@ -267,7 +272,7 @@ class Geohash
             return $this->equals($geoHash);
         }
 
-        $childSubstr = \mb_substr($geoHash->hash, 0, $this->getLength());
+        $childSubstr = mb_substr($geoHash->hash, 0, $this->getLength());
 
         return $this->hash === $childSubstr;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use JsonSerializable;
 use Ricklab\Location\Transformer\WktTransformer;
 
 /**
@@ -11,7 +12,7 @@ use Ricklab\Location\Transformer\WktTransformer;
  *
  * Interface GeometryInterface
  */
-interface GeometryInterface extends \JsonSerializable
+interface GeometryInterface extends JsonSerializable
 {
     public static function getWktType(): string;
 

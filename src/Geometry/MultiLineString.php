@@ -9,12 +9,13 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
  * Class MultiLineString.
  */
-class MultiLineString implements GeometryInterface, GeometryCollectionInterface, \IteratorAggregate
+class MultiLineString implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
     use GeometryTrait;
 

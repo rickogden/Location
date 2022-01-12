@@ -26,24 +26,24 @@ class BoundingBox extends Polygon
 
         $radDist = $radius / DefaultEllipsoid::get()::radius($unit);
         $radLon = $point->longitudeToRad();
-        $deltaLon = \asin(\sin($radDist) / \cos($point->latitudeToRad()));
+        $deltaLon = asin(sin($radDist) / cos($point->latitudeToRad()));
 
-        if (\is_nan($deltaLon)) {
+        if (is_nan($deltaLon)) {
             throw new BoundBoxRangeException('Cannot create a bounding-box at these coordinates.');
         }
         $minLon = $radLon - $deltaLon;
 
-        if ($minLon < \deg2rad(-180)) {
+        if ($minLon < deg2rad(-180)) {
             $minLon += 2 * M_PI;
         }
         $maxLon = $radLon + $deltaLon;
 
-        if ($maxLon > \deg2rad(180)) {
+        if ($maxLon > deg2rad(180)) {
             $maxLon -= 2 * M_PI;
         }
 
-        $minLon = \rad2deg($minLon);
-        $maxLon = \rad2deg($maxLon);
+        $minLon = rad2deg($minLon);
+        $maxLon = rad2deg($maxLon);
 
         return new self($minLon, $minLat, $maxLon, $maxLat);
     }

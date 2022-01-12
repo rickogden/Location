@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Transformer;
 
+use Generator;
+use function get_class;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\LineString;
@@ -14,7 +16,7 @@ use Ricklab\Location\Geometry\Polygon;
 
 class WktTransformerTest extends TestCase
 {
-    public static function geometryProvider(): \Generator
+    public static function geometryProvider(): Generator
     {
         yield 'MultiPolygon' => [
             'MULTIPOLYGON(((1.432 -1.543, 5 1, 5 5, 1 5, 1.432 -1.543), (2 2, 3 2, 3 3, 2 3, 2 2)), ((3 3, 6 2, 6 4, 3 3)))',
@@ -82,13 +84,13 @@ class WktTransformerTest extends TestCase
     public function testDecode(string $wkt, GeometryInterface $geometry): void
     {
         $decoded = WktTransformer::decode($wkt);
-        $this->assertInstanceOf(\get_class($geometry), $decoded);
+        $this->assertInstanceOf(get_class($geometry), $decoded);
         $this->assertTrue(
             $geometry->equals($decoded),
-            \sprintf(
+            sprintf(
                 "Geometries don\'t match:\n Expected: %s \n Actual: %s",
-                \json_encode($geometry),
-                \json_encode($decoded)
+                json_encode($geometry),
+                json_encode($decoded)
             )
         );
     }

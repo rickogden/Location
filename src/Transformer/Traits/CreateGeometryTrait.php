@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Transformer\Traits;
 
+use InvalidArgumentException;
 use Ricklab\Location\Geometry\GeometryCollection;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\LineString;
@@ -21,7 +22,7 @@ trait CreateGeometryTrait
      */
     private static function createGeometry(string $type, array $coordinates): GeometryInterface
     {
-        switch (\mb_strtolower($type)) {
+        switch (mb_strtolower($type)) {
             case 'point':
                 $result = Point::fromArray($coordinates);
                 break;
@@ -44,7 +45,7 @@ trait CreateGeometryTrait
                 $result = GeometryCollection::fromArray($coordinates);
                 break;
             default:
-                throw new \InvalidArgumentException('This type is not supported');
+                throw new InvalidArgumentException('This type is not supported');
         }
 
         return $result;

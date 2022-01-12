@@ -9,10 +9,14 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Feature;
 
+use ArrayIterator;
+use function count;
+use IteratorAggregate;
+use JsonSerializable;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\MultiPoint;
 
-class FeatureCollection implements \IteratorAggregate, \JsonSerializable
+class FeatureCollection implements IteratorAggregate, JsonSerializable
 {
     /**
      * @var Feature[]
@@ -23,7 +27,7 @@ class FeatureCollection implements \IteratorAggregate, \JsonSerializable
 
     public static function fromGeoJson(array $geojson): self
     {
-        $features = \array_map(
+        $features = array_map(
             static fn (array $feature): Feature => Feature::fromGeoJson($feature),
             $geojson['features'] ?? []
         );
@@ -64,8 +68,8 @@ class FeatureCollection implements \IteratorAggregate, \JsonSerializable
                 }
             }
 
-            if (0 < \count($points)) {
-                $points = \array_merge(...$points);
+            if (0 < count($points)) {
+                $points = array_merge(...$points);
             }
             $this->bboxCache = BoundingBox::fromGeometry(new MultiPoint($points));
         }
@@ -92,7 +96,7 @@ class FeatureCollection implements \IteratorAggregate, \JsonSerializable
     public function withFeature(Feature $feature): self
     {
         return new self(
-            \array_merge($this->features, [$feature]),
+            array_merge($this->features, [$feature]),
             $this->bbox
         );
     }
@@ -112,7 +116,7 @@ class FeatureCollection implements \IteratorAggregate, \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        $features = \array_map(static fn (Feature $f): array => $f->jsonSerialize(), $this->features);
+        $features = array_map(static fn (Feature $f): array => $f->jsonSerialize(), $this->features);
 
         $return = [];
         $return['type'] = 'FeatureCollection';
@@ -128,8 +132,8 @@ class FeatureCollection implements \IteratorAggregate, \JsonSerializable
         return $return;
     }
 
-    public function getIterator(): \ArrayIterator
+    public function getIterator(): ArrayIterator
     {
-        return new \ArrayIterator($this->features);
+        return new ArrayIterator($this->features);
     }
 }

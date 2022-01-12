@@ -32,7 +32,7 @@ return $config->setRules([
         'no_binary_string' => true,
         'no_null_property_initialization' => true,
         'echo_tag_syntax' => ['format' => 'long'],
-        'global_namespace_import' => ['import_classes' => false, 'import_constants' => false, 'import_functions' => false],
+        'global_namespace_import' => ['import_classes' => true, 'import_constants' => true, 'import_functions' => true],
         'no_singleline_whitespace_before_semicolons' => false,
         'no_superfluous_elseif' => true,
         'no_superfluous_phpdoc_tags' => true,

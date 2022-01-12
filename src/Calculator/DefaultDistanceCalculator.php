@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Calculator;
 
+use InvalidArgumentException;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Geometry\Point;
 
@@ -14,7 +15,7 @@ final class DefaultDistanceCalculator implements DistanceCalculator, UsesGeoSpat
     public static function setDefaultCalculator(DistanceCalculator $distanceCalculator): void
     {
         if ($distanceCalculator instanceof self) {
-            throw new \InvalidArgumentException('Cannot pass an instance of DefaultDistanceCalculator in as a default calculator.');
+            throw new InvalidArgumentException('Cannot pass an instance of DefaultDistanceCalculator in as a default calculator.');
         }
 
         self::$defaultCalculator = $distanceCalculator;

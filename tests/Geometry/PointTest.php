@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Generator;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\VincentyCalculator;
@@ -56,31 +58,31 @@ class PointTest extends TestCase
     public function testRelativePoint(): void
     {
         $newPoint = $this->point->getRelativePoint(2.783, 98.50833, 'km');
-        $this->assertEquals(53.48204, \round($newPoint->getLatitude(), 5));
-        $this->assertEquals(-2.23194, \round($newPoint->getLongitude(), 5));
+        $this->assertEquals(53.48204, round($newPoint->getLatitude(), 5));
+        $this->assertEquals(-2.23194, round($newPoint->getLongitude(), 5));
     }
 
     public function testDistanceTo(): void
     {
         $newPoint = new Point(-2.23194, 53.48204);
-        $this->assertEquals(1.729, \round($this->point->distanceTo($newPoint, UnitConverter::UNIT_MILES), 3));
-        $this->assertEquals(2.783, \round($this->point->distanceTo($newPoint, UnitConverter::UNIT_KM), 3));
+        $this->assertEquals(1.729, round($this->point->distanceTo($newPoint, UnitConverter::UNIT_MILES), 3));
+        $this->assertEquals(2.783, round($this->point->distanceTo($newPoint, UnitConverter::UNIT_KM), 3));
         $this->assertEquals(
             2.792,
-            \round($this->point->distanceTo($newPoint, UnitConverter::UNIT_KM, new VincentyCalculator()), 3)
+            round($this->point->distanceTo($newPoint, UnitConverter::UNIT_KM, new VincentyCalculator()), 3)
         );
     }
 
     public function testDistanceToException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $newPoint = new Point(-2.23194, 53.48204);
         $this->point->distanceTo($newPoint, 'foo');
     }
 
     public function testJsonSerializable(): void
     {
-        $geoJSON = \json_encode($this->point);
+        $geoJSON = json_encode($this->point);
         $this->assertIsString($geoJSON);
         $this->assertJsonStringEqualsJsonString('{"type":"Point", "coordinates":[-2.27354, 53.48575]}', $geoJSON);
     }
@@ -130,7 +132,7 @@ class PointTest extends TestCase
         $this->assertFalse($point1->equals(new LineString([new Point(1.1, -1.3), new Point(1.1, -1.31)])));
     }
 
-    public function geoHahProvider(): \Generator
+    public function geoHahProvider(): Generator
     {
         yield ['u4pruydqqvj', 10.40744, 57.64911];
     }

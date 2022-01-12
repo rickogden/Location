@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry\Traits;
 
+use ArrayIterator;
+use function count;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\Point;
+use Traversable;
 
 /**
  * @author Rick Ogden <rick@rickogden.com>
@@ -21,7 +24,7 @@ trait GeometryTrait
 
     public function __toString(): string
     {
-        return \sprintf('(%s)', \implode(', ', $this->getGeometryArray()));
+        return sprintf('(%s)', implode(', ', $this->getGeometryArray()));
     }
 
     public function toArray(): array
@@ -45,12 +48,12 @@ trait GeometryTrait
             $points[] = $linePoints;
         }
 
-        return \array_merge(...$points);
+        return array_merge(...$points);
     }
 
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->getGeometryArray());
+        return new ArrayIterator($this->getGeometryArray());
     }
 
     public function equals(GeometryInterface $geometry): bool
@@ -59,7 +62,7 @@ trait GeometryTrait
             return false;
         }
 
-        if (\count($this->geometries) !== \count($geometry->geometries)) {
+        if (count($this->geometries) !== count($geometry->geometries)) {
             return false;
         }
 

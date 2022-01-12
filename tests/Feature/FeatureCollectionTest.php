@@ -31,8 +31,8 @@ class FeatureCollectionTest extends TestCase
         $featureCollection = Location::fromGeoJson($initialjson);
 
         $this->assertInstanceOf(FeatureCollection::class, $featureCollection);
-        $result = \json_encode($featureCollection);
-        $this->assertJsonStringEqualsJsonString($initialjson, \json_encode($featureCollection));
+        $result = json_encode($featureCollection);
+        $this->assertJsonStringEqualsJsonString($initialjson, json_encode($featureCollection));
     }
 
     public function testFromString(): void
@@ -56,7 +56,7 @@ class FeatureCollectionTest extends TestCase
         $featureCollection = GeoJsonTransformer::decode($initialjson);
 
         $this->assertInstanceOf(FeatureCollection::class, $featureCollection);
-        $this->assertJsonStringEqualsJsonString($initialjson, \json_encode($featureCollection));
+        $this->assertJsonStringEqualsJsonString($initialjson, json_encode($featureCollection));
     }
 
     public function testFromWithBbox(): void
@@ -97,6 +97,6 @@ class FeatureCollectionTest extends TestCase
         $featureCollection = GeoJsonTransformer::decode($initialjson)->withBbox();
 
         $this->assertInstanceOf(FeatureCollection::class, $featureCollection);
-        $this->assertJsonStringEqualsJsonString($jsonWithBbox, \json_encode($featureCollection));
+        $this->assertJsonStringEqualsJsonString($jsonWithBbox, json_encode($featureCollection));
     }
 }

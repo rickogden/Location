@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Transformer;
 
+use ErrorException;
+use InvalidArgumentException;
+use const JSON_THROW_ON_ERROR;
+use JsonException;
+use JsonSerializable;
 use Ricklab\Location\Feature\Feature;
 use Ricklab\Location\Feature\FeatureCollection;
 use Ricklab\Location\Geometry\GeometryInterface;
@@ -14,30 +19,30 @@ final class GeoJsonTransformer
     use CreateGeometryTrait;
 
     /**
-     * @throws \JsonException
-     * @throws \ErrorException
+     * @throws JsonException
+     * @throws ErrorException
      *
      * @return GeometryInterface|FeatureCollection|Feature
      */
     public static function decode(string $geojson)
     {
-        return self::fromArray(\json_decode($geojson, true, 512, \JSON_THROW_ON_ERROR));
+        return self::fromArray(json_decode($geojson, true, 512, JSON_THROW_ON_ERROR));
     }
 
     /**
-     * @throws \JsonException
-     * @throws \ErrorException
+     * @throws JsonException
+     * @throws ErrorException
      *
      * @return GeometryInterface|FeatureCollection|Feature
      */
     public static function fromObject(object $geojson)
     {
         return self::fromArray(
-            \json_decode(
-                \json_encode($geojson, \JSON_THROW_ON_ERROR),
+            json_decode(
+                json_encode($geojson, JSON_THROW_ON_ERROR),
                 true,
                 512,
-                \JSON_THROW_ON_ERROR
+                JSON_THROW_ON_ERROR
             )
         );
     }
@@ -45,7 +50,7 @@ final class GeoJsonTransformer
     /**
      * Create a geometry from GeoJSON array.
      *
-     * @throws \ErrorException
+     * @throws ErrorException
      *
      * @return GeometryInterface|FeatureCollection|Feature
      */
@@ -54,14 +59,14 @@ final class GeoJsonTransformer
         $type = $geojson['type'] ?? null;
 
         if (null === $type) {
-            throw new \InvalidArgumentException('Cannot determine GeoJSON type.');
+            throw new InvalidArgumentException('Cannot determine GeoJSON type.');
         }
 
-        $type = \mb_strtolower($type);
+        $type = mb_strtolower($type);
 
         switch ($type) {
             case 'geometrycollection':
-                $geometries = \array_map(
+                $geometries = array_map(
                     static fn (array $geom) => self::fromArray($geom),
                     $geojson['geometries'] ?? []
                 );
@@ -81,10 +86,10 @@ final class GeoJsonTransformer
      */
     public static function encode($object): string
     {
-        if (!$object instanceof \JsonSerializable) {
-            throw new \InvalidArgumentException('Cannot serialize object.');
+        if (!$object instanceof JsonSerializable) {
+            throw new InvalidArgumentException('Cannot serialize object.');
         }
 
-        return \json_encode($object);
+        return json_encode($object);
     }
 }

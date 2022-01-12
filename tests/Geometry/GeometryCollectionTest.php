@@ -27,7 +27,7 @@ class GeometryCollectionTest extends TestCase
 
         $geometryCollection = new GeometryCollection([$point, $lineString]);
 
-        $this->assertJsonStringEqualsJsonString($json, \json_encode($geometryCollection));
+        $this->assertJsonStringEqualsJsonString($json, json_encode($geometryCollection));
     }
 
     public function testToWkt(): void

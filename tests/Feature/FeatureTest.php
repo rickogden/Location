@@ -41,6 +41,6 @@ class FeatureTest extends TestCase
         $this->assertInstanceOf(Polygon::class, $feature->getGeometry());
         $this->assertEquals('bar', $feature->getProperties()['foo']);
 
-        $this->assertJsonStringEqualsJsonString($initialjson, \json_encode($feature));
+        $this->assertJsonStringEqualsJsonString($initialjson, json_encode($feature));
     }
 }

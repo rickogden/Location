@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use function count;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 
@@ -55,8 +56,8 @@ class PolygonTest extends TestCase
     public function testLastPointIsTheSameAsFirstPoint(): void
     {
         $a = $this->polygon;
-        $this->assertEquals($a->toArray()[0][0][0], $a->toArray()[0][\count($a->toArray()[0]) - 1][0]);
-        $this->assertEquals($a->toArray()[0][0][1], $a->toArray()[0][\count($a->toArray()[0]) - 1][1]);
+        $this->assertEquals($a->toArray()[0][0][0], $a->toArray()[0][count($a->toArray()[0]) - 1][0]);
+        $this->assertEquals($a->toArray()[0][0][1], $a->toArray()[0][count($a->toArray()[0]) - 1][1]);
     }
 
     public function testToString(): void
@@ -78,7 +79,7 @@ class PolygonTest extends TestCase
 
     public function testJsonSerialize(): void
     {
-        $json = \json_encode($this->polygon);
+        $json = json_encode($this->polygon);
         $this->assertEquals('{"type":"Polygon","coordinates":[[[3,2],[4,2],[4,3],[3,2]]]}', $json);
     }
 
@@ -94,12 +95,12 @@ class PolygonTest extends TestCase
         ]);
         $this->assertEquals(
             '{"type":"Polygon","coordinates":[[[2,3],[4,3],[4,2],[2,2],[2,3]]]}',
-            \json_encode($polygon->getBBox())
+            json_encode($polygon->getBBox())
         );
 
         $this->assertEquals(
             '{"type":"Polygon","coordinates":[[[3,3],[4,3],[4,2],[3,2],[3,3]]]}',
-            \json_encode($this->polygon->getBBox())
+            json_encode($this->polygon->getBBox())
         );
     }
 
