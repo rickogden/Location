@@ -46,13 +46,13 @@ class Point implements GeometryInterface
         return 'Point';
     }
 
-    public static function fromArray(array $point): self
+    public static function fromArray(array $geometries): self
     {
-        if (2 !== $length = count($point)) {
+        if (2 !== $length = count($geometries)) {
             throw new InvalidArgumentException(sprintf('Must be an array consisting of exactly 2 elements, %d passed', $length));
         }
 
-        return new self($point[0], $point[1]);
+        return new self($geometries[0], $geometries[1]);
     }
 
     /**
