@@ -9,7 +9,7 @@ use function in_array;
 use InvalidArgumentException;
 use LogicException;
 
-class Geohash
+final class Geohash
 {
     private const HASH_MAP = [
         '0',

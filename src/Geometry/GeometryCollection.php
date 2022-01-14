@@ -17,7 +17,7 @@ use Ricklab\Location\Transformer\WktTransformer;
 /**
  * Class GeometryCollection.
  */
-class GeometryCollection implements GeometryInterface, GeometryCollectionInterface
+final class GeometryCollection implements GeometryInterface, GeometryCollectionInterface
 {
     use GeometryTrait;
 

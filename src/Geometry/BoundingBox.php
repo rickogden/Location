@@ -9,7 +9,7 @@ use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 
-class BoundingBox
+final class BoundingBox
 {
     private float $minLon;
     private float $maxLon;
@@ -60,10 +60,12 @@ class BoundingBox
         $points = $geometry->getPoints();
 
         foreach ($points as $point) {
-            $maxLat = ($point->getLatitude() > $maxLat) ? $point->getLatitude() : $maxLat;
-            $minLat = ($point->getLatitude() < $minLat) ? $point->getLatitude() : $minLat;
-            $maxLon = ($point->getLongitude() > $maxLon) ? $point->getLongitude() : $maxLon;
-            $minLon = ($point->getLongitude() < $minLon) ? $point->getLongitude() : $minLon;
+            $lat = $point->getLatitude();
+            $lon = $point->getLongitude();
+            $maxLat = ($lat > $maxLat) ? $lat : $maxLat;
+            $minLat = ($lat < $minLat) ? $lat : $minLat;
+            $maxLon = ($lon > $maxLon) ? $lon : $maxLon;
+            $minLon = ($lon < $minLon) ? $lon : $minLon;
         }
 
         return new self($minLon, $minLat, $maxLon, $maxLat);

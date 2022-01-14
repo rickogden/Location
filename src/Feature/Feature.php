@@ -16,7 +16,7 @@ use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Transformer\GeoJsonTransformer;
 
-class Feature implements JsonSerializable
+final class Feature implements JsonSerializable
 {
     /**
      * @var string|int|float|null

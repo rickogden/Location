@@ -9,7 +9,7 @@ use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
-class Polygon implements GeometryInterface, IteratorAggregate
+final class Polygon implements GeometryInterface, IteratorAggregate
 {
     use GeometryTrait;
 

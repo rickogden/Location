@@ -17,7 +17,7 @@ use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\MultiPoint;
 use Ricklab\Location\Transformer\GeoJsonTransformer;
 
-class FeatureCollection implements IteratorAggregate, JsonSerializable
+final class FeatureCollection implements IteratorAggregate, JsonSerializable
 {
     /**
      * @var Feature[]
