@@ -18,16 +18,6 @@ class Polygon implements GeometryInterface, IteratorAggregate
      */
     private array $geometries = [];
 
-    public static function getWktType(): string
-    {
-        return 'POLYGON';
-    }
-
-    public static function getGeoJsonType(): string
-    {
-        return 'Polygon';
-    }
-
     public static function fromArray(array $geometries): self
     {
         $result = [];

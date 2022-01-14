@@ -12,7 +12,7 @@ namespace Ricklab\Location\Geometry;
 use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
-class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
+final class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
     use GeometryTrait;
 
@@ -20,16 +20,6 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, It
      * @var Polygon[]
      */
     protected array $geometries = [];
-
-    public static function getWktType(): string
-    {
-        return 'MULTIPOLYGON';
-    }
-
-    public static function getGeoJsonType(): string
-    {
-        return 'MultiPolygon';
-    }
 
     public static function fromArray(array $geometries): self
     {

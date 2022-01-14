@@ -7,9 +7,11 @@ namespace Ricklab\Location\Transformer;
 use Generator;
 use function get_class;
 use PHPUnit\Framework\TestCase;
+use Ricklab\Location\Geometry\GeometryCollection;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\LineString;
 use Ricklab\Location\Geometry\MultiLineString;
+use Ricklab\Location\Geometry\MultiPoint;
 use Ricklab\Location\Geometry\MultiPolygon;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Geometry\Polygon;
@@ -75,6 +77,37 @@ class WktTransformerTest extends TestCase
                 new Point(3.3233, -34.1222),
                 new Point(5.232, -22.2332),
             ]),
+        ];
+
+        yield 'Geometry Collection' => [
+            'GEOMETRYCOLLECTION(POINT(4 6), LINESTRING(4 6, 7 10))',
+            new GeometryCollection([Point::fromArray([4, 6]), LineString::fromArray([[4, 6], [7, 10]])]),
+        ];
+
+        yield 'MultiPoint' => [
+            'MULTIPOINT(10 40, 40 30, 20 20, 30 10)',
+            new MultiPoint([
+                new Point(10, 40),
+                new Point(40, 30),
+                new Point(20, 20),
+                new Point(30, 10),
+            ]),
+        ];
+
+        yield 'multipolygon 2' => [
+            'MULTIPOLYGON(((1 1, 5 1, 5 5, 1 5, 1 1), (2 2, 3 2, 3 3, 2 3, 2 2)), ((3 3, 6 2, 6 4, 3 3)))',
+            MultiPolygon::fromArray([
+                Polygon::fromArray([
+                    [[1, 1], [5, 1], [5, 5], [1, 5], [1, 1]],
+                    [[2, 2], [3, 2], [3, 3], [2, 3], [2, 2]],
+                ]),
+                Polygon::fromArray([[[3, 3], [6, 2], [6, 4], [3, 3]]]),
+            ]),
+        ];
+
+        yield 'polygon' => [
+            'POLYGON((3 2, 4 2, 4 3, 3 2))',
+            Polygon::fromArray([[new Point(3, 2), new Point(4, 2), new Point(4, 3)]]),
         ];
     }
 

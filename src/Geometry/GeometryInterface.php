@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use JsonSerializable;
-use Ricklab\Location\Transformer\WktTransformer;
 
 /**
  * The interface for all the Geometry objects.
@@ -14,21 +13,7 @@ use Ricklab\Location\Transformer\WktTransformer;
  */
 interface GeometryInterface extends JsonSerializable
 {
-    public static function getWktType(): string;
-
-    public static function getGeoJsonType(): string;
-
-    /**
-     * @return self
-     */
-    public static function fromArray(array $geometries);
-
-    /**
-     * Representation of the geometry in Well-Known Text.
-     *
-     * @deprecated use WktTransformer::encode();
-     */
-    public function toWkt(): string;
+    public static function fromArray(array $geometries): self;
 
     /**
      * The geometry in an embedded array format.
@@ -39,6 +24,7 @@ interface GeometryInterface extends JsonSerializable
      * Gets all the points in a geometry. Note, order is not necessarily representative.
      *
      * @return Point[]
+     * @psalm-return list<Point>
      */
     public function getPoints(): array;
 

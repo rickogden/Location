@@ -12,7 +12,7 @@ namespace Ricklab\Location\Geometry;
 use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
-class MultiPoint implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
+final class MultiPoint implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
     use GeometryTrait;
 
@@ -20,16 +20,6 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, Iter
      * @var Point[]
      */
     protected array $geometries = [];
-
-    public static function getWktType(): string
-    {
-        return 'MULTIPOINT';
-    }
-
-    public static function getGeoJsonType(): string
-    {
-        return 'MultiPoint';
-    }
 
     public static function fromArray(array $geometries): self
     {
@@ -76,7 +66,7 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, Iter
         }
     }
 
-    public function getBBox(): Polygon
+    public function getBBox(): BoundingBox
     {
         return BoundingBox::fromGeometry($this);
     }

@@ -19,7 +19,7 @@ use Ricklab\Location\Geometry\Traits\GeometryTrait;
 /**
  * Class LineString.
  */
-class LineString implements GeometryInterface, IteratorAggregate
+final class LineString implements GeometryInterface, IteratorAggregate
 {
     use GeometryTrait;
 
@@ -28,16 +28,6 @@ class LineString implements GeometryInterface, IteratorAggregate
      */
     protected array $geometries = [];
     protected int $position = 0;
-
-    public static function getWktType(): string
-    {
-        return 'LINESTRING';
-    }
-
-    public static function getGeoJsonType(): string
-    {
-        return 'LineString';
-    }
 
     public static function fromArray(array $geometries): self
     {
@@ -108,7 +98,7 @@ class LineString implements GeometryInterface, IteratorAggregate
     /**
      * Gets the bounding box which will contain the entire geometry.
      */
-    public function getBBox(): Polygon
+    public function getBBox(): BoundingBox
     {
         return BoundingBox::fromGeometry($this);
     }

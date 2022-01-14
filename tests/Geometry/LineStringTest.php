@@ -87,7 +87,7 @@ class LineStringTest extends TestCase
     {
         $this->assertJsonStringEqualsJsonString(
             '{"type":"Polygon","coordinates":[[[-2.27354,53.48575],[-2.23194,53.48575],[-2.23194,53.48204],[-2.27354,53.48204],[-2.27354,53.48575]]]}',
-            json_encode($this->line->getBBox())
+            json_encode($this->line->getBBox()->getPolygon())
         );
     }
 

@@ -11,6 +11,8 @@ namespace Ricklab\Location\Geometry;
 
 use InvalidArgumentException;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
+use Ricklab\Location\Transformer\GeoJsonTransformer;
+use Ricklab\Location\Transformer\WktTransformer;
 
 /**
  * Class GeometryCollection.
@@ -23,16 +25,6 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
      * @var GeometryInterface[]
      */
     protected array $geometries = [];
-
-    public static function getWktType(): string
-    {
-        return 'GEOMETRYCOLLECTION';
-    }
-
-    public static function getGeoJsonType(): string
-    {
-        return 'GeometryCollection';
-    }
 
     public static function fromArray(array $geometries): self
     {
@@ -59,13 +51,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
      */
     public function jsonSerialize(): array
     {
-        $json = ['type' => self::getGeoJsonType()];
-
-        foreach ($this->geometries as $geometry) {
-            $json['geometries'][] = $geometry->jsonSerialize();
-        }
-
-        return $json;
+        return GeoJsonTransformer::jsonArray($this);
     }
 
     /**
@@ -75,7 +61,7 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     {
         $collection = [];
         foreach ($this->geometries as $geometry) {
-            $collection[] = $geometry->toWkt();
+            $collection[] = WktTransformer::encode($geometry);
         }
 
         return '('.implode(', ', $collection).')';

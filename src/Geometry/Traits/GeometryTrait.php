@@ -8,7 +8,6 @@ use ArrayIterator;
 use function count;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\Point;
-use Traversable;
 
 /**
  * @author Rick Ogden <rick@rickogden.com>
@@ -19,6 +18,7 @@ trait GeometryTrait
 
     /**
      * @return GeometryInterface[]
+     * @psalm-return list<GeometryInterface>
      */
     abstract protected function getGeometryArray(): array;
 
@@ -27,31 +27,33 @@ trait GeometryTrait
         return sprintf('(%s)', implode(', ', $this->getGeometryArray()));
     }
 
+    /**
+     * @return array[]
+     * @psalm-return list<array>
+     */
     public function toArray(): array
     {
-        $return = [];
-        foreach ($this->getGeometryArray() as $geometry) {
-            $return[] = $geometry->toArray();
-        }
-
-        return $return;
+        return array_map(
+            static fn (GeometryInterface $geometry): array => $geometry->toArray(),
+            $this->getGeometryArray()
+        );
     }
 
     /**
      * @return Point[]
+     * @psalm-return list<Point>
      */
     public function getPoints(): array
     {
-        $points = [];
-        foreach ($this->getGeometryArray() as $geometry) {
-            $linePoints = $geometry->getPoints();
-            $points[] = $linePoints;
-        }
+        $points = array_map(
+            static fn (GeometryInterface $geometry): array => $geometry->getPoints(),
+            $this->getGeometryArray()
+        );
 
         return array_merge(...$points);
     }
 
-    public function getIterator(): Traversable
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->getGeometryArray());
     }

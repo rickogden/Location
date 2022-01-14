@@ -134,28 +134,7 @@ class Feature implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        $array = [];
-
-        if (null !== $this->id) {
-            $array['id'] = $this->id;
-        }
-
-        $array['type'] = 'Feature';
-
-        if ($this->geometry instanceof GeometryInterface) {
-            $bbox = $this->getBoundingBox();
-
-            if (null !== $bbox) {
-                $array['bbox'] = $bbox->getBounds();
-            }
-            $array['geometry'] = $this->geometry->jsonSerialize();
-        } else {
-            $array['geometry'] = null;
-        }
-
-        $array['properties'] = $this->properties;
-
-        return $array;
+        return GeoJsonTransformer::jsonArray($this);
     }
 
     /**

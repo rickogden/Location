@@ -15,7 +15,7 @@ use Ricklab\Location\Geometry\Traits\GeometryTrait;
 /**
  * Class MultiLineString.
  */
-class MultiLineString implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
+final class MultiLineString implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
     use GeometryTrait;
 
@@ -23,16 +23,6 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface,
      * @var LineString[]
      */
     protected array $geometries = [];
-
-    public static function getGeoJsonType(): string
-    {
-        return 'MultiLineString';
-    }
-
-    public static function getWktType(): string
-    {
-        return 'MULTILINESTRING';
-    }
 
     public static function fromArray(array $geometries): self
     {

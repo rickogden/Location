@@ -9,12 +9,14 @@ use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 
-class BoundingBox extends Polygon
+class BoundingBox
 {
     private float $minLon;
     private float $maxLon;
     private float $minLat;
     private float $maxLat;
+
+    private ?Polygon $polygon = null;
 
     /**
      * @throws BoundBoxRangeException currently cannot create a bounding box over the meridian
@@ -95,12 +97,6 @@ class BoundingBox extends Polygon
 
     public function __construct(float $minLon, float $minLat, float $maxLon, float $maxLat)
     {
-        $nw = Point::fromArray([$minLon, $maxLat]);
-        $ne = Point::fromArray([$maxLon, $maxLat]);
-        $se = Point::fromArray([$maxLon, $minLat]);
-        $sw = Point::fromArray([$minLon, $minLat]);
-
-        parent::__construct([new LineString([$nw, $ne, $se, $sw])]);
         $this->minLon = $minLon;
         $this->maxLon = $maxLon;
         $this->minLat = $minLat;
@@ -184,5 +180,24 @@ class BoundingBox extends Polygon
         }
 
         return false;
+    }
+
+    public function getPolygon(): Polygon
+    {
+        if (null === $this->polygon) {
+            $nw = Point::fromArray([$this->minLon, $this->maxLat]);
+            $ne = Point::fromArray([$this->maxLon, $this->maxLat]);
+            $se = Point::fromArray([$this->maxLon, $this->minLat]);
+            $sw = Point::fromArray([$this->minLon, $this->minLat]);
+
+            $this->polygon = new Polygon([new LineString([$nw, $ne, $se, $sw])]);
+        }
+
+        return $this->polygon;
+    }
+
+    public function getPoints(): array
+    {
+        return $this->getPolygon()->getPoints();
     }
 }

@@ -50,11 +50,6 @@ class PointTest extends TestCase
         $this->assertEquals($this->lon.' '.$this->lat, (string) $this->point);
     }
 
-    public function testToWktConversion(): void
-    {
-        $this->assertEquals('POINT('.$this->lon.' '.$this->lat.')', $this->point->toWkt());
-    }
-
     public function testRelativePoint(): void
     {
         $newPoint = $this->point->getRelativePoint(2.783, 98.50833, 'km');

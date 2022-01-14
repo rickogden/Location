@@ -66,12 +66,6 @@ class PolygonTest extends TestCase
         $this->assertEquals($retval, (string) $this->polygon);
     }
 
-    public function testToWkt(): void
-    {
-        $retVal = $this->polygon->toWkt();
-        $this->assertEquals('POLYGON((3 2, 4 2, 4 3, 3 2))', $retVal);
-    }
-
     protected function tearDown(): void
     {
         $this->polygon = null;
@@ -95,12 +89,12 @@ class PolygonTest extends TestCase
         ]);
         $this->assertEquals(
             '{"type":"Polygon","coordinates":[[[2,3],[4,3],[4,2],[2,2],[2,3]]]}',
-            json_encode($polygon->getBBox())
+            json_encode($polygon->getBBox()->getPolygon())
         );
 
         $this->assertEquals(
             '{"type":"Polygon","coordinates":[[[3,3],[4,3],[4,2],[3,2],[3,3]]]}',
-            json_encode($this->polygon->getBBox())
+            json_encode($this->polygon->getBBox()->getPolygon())
         );
     }
 

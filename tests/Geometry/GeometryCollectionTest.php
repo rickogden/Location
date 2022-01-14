@@ -30,18 +30,6 @@ class GeometryCollectionTest extends TestCase
         $this->assertJsonStringEqualsJsonString($json, json_encode($geometryCollection));
     }
 
-    public function testToWkt(): void
-    {
-        $wkt = 'GEOMETRYCOLLECTION(POINT(4 6), LINESTRING(4 6, 7 10))';
-
-        $point = Point::fromArray([4, 6]);
-        $lineString = LineString::fromArray([[4, 6], [7, 10]]);
-
-        $geometryCollection = new GeometryCollection([$point, $lineString]);
-
-        $this->assertEquals($wkt, $geometryCollection->toWkt());
-    }
-
     public function testFromGeoJson(): void
     {
         $json = '{ "type": "GeometryCollection",

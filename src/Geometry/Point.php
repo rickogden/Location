@@ -21,10 +21,9 @@ use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
-use Ricklab\Location\Location;
 use function round;
 
-class Point implements GeometryInterface
+final class Point implements GeometryInterface
 {
     use TransformationTrait;
 
@@ -35,16 +34,6 @@ class Point implements GeometryInterface
 
     protected float $longitude;
     protected float $latitude;
-
-    public static function getWktType(): string
-    {
-        return 'POINT';
-    }
-
-    public static function getGeoJsonType(): string
-    {
-        return 'Point';
-    }
 
     public static function fromArray(array $geometries): self
     {
@@ -215,11 +204,11 @@ class Point implements GeometryInterface
     /**
      * The point as an array in the order of longitude, latitude.
      *
-     * @return float[]
+     * @return array{0: float, 1: float}
      */
     public function toArray(): array
     {
-        return [$this->longitude, $this->latitude];
+        return $this->getCoordinates();
     }
 
     /**
@@ -233,9 +222,9 @@ class Point implements GeometryInterface
     /**
      * Finds the mid point between two points.
      *
-     * @return Point the mid point
+     * @return self the mid point
      */
-    public function getMidpoint(Point $point, ?DistanceCalculator $calculator = null): Point
+    public function getMidpoint(Point $point, ?DistanceCalculator $calculator = null): self
     {
         return $this->getFractionAlongLineTo($point, 0.5, $calculator);
     }
@@ -275,17 +264,9 @@ class Point implements GeometryInterface
     }
 
     /**
-     * Converts point to Well-Known Text.
-     */
-    public function toWkt(): string
-    {
-        return sprintf('%s(%s)', self::getWktType(), (string) $this);
-    }
-
-    /**
      * The coordinates in the order of [longitude, latitude].
      *
-     * @return float[]
+     * @return array{0: float, 1: float}
      */
     public function getCoordinates(): array
     {
@@ -295,7 +276,7 @@ class Point implements GeometryInterface
     /**
      * This point in an array.
      *
-     * @return Point[]
+     * @return list<Point>
      */
     public function getPoints(): array
     {

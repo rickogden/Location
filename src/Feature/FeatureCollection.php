@@ -15,6 +15,7 @@ use IteratorAggregate;
 use JsonSerializable;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\MultiPoint;
+use Ricklab\Location\Transformer\GeoJsonTransformer;
 
 class FeatureCollection implements IteratorAggregate, JsonSerializable
 {
@@ -116,24 +117,19 @@ class FeatureCollection implements IteratorAggregate, JsonSerializable
 
     public function jsonSerialize(): array
     {
-        $features = array_map(static fn (Feature $f): array => $f->jsonSerialize(), $this->features);
-
-        $return = [];
-        $return['type'] = 'FeatureCollection';
-
-        $bbox = $this->getBbox();
-
-        if (null !== $bbox) {
-            $return['bbox'] = $bbox->getBounds();
-        }
-
-        $return['features'] = $features;
-
-        return $return;
+        return GeoJsonTransformer::jsonArray($this);
     }
 
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->features);
+    }
+
+    /**
+     * @return Feature[]
+     */
+    public function getFeatures(): array
+    {
+        return $this->features;
     }
 }
