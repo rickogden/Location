@@ -20,7 +20,7 @@ use Ricklab\Location\Transformer\GeoJsonTransformer;
 final class FeatureCollection implements IteratorAggregate, JsonSerializable
 {
     /**
-     * @var Feature[]
+     * @var list<Feature>
      */
     protected array $features = [];
     private bool $bbox;
@@ -120,6 +120,9 @@ final class FeatureCollection implements IteratorAggregate, JsonSerializable
         return GeoJsonTransformer::jsonArray($this);
     }
 
+    /**
+     * @return ArrayIterator<int, Feature>
+     */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->features);
@@ -127,6 +130,7 @@ final class FeatureCollection implements IteratorAggregate, JsonSerializable
 
     /**
      * @return Feature[]
+     * @psalm-return list<Feature>
      */
     public function getFeatures(): array
     {
