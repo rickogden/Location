@@ -1,3 +1,13 @@
+# Upgrade from Version 6 to Version 7
+
+* BoundingBox is no longer a polygon, any polygon operations on bounding box use `getPolygon`.
+* Geometry and feature classes are now all final, they should be decorated rather than extended.
+
+## Changes
+
+* Made all classes final
+* Removed deprecated methods
+
 # Upgrading from Version 5 to Version 6
 
 Version 6 a plethora of new features.
