@@ -22,7 +22,7 @@ final class FeatureCollection implements IteratorAggregate, JsonSerializable
     /**
      * @var list<Feature>
      */
-    protected array $features = [];
+    private array $features = [];
     private bool $bbox;
     private ?BoundingBox $bboxCache = null;
 

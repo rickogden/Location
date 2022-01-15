@@ -21,10 +21,10 @@ final class Feature implements JsonSerializable
     /**
      * @var string|int|float|null
      */
-    protected $id;
+    private $id;
 
-    protected ?GeometryInterface $geometry;
-    protected array $properties = [];
+    private ?GeometryInterface $geometry;
+    private array $properties = [];
     private bool $bbox;
     private ?BoundingBox $bboxCache = null;
 
