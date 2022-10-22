@@ -22,6 +22,7 @@ class GeohashTest extends TestCase
 
     /**
      * @dataProvider geoHahProvider
+     *
      * @covers ::fromPoint
      */
     public function testGeoHashFromPoint(string $hash, float $lon, float $lat, float $precision): void
@@ -33,6 +34,7 @@ class GeohashTest extends TestCase
 
     /**
      * @dataProvider geoHahProvider
+     *
      * @covers ::getBounds
      * @covers ::getCenter
      */

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Ricklab\Location\Transformer;
 
 use Generator;
+
 use function get_class;
+
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\LineString;

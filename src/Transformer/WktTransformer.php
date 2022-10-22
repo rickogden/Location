@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Ricklab\Location\Transformer;
 
 use InvalidArgumentException;
+
 use function is_array;
+
 use const JSON_THROW_ON_ERROR;
+
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Transformer\Traits\CreateGeometryTrait;

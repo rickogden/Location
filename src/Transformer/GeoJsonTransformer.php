@@ -6,7 +6,9 @@ namespace Ricklab\Location\Transformer;
 
 use ErrorException;
 use InvalidArgumentException;
+
 use const JSON_THROW_ON_ERROR;
+
 use JsonException;
 use JsonSerializable;
 use Ricklab\Location\Feature\Feature;

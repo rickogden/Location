@@ -11,9 +11,11 @@ namespace Ricklab\Location;
 
 use ErrorException;
 use InvalidArgumentException;
+
 use function is_array;
 use function is_object;
 use function is_string;
+
 use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\FractionAlongLineCalculator;
