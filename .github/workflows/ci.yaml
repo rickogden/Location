@@ -4,10 +4,11 @@ on:
   - pull_request
   - push
 jobs:
-  build:
+  test:
     strategy:
       matrix:
-        php-versions: ['7.4', '8.0', '8.1']
+        php-versions: ['7.4', '8.0', '8.1', '8.2']
+        dependencies: ['', '--prefer-lowest']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,7 +20,7 @@ jobs:
           coverage: pcov
           tools: composer:v2
       - name: Install dependencies
-        run: composer install --no-progress --prefer-dist --optimize-autoloader
+        run: composer update --no-progress --prefer-dist --optimize-autoloader ${{matrix.dependencies}}
       - name: Psalm
         run: php vendor/bin/psalm --output-format=github --php-version=${{ matrix.php-versions }}
       - name: PHPUnit

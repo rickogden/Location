@@ -94,8 +94,8 @@ class PointTest extends TestCase
             new DegreesMinutesSeconds(0, 6, 9, 'W')
         );
 
-        $this->assertSame(1.0342916666667, $point->getLatitude());
-        $this->assertSame(-0.1025, $point->getLongitude());
+        $this->assertSame(1.0342916666667, round($point->getLatitude(), 13));
+        $this->assertSame(-0.1025, round($point->getLongitude(), 4));
     }
 
     public function testFromDmsInverted(): void
@@ -105,8 +105,8 @@ class PointTest extends TestCase
             new DegreesMinutesSeconds(1, 2, 3.45, 'N')
         );
 
-        $this->assertSame(1.0342916666667, $point->getLatitude());
-        $this->assertSame(-0.1025, $point->getLongitude());
+        $this->assertSame(1.0342916666667, round($point->getLatitude(), 13));
+        $this->assertSame(-0.1025, round($point->getLongitude(), 4));
     }
 
     public function testFractionAlongLine(): void
@@ -155,8 +155,8 @@ class PointTest extends TestCase
         $fraction05 = $point1->getFractionAlongLineTo($point2, 0.5);
         $midpoint = $point1->getMidpoint($point2);
 
-        $this->assertEquals(6.9998522347268, $fraction02->getLongitude());
-        $this->assertEquals(10.023944943799, $fraction02->getLatitude());
+        $this->assertEquals(6.9998522347268, round($fraction02->getLongitude(), 13));
+        $this->assertEquals(10.0239449437995, round($fraction02->getLatitude(), 13));
         $this->assertEquals($midpoint->getLatitude(), $fraction05->getLatitude());
         $this->assertEquals($midpoint->getLongitude(), $fraction05->getLongitude());
     }

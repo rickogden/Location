@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use function count;
+
 use InvalidArgumentException;
 use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
@@ -22,6 +23,7 @@ use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
 use Ricklab\Location\Location;
+
 use function round;
 
 class Point implements GeometryInterface

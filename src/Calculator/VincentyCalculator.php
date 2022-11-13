@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Calculator;
 
 use function function_exists;
+
 use Ricklab\Location\Calculator\Traits\GeoSpatialExtensionTrait;
 use Ricklab\Location\Ellipsoid\Earth;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
