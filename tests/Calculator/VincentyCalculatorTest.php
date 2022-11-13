@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ricklab\Location\Psalm\Calculator;
+namespace Ricklab\Location\Calculator;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Geometry\Point;
 
