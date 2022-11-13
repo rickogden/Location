@@ -20,7 +20,7 @@ jobs:
           coverage: pcov
           tools: composer:v2
       - name: Install dependencies
-        run: composer install --no-progress --prefer-dist --optimize-autoloader ${{matrix.dependencies}}
+        run: composer update --no-progress --prefer-dist --optimize-autoloader ${{matrix.dependencies}}
       - name: Psalm
         run: php vendor/bin/psalm --output-format=github --php-version=${{ matrix.php-versions }}
       - name: PHPUnit
