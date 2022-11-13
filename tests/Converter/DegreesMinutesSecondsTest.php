@@ -11,10 +11,10 @@ class DegreesMinutesSecondsTest extends TestCase
 {
     public function decimalDmsProvider(): Generator
     {
-        yield [1.0342916666667, 'LATITUDE', 1, 2, 3.45, 'N'];
-        yield [1.0342916666667, 'LONGITUDE', 1, 2, 3.45, 'E'];
-        yield [-1.0342916666667, 'LONGITUDE', 1, 2, 3.45, 'W'];
-        yield [-1.0342916666667, 'LATITUDE', 1, 2, 3.45, 'S'];
+        yield [1.0342916666666668, 'LATITUDE', 1, 2, 3.45, 'N'];
+        yield [1.0342916666666668, 'LONGITUDE', 1, 2, 3.45, 'E'];
+        yield [-1.0342916666666668, 'LONGITUDE', 1, 2, 3.45, 'W'];
+        yield [-1.0342916666666668, 'LATITUDE', 1, 2, 3.45, 'S'];
     }
 
     /**
