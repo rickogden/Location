@@ -6,9 +6,12 @@ namespace Ricklab\Location\Transformer;
 
 use function array_key_exists;
 use function class_implements;
+
 use ErrorException;
+
 use function get_class;
 use function in_array;
+
 use InvalidArgumentException;
 
 use const JSON_THROW_ON_ERROR;

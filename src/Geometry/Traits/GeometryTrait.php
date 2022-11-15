@@ -20,6 +20,7 @@ trait GeometryTrait
 
     /**
      * @return GeometryInterface[]
+     *
      * @psalm-return list<GeometryInterface>
      */
     abstract protected function getGeometryArray(): array;
@@ -31,6 +32,7 @@ trait GeometryTrait
 
     /**
      * @return array[]
+     *
      * @psalm-return list<array>
      */
     public function toArray(): array
@@ -43,6 +45,7 @@ trait GeometryTrait
 
     /**
      * @return Point[]
+     *
      * @psalm-return list<Point>
      */
     public function getPoints(): array

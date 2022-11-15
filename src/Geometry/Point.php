@@ -22,6 +22,7 @@ use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
+
 use function round;
 
 final class Point implements GeometryInterface

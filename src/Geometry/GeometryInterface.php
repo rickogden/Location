@@ -24,6 +24,7 @@ interface GeometryInterface extends JsonSerializable
      * Gets all the points in a geometry. Note, order is not necessarily representative.
      *
      * @return Point[]
+     *
      * @psalm-return list<Point>
      */
     public function getPoints(): array;
