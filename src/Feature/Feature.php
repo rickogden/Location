@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Ricklab\Location\Feature;
 
 use InvalidArgumentException;
+
 use function is_string;
+
 use JsonSerializable;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryInterface;

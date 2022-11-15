@@ -6,6 +6,7 @@ namespace Ricklab\Location\Converter;
 
 use function count;
 use function in_array;
+
 use InvalidArgumentException;
 
 final class DegreesMinutesSeconds
@@ -169,7 +170,7 @@ final class DegreesMinutesSeconds
     }
 
     /**
-     * @return array{0: int, 1: int, 2: float, 3: self::DIRECTION_N | self::DIRECTION_S | self::DIRECTION_E | self::DIRECTION_W} of degrees, minutes, seconds and direction
+     * @return array{0: int, 1: int, 2: float, 3: self::DIRECTION_N|self::DIRECTION_S|self::DIRECTION_E|self::DIRECTION_W} of degrees, minutes, seconds and direction
      */
     public function toArray(): array
     {

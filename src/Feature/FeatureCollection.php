@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Ricklab\Location\Feature;
 
 use ArrayIterator;
+
 use function count;
+
 use IteratorAggregate;
 use JsonSerializable;
 use Ricklab\Location\Geometry\BoundingBox;

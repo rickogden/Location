@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry\Traits;
 
 use ArrayIterator;
+
 use function count;
+
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\Point;
 

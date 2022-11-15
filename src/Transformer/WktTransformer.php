@@ -8,8 +8,11 @@ use function array_key_exists;
 use function get_class;
 use function in_array;
 use InvalidArgumentException;
+
 use function is_array;
+
 use const JSON_THROW_ON_ERROR;
+
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryCollection;
 use Ricklab\Location\Geometry\GeometryInterface;

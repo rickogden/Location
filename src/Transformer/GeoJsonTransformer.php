@@ -10,7 +10,9 @@ use ErrorException;
 use function get_class;
 use function in_array;
 use InvalidArgumentException;
+
 use const JSON_THROW_ON_ERROR;
+
 use JsonException;
 use Ricklab\Location\Feature\Feature;
 use Ricklab\Location\Feature\FeatureCollection;

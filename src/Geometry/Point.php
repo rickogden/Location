@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use function count;
+
 use InvalidArgumentException;
 use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;

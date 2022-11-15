@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use function count;
+
 use InvalidArgumentException;
 use IteratorAggregate;
 use Ricklab\Location\Calculator\DistanceCalculator;

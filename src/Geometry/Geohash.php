@@ -6,6 +6,7 @@ namespace Ricklab\Location\Geometry;
 
 use function count;
 use function in_array;
+
 use InvalidArgumentException;
 use LogicException;
 
