@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ricklab\Location\Transformer;
 
 use function array_key_exists;
-use function get_class;
 use function in_array;
 
 use InvalidArgumentException;
@@ -108,7 +107,7 @@ final class WktTransformer
 
     public static function encode(GeometryInterface $geometry): string
     {
-        $class = get_class($geometry);
+        $class = $geometry::class;
 
         if (!array_key_exists($class, self::CLASS_MAP)) {
             throw new InvalidArgumentException('Cannot handle geometry');

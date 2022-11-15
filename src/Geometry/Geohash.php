@@ -115,7 +115,7 @@ final class Geohash
             ++$i;
         }
 
-        return new self(implode($hash));
+        return new self(implode('', $hash));
     }
 
     public function __construct(string $hash)

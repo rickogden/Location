@@ -10,9 +10,6 @@ declare(strict_types=1);
 namespace Ricklab\Location\Feature;
 
 use InvalidArgumentException;
-
-use function is_string;
-
 use JsonSerializable;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryInterface;
@@ -49,15 +46,8 @@ final class Feature implements JsonSerializable
         return $feature;
     }
 
-    /**
-     * @param string|int|float|null $id
-     */
-    public function __construct(array $properties = [], ?GeometryInterface $geometry = null, $id = null, bool $bbox = false)
+    public function __construct(array $properties = [], ?GeometryInterface $geometry = null, float|int|string $id = null, bool $bbox = false)
     {
-        if (null !== $id && !is_string($id) && !is_numeric($id)) {
-            throw new InvalidArgumentException('$id must be either a string or number.');
-        }
-
         $this->properties = $properties;
         $this->geometry = $geometry;
         $this->bbox = $bbox;

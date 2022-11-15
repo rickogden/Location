@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Ricklab\Location\Transformer;
 
 use Generator;
-
-use function get_class;
-
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Geometry\GeometryCollection;
 use Ricklab\Location\Geometry\GeometryInterface;
@@ -119,7 +116,7 @@ class WktTransformerTest extends TestCase
     public function testDecode(string $wkt, GeometryInterface $geometry): void
     {
         $decoded = WktTransformer::decode($wkt);
-        $this->assertInstanceOf(get_class($geometry), $decoded);
+        $this->assertInstanceOf($geometry::class, $decoded);
         $this->assertTrue(
             $geometry->equals($decoded),
             sprintf(

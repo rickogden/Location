@@ -66,7 +66,7 @@ final class FeatureCollection implements IteratorAggregate, JsonSerializable
             foreach ($this->features as $feature) {
                 $geometry = $feature->getGeometry();
 
-                if ($this->bbox && null !== $geometry) {
+                if (null !== $geometry) {
                     $points[] = $geometry->getPoints();
                 }
             }

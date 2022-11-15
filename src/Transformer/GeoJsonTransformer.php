@@ -9,7 +9,6 @@ use function class_implements;
 
 use ErrorException;
 
-use function get_class;
 use function in_array;
 
 use InvalidArgumentException;
@@ -138,15 +137,12 @@ final class GeoJsonTransformer
         return $class::fromArray($geojson['coordinates']);
     }
 
-    /**
-     * @param GeometryInterface|Feature|FeatureCollection $object
-     */
-    public static function jsonArray(object $object): array
+    public static function jsonArray(GeometryInterface|FeatureCollection|Feature $object): array
     {
-        $class = get_class($object);
+        $class = $object::class;
 
         if (!array_key_exists($class, self::CLASS_MAP)) {
-            throw new InvalidArgumentException(sprintf('Unsupported GeoJSON type %s', get_class($object)));
+            throw new InvalidArgumentException(sprintf('Unsupported GeoJSON type %s', $object::class));
         }
         $type = self::CLASS_MAP[$class];
         $result = ['type' => $type];
@@ -155,10 +151,8 @@ final class GeoJsonTransformer
             $content = self::arrayFromGeometry($object);
         } elseif ($object instanceof Feature) {
             $content = self::arrayFromFeature($object);
-        } elseif ($object instanceof FeatureCollection) {
-            $content = self::arrayFromFeatureCollection($object);
         } else {
-            throw new InvalidArgumentException('Unsupported object');
+            $content = self::arrayFromFeatureCollection($object);
         }
 
         return array_merge($result, $content);
