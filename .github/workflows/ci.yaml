@@ -7,7 +7,7 @@ jobs:
   test:
     strategy:
       matrix:
-        php-versions: ['7.4', '8.0', '8.1', '8.2']
+        php-versions: ['8.0', '8.1', '8.2']
         dependencies: ['', '--prefer-lowest']
     runs-on: ubuntu-latest
     steps:
