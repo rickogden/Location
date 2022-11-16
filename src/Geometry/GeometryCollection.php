@@ -54,17 +54,23 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
         return GeoJsonTransformer::jsonArray($this);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __toString(): string
     {
-        $collection = [];
-        foreach ($this->geometries as $geometry) {
-            $collection[] = WktTransformer::encode($geometry);
-        }
+        return $this->wktFormat();
+    }
 
-        return '('.implode(', ', $collection).')';
+    public function wktFormat(): string
+    {
+        return sprintf(
+            '(%s)',
+            implode(
+                ', ',
+                array_map(
+                    fn (GeometryInterface $g) => WktTransformer::encode($g),
+                    $this->geometries
+                )
+            )
+        );
     }
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Generator;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\BearingCalculator;
@@ -114,12 +115,22 @@ class LineStringTest extends TestCase
         $this->assertEquals($original[1], $lineString->toArray()[1]);
     }
 
-    public function testEquals(): void
+    public function equalProvider(): Generator
     {
         $original = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
 
         $lineString = LineString::fromArray($original);
         $lineString2 = LineString::fromArray($original);
+        yield 'Different objects' => [$lineString, $lineString2];
+        yield 'Different objects reversed' => [$lineString2, $lineString];
+        yield 'Same object' => [$lineString, $lineString];
+    }
+
+    /**
+     * @dataProvider equalProvider
+     */
+    public function testEqualsIsTrue(LineString $lineString, LineString $lineString2): void
+    {
         $this->assertTrue($lineString->equals($lineString2));
     }
 

@@ -9,22 +9,22 @@ use PHPUnit\Framework\TestCase;
 class MultiPolygonTest extends TestCase
 {
     public function testToGeoJson(): void
-{
-    $geojson = '{ "type": "MultiPolygon",
+    {
+        $geojson = '{ "type": "MultiPolygon",
     "coordinates": [
         [ [ [100.0, 0.0], [101.0, 1.0], [100.0, 0.0] ] ],
         [ [ [102.0, 2.0], [103.0, 3.0], [102.0, 2.0] ] ]
       ]
     }';
 
-    $geojson = json_encode(json_decode($geojson));
+        $geojson = json_encode(json_decode($geojson));
 
-    $polygon1 = new Polygon([new LineString([Point::fromArray([100.0, 0.0]), Point::fromArray([101.0, 1.0])])]);
-    $polygon2 = new Polygon([new LineString([Point::fromArray([102.0, 2.0]), Point::fromArray([103.0, 3.0])])]);
-    $multiPolygon = new MultiPolygon([$polygon1, $polygon2]);
+        $polygon1 = new Polygon([new LineString([Point::fromArray([100.0, 0.0]), Point::fromArray([101.0, 1.0])])]);
+        $polygon2 = new Polygon([new LineString([Point::fromArray([102.0, 2.0]), Point::fromArray([103.0, 3.0])])]);
+        $multiPolygon = new MultiPolygon([$polygon1, $polygon2]);
 
-    $this->assertJsonStringEqualsJsonString($geojson, json_encode($multiPolygon));
-}
+        $this->assertJsonStringEqualsJsonString($geojson, json_encode($multiPolygon));
+    }
 
     public function testAddAndRemoveGeometries(): void
     {

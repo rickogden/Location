@@ -36,9 +36,17 @@ interface GeometryInterface extends JsonSerializable
     public function __toString(): string;
 
     /**
+     * @return string A representation of the geometry for use in generating WKT
+     */
+    public function wktFormat(): string;
+
+    /**
      * Returns a GeoJSON representation of the geometry.
      */
     public function jsonSerialize(): array;
 
+    /**
+     * @psalm-assert-if-true self $geometry
+     */
     public function equals(GeometryInterface $geometry): bool;
 }

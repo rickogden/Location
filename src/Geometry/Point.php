@@ -100,12 +100,22 @@ final class Point implements GeometryInterface
         return DegreesMinutesSeconds::fromDecimal($this->longitude, DegreesMinutesSeconds::AXIS_LONGITUDE);
     }
 
+    public function wktFormat(): string
+    {
+        return $this->toString(' ');
+    }
+
     /**
      * {@inheritdoc}
      */
     public function __toString(): string
     {
-        return $this->longitude.' '.$this->latitude;
+        return $this->toString(' ');
+    }
+
+    public function toString(string $separator): string
+    {
+        return $this->longitude.$separator.$this->latitude;
     }
 
     /**
@@ -305,9 +315,10 @@ final class Point implements GeometryInterface
 
     public function equals(GeometryInterface $geometry): bool
     {
-        return $geometry instanceof self
+        return $this === $geometry ||
+            ($geometry instanceof self
             && $geometry->latitude === $this->latitude
-            && $geometry->longitude === $this->longitude;
+            && $geometry->longitude === $this->longitude);
     }
 
     public function getGeoHash(int $resolution = 12): Geohash

@@ -13,6 +13,7 @@ use function is_array;
 
 use const JSON_THROW_ON_ERROR;
 
+use JsonException;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryCollection;
 use Ricklab\Location\Geometry\GeometryInterface;
@@ -81,12 +82,17 @@ final class WktTransformer
             }
 
             if (null === $json) {
-                throw new InvalidArgumentException('This is not recognised WKT.');
+                throw new InvalidArgumentException('This is not recognized WKT.');
             }
-            $arrays = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
+            try {
+                $arrays = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                throw new InvalidArgumentException('This is not recognized WKT.', 0, $e);
+            }
 
             if (!$arrays) {
-                throw new InvalidArgumentException('This is not recognised WKT.');
+                throw new InvalidArgumentException('This is not recognized WKT.');
             }
 
             if (self::TYPE_MULTIPOINT === $type) {
@@ -116,17 +122,17 @@ final class WktTransformer
         $type = self::CLASS_MAP[$class];
 
         if ($geometry instanceof Point) {
-            return sprintf('%s(%s)', $type, (string) $geometry);
+            return sprintf('%s(%s)', $type, $geometry->wktFormat());
         }
 
-        return $type.$geometry;
+        return $type.$geometry->wktFormat();
     }
 
     /** @psalm-assert class-string<GeometryInterface> $geometryClass */
     private static function assertStringGeometryInterface(string $geometryClass): void
     {
         if (!in_array(GeometryInterface::class, class_implements($geometryClass))) {
-            throw new InvalidArgumentException('Unsupported GeoJSON type');
+            throw new InvalidArgumentException('Unsupported WKT type');
         }
     }
 }

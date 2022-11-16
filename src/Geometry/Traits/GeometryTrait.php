@@ -27,7 +27,21 @@ trait GeometryTrait
 
     public function __toString(): string
     {
-        return sprintf('(%s)', implode(', ', $this->getGeometryArray()));
+        return $this->wktFormat();
+    }
+
+    public function wktFormat(): string
+    {
+        return sprintf(
+            '(%s)',
+            implode(
+                ', ',
+                array_map(
+                    fn (GeometryInterface $g): string => $g->wktFormat(),
+                    $this->getGeometryArray()
+                )
+            )
+        );
     }
 
     /**
@@ -65,6 +79,10 @@ trait GeometryTrait
 
     public function equals(GeometryInterface $geometry): bool
     {
+        if ($geometry === $this) {
+            return true;
+        }
+
         if (!$geometry instanceof self) {
             return false;
         }

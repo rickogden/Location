@@ -112,19 +112,37 @@ class PointTest extends TestCase
         $this->fractionAlongLine();
     }
 
-    public function testEqualsIsTrue(): void
+    public function equalProvider(): Generator
     {
         $point1 = new Point(1.1, -1.3);
         $point2 = new Point(1.1, -1.3);
+        yield 'Different objects' => [$point1, $point2];
+        yield 'Different objects reversed' => [$point2, $point1];
+        yield 'Same object' => [$point1, $point1];
+    }
+
+    /**
+     * @dataProvider equalProvider
+     */
+    public function testEqualsIsTrue(Point $point1, Point $point2): void
+    {
         $this->assertTrue($point1->equals($point2));
     }
 
-    public function testEqualsIsFalse(): void
+    public function notEqualProvider(): Generator
     {
         $point1 = new Point(1.1, -1.3);
-        $this->assertFalse($point1->equals(new Point(1.1, 1.3)));
-        $this->assertFalse($point1->equals(new Point(1.1, -1.31)));
-        $this->assertFalse($point1->equals(new LineString([new Point(1.1, -1.3), new Point(1.1, -1.31)])));
+        yield 'Absolute values' => [$point1, new Point(1.1, 1.3)];
+        yield 'Additional decimal place' => [$point1, new Point(1.1, -1.31)];
+        yield 'Different geometry' => [$point1, new LineString([new Point(1.1, -1.3), new Point(1.1, -1.31)])];
+    }
+
+    /**
+     * @dataProvider notEqualProvider
+     */
+    public function testEqualsIsFalse(Point $point1, GeometryInterface $geometry): void
+    {
+        $this->assertFalse($point1->equals($geometry));
     }
 
     public function geoHahProvider(): Generator
