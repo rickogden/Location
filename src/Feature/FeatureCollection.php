@@ -10,9 +10,6 @@ declare(strict_types=1);
 namespace Ricklab\Location\Feature;
 
 use ArrayIterator;
-
-use function count;
-
 use IteratorAggregate;
 use JsonSerializable;
 use Ricklab\Location\Geometry\BoundingBox;
@@ -67,13 +64,10 @@ final class FeatureCollection implements IteratorAggregate, JsonSerializable
                 $geometry = $feature->getGeometry();
 
                 if (null !== $geometry) {
-                    $points[] = $geometry->getPoints();
+                    array_push($points, ...$geometry->getPoints());
                 }
             }
 
-            if (0 < count($points)) {
-                $points = array_merge(...$points);
-            }
             $this->bboxCache = BoundingBox::fromGeometry(new MultiPoint($points));
         }
 

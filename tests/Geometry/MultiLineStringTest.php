@@ -42,10 +42,10 @@ class MultiLineStringTest extends TestCase
             Point::fromArray([-15, -4]),
         ]);
 
-        $multiLineString->addGeometry($lineString2);
+        $multiLineString = $multiLineString->withGeometry($lineString2);
         $this->assertContains($lineString, $multiLineString->getGeometries());
         $this->assertContains($lineString2, $multiLineString->getGeometries());
-        $multiLineString->removeGeometry($lineString);
+        $multiLineString = $multiLineString->withoutGeometry($lineString);
         $this->assertCount(1, $multiLineString->getGeometries());
         $this->assertNotContains($lineString, $multiLineString->getGeometries());
     }

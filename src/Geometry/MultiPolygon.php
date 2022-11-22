@@ -17,7 +17,9 @@ final class MultiPolygon implements GeometryInterface, GeometryCollectionInterfa
     use GeometryTrait;
 
     /**
-     * @var Polygon[]
+     * @readonly
+     *
+     * @var list<Polygon>
      */
     protected array $geometries = [];
 
@@ -40,31 +42,32 @@ final class MultiPolygon implements GeometryInterface, GeometryCollectionInterfa
      */
     public function __construct(array $polygons)
     {
-        foreach ($polygons as $polygon) {
-            $this->addGeometry($polygon);
-        }
+        $this->geometries = (fn (Polygon ...$polygons): array => $polygons)(...$polygons);
     }
 
     /**
      * @return Polygon[]
+     *
+     * @psalm-return list<Polygon>
      */
     public function getGeometries(): array
     {
         return $this->geometries;
     }
 
-    public function addGeometry(Polygon $polygon): void
+    public function withGeometry(Polygon $polygon): self
     {
-        $this->geometries[] = $polygon;
+        $geometries = $this->geometries;
+        $geometries[] = $polygon;
+
+        return new self($geometries);
     }
 
-    public function removeGeometry(Polygon $polygon): void
+    public function withoutGeometry(Polygon $polygon): self
     {
-        foreach ($this->geometries as $index => $geom) {
-            if ($polygon === $geom) {
-                unset($this->geometries[$index]);
-            }
-        }
+        $geometries = array_filter($this->geometries, fn (Polygon $p): bool => $p !== $polygon);
+
+        return new self(array_values($geometries));
     }
 
     protected function getGeometryArray(): array

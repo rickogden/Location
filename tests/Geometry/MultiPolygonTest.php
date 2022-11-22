@@ -42,10 +42,10 @@ class MultiPolygonTest extends TestCase
             Point::fromArray([-15, -4]),
         ])]);
 
-        $multiPolygon->addGeometry($polygon2);
+        $multiPolygon = $multiPolygon->withGeometry($polygon2);
         $this->assertContains($polygon, $multiPolygon->getGeometries());
         $this->assertContains($polygon2, $multiPolygon->getGeometries());
-        $multiPolygon->removeGeometry($polygon);
+        $multiPolygon = $multiPolygon->withoutGeometry($polygon);
         $this->assertCount(1, $multiPolygon->getGeometries());
         $this->assertNotContains($polygon, $multiPolygon->getGeometries());
     }

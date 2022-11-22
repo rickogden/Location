@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use function array_values;
+
 use IteratorAggregate;
 use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Converter\UnitConverter;
@@ -14,9 +16,11 @@ final class Polygon implements GeometryInterface, IteratorAggregate
     use GeometryTrait;
 
     /**
-     * @var LineString[]
+     * @var list<LineString>
+     *
+     * @readonly
      */
-    private array $geometries = [];
+    private array $geometries;
 
     public static function fromArray(array $geometries): self
     {
@@ -39,9 +43,10 @@ final class Polygon implements GeometryInterface, IteratorAggregate
      */
     public function __construct(array $lines)
     {
-        foreach ($lines as $line) {
-            $this->add($line);
-        }
+        $this->geometries = array_map(
+            fn (LineString $ls): LineString => $ls->getClosedShape(),
+            array_values($lines)
+        );
     }
 
     /**
@@ -62,19 +67,12 @@ final class Polygon implements GeometryInterface, IteratorAggregate
 
     /**
      * @return LineString[]
+     *
+     * @psalm-return list<LineString>
      */
     public function getLineStrings(): array
     {
         return $this->geometries;
-    }
-
-    private function add(LineString $lineString): void
-    {
-        if (!$lineString->isClosedShape()) {
-            $lineString = $lineString->addPoint($lineString->getFirst());
-        }
-
-        $this->geometries[] = $lineString;
     }
 
     protected function getGeometryArray(): array

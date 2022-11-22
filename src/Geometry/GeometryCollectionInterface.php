@@ -20,6 +20,8 @@ interface GeometryCollectionInterface
      * Returns the geometries in the collection as an array.
      *
      * @return GeometryInterface[]
+     *
+     * @psalm-return list<GeometryInterface>
      */
     public function getGeometries(): array;
 }

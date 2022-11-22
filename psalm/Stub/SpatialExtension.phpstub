@@ -6,4 +6,6 @@ function initial_bearing(array $point1, array $point2): float
 {
 }
 
-
+function vincenty(array $point1, array $point2): float
+{
+}

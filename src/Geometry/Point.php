@@ -34,7 +34,10 @@ final class Point implements GeometryInterface
     public const MAX_LONGITUDE = 180;
     public const MIN_LONGITUDE = -180;
 
+    /** @readonly  */
     protected float $longitude;
+
+    /** @readonly  */
     protected float $latitude;
 
     public static function fromArray(array $geometries): self
@@ -75,6 +78,16 @@ final class Point implements GeometryInterface
         return new self($longitude->toDecimal(), $latitude->toDecimal());
     }
 
+    public static function validLongitude(float $long): bool
+    {
+        return $long <= self::MAX_LONGITUDE && $long >= self::MIN_LONGITUDE && !is_nan($long);
+    }
+
+    public static function validateLatitude(float $lat): bool
+    {
+        return $lat <= self::MAX_LATITUDE && $lat >= self::MIN_LATITUDE && !is_nan($lat);
+    }
+
     /**
      * Create a new Point from Longitude and latitude.
      *
@@ -86,8 +99,16 @@ final class Point implements GeometryInterface
      */
     public function __construct(float $long, float $lat)
     {
-        $this->setLatitude($lat);
-        $this->setLongitude($long);
+        if (!self::validateLatitude($lat)) {
+            throw new InvalidArgumentException('latitude must be a valid number between -90 and 90.');
+        }
+
+        if (!self::validLongitude($long)) {
+            throw new InvalidArgumentException('longitude must be a valid number between -180 and 180.');
+        }
+
+        $this->latitude = $lat;
+        $this->longitude = $long;
     }
 
     public function getLatitudeInDms(): DegreesMinutesSeconds
@@ -293,24 +314,6 @@ final class Point implements GeometryInterface
     public function getPoints(): array
     {
         return [$this];
-    }
-
-    private function setLatitude(float $lat): void
-    {
-        if ($lat > self::MAX_LATITUDE || $lat < self::MIN_LATITUDE || is_nan($lat)) {
-            throw new InvalidArgumentException('latitude must be a valid number between -90 and 90.');
-        }
-
-        $this->latitude = $lat;
-    }
-
-    private function setLongitude(float $long): void
-    {
-        if ($long > self::MAX_LONGITUDE || $long < self::MIN_LONGITUDE || is_nan($long)) {
-            throw new InvalidArgumentException('longitude must be a valid number between -180 and 180.');
-        }
-
-        $this->longitude = $long;
     }
 
     public function equals(GeometryInterface $geometry): bool

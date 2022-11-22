@@ -20,7 +20,9 @@ final class MultiLineString implements GeometryInterface, GeometryCollectionInte
     use GeometryTrait;
 
     /**
-     * @var LineString[]
+     * @readonly
+     *
+     * @var list<LineString>
      */
     protected array $geometries = [];
 
@@ -40,13 +42,13 @@ final class MultiLineString implements GeometryInterface, GeometryCollectionInte
 
     public function __construct(array $lineStrings)
     {
-        foreach ($lineStrings as $lineString) {
-            $this->addGeometry($lineString);
-        }
+        $this->geometries = (fn (LineString ...$lineStrings): array => $lineStrings)(...$lineStrings);
     }
 
     /**
      * @return LineString[] an array of the LineStrings
+     *
+     * @psalm-return list<LineString> an array of the LineStrings
      */
     public function getGeometries(): array
     {
@@ -56,21 +58,22 @@ final class MultiLineString implements GeometryInterface, GeometryCollectionInte
     /**
      * Adds a new LineString to the collection.
      */
-    public function addGeometry(LineString $lineString): void
+    public function withGeometry(LineString $lineString): self
     {
-        $this->geometries[] = $lineString;
+        $geometries = $this->geometries;
+        $geometries[] = $lineString;
+
+        return new self($geometries);
     }
 
     /**
      * Removes a LineString from the collection.
      */
-    public function removeGeometry(LineString $lineString): void
+    public function withoutGeometry(LineString $lineString): self
     {
-        foreach ($this->geometries as $index => $geom) {
-            if ($lineString === $geom) {
-                unset($this->geometries[$index]);
-            }
-        }
+        $geometries = array_filter($this->geometries, fn (LineString $ls): bool => $ls !== $lineString);
+
+        return new self(array_values($geometries));
     }
 
     protected function getGeometryArray(): array

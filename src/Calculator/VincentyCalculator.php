@@ -11,6 +11,9 @@ use Ricklab\Location\Ellipsoid\Earth;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Geometry\Point;
 
+/**
+ * @psalm-immutable
+ */
 final class VincentyCalculator implements DistanceCalculator, UsesGeoSpatialExtensionInterface
 {
     use GeoSpatialExtensionTrait;

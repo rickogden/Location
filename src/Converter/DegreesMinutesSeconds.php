@@ -9,6 +9,9 @@ use function in_array;
 
 use InvalidArgumentException;
 
+/**
+ * @psalm-immutable
+ */
 final class DegreesMinutesSeconds
 {
     public const DIRECTION_N = 'N';
@@ -94,6 +97,8 @@ final class DegreesMinutesSeconds
 
     /**
      * @param self::AXIS_LONGITUDE|self::AXIS_LATITUDE $axis
+     *
+     * @psalm-pure
      */
     public static function fromDecimal(float $decimal, string $axis): self
     {

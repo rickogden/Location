@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
-use InvalidArgumentException;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 use Ricklab\Location\Transformer\GeoJsonTransformer;
 use Ricklab\Location\Transformer\WktTransformer;
@@ -22,7 +21,7 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
     use GeometryTrait;
 
     /**
-     * @var GeometryInterface[]
+     * @var list<GeometryInterface>
      */
     protected array $geometries = [];
 
@@ -38,12 +37,7 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
      */
     public function __construct(array $geometries)
     {
-        foreach ($geometries as $geometry) {
-            if (!$geometry instanceof GeometryInterface) {
-                throw new InvalidArgumentException('Array must contain geometries only');
-            }
-        }
-        $this->geometries = $geometries;
+        $this->geometries = (fn (GeometryInterface ...$geometries): array => $geometries)(...$geometries);
     }
 
     /**
@@ -77,6 +71,8 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
      * All the geometries in the collection.
      *
      * @return GeometryInterface[]
+     *
+     * @psalm-return list<GeometryInterface>
      */
     public function getGeometries(): array
     {
@@ -86,21 +82,22 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
     /**
      * Adds a geometry to the collection.
      */
-    public function addGeometry(GeometryInterface $geometry): void
+    public function withGeometry(GeometryInterface $geometry): self
     {
-        $this->geometries[] = $geometry;
+        $geometries = $this->geometries;
+        $geometries[] = $geometry;
+
+        return new self($geometries);
     }
 
     /**
      * Removes a geometry from the collection.
      */
-    public function removeGeometry(GeometryInterface $geometry): void
+    public function removeGeometry(GeometryInterface $geometry): self
     {
-        foreach ($this->geometries as $index => $geom) {
-            if ($geom === $geometry) {
-                unset($this->geometries[$index]);
-            }
-        }
+        $geometries = array_filter($this->geometries, fn (GeometryInterface $g): bool => $g !== $geometry);
+
+        return new self(array_values($geometries));
     }
 
     protected function getGeometryArray(): array

@@ -17,11 +17,7 @@ use Ricklab\Location\Transformer\GeoJsonTransformer;
 
 final class Feature implements JsonSerializable
 {
-    /**
-     * @var string|int|float|null
-     */
-    private $id;
-
+    private string|int|null|float $id;
     private ?GeometryInterface $geometry;
     private array $properties = [];
     private bool $bbox;

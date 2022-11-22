@@ -17,7 +17,9 @@ final class MultiPoint implements GeometryInterface, GeometryCollectionInterface
     use GeometryTrait;
 
     /**
-     * @var Point[]
+     * @readonly
+     *
+     * @var list<Point>
      */
     protected array $geometries = [];
 
@@ -35,35 +37,37 @@ final class MultiPoint implements GeometryInterface, GeometryCollectionInterface
         return new self($result);
     }
 
+    /**
+     * @param Point[] $points
+     */
     public function __construct(array $points)
     {
-        foreach ($points as $point) {
-            $this->addGeometry($point);
-        }
+        $this->geometries = (fn (Point ...$points): array => $points)(...$points);
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @return Point[]
+     *
+     * @psalm-return list<Point>
      */
     public function getGeometries(): array
     {
         return $this->getPoints();
     }
 
-    public function addGeometry(Point $point): void
+    public function withGeometry(Point $point): self
     {
-        $this->geometries[] = $point;
+        $geometries = $this->geometries;
+        $geometries[] = $point;
+
+        return new self($geometries);
     }
 
-    public function removeGeometry(Point $point): void
+    public function withoutGeometry(Point $point): self
     {
-        foreach ($this->geometries as $index => $geom) {
-            if ($point === $geom) {
-                unset($this->geometries[$index]);
-            }
-        }
+        $geometries = array_filter($this->geometries, fn (Point $p): bool => $p !== $point);
+
+        return new self(array_values($geometries));
     }
 
     public function getBBox(): BoundingBox

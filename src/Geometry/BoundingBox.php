@@ -12,9 +12,16 @@ use Ricklab\Location\Exception\BoundBoxRangeException;
 
 final class BoundingBox
 {
+    /** @readonly  */
     private float $minLon;
+
+    /** @readonly  */
     private float $maxLon;
+
+    /** @readonly  */
     private float $minLat;
+
+    /** @readonly  */
     private float $maxLat;
 
     private ?Polygon $polygon = null;

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Calculator;
 
+use function function_exists;
+
 use Ricklab\Location\Calculator\Traits\GeoSpatialExtensionTrait;
 use Ricklab\Location\Geometry\Point;
 
@@ -16,7 +18,8 @@ final class BearingCalculator implements UsesGeoSpatialExtensionInterface
         if (
             self::$useSpatialExtension &&
             ($geospatialVersion = phpversion('geospatial')) &&
-            version_compare($geospatialVersion, '0.2.2-dev', '>=')
+            version_compare($geospatialVersion, '0.2.2-dev', '>=') &&
+            function_exists('initial_bearing')
         ) {
             return initial_bearing($point1->jsonSerialize(), $point2->jsonSerialize());
         }

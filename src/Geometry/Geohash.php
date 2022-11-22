@@ -156,7 +156,6 @@ final class Geohash
         $maxLon = Point::MAX_LONGITUDE;
         $minLat = Point::MIN_LATITUDE;
         $maxLat = Point::MAX_LATITUDE;
-        $i = 0;
 
         $hash = mb_str_split($this->hash);
         $indexes = array_flip(self::HASH_MAP);

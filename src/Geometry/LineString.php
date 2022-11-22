@@ -25,7 +25,11 @@ final class LineString implements GeometryInterface, IteratorAggregate
     use GeometryTrait;
 
     /**
+     * @readonly
+     *
      * @var Point[]
+     *
+     * @psalm-var list<Point>
      */
     protected array $geometries = [];
     protected int $position = 0;
@@ -46,15 +50,15 @@ final class LineString implements GeometryInterface, IteratorAggregate
 
     /**
      * @param Point[] $points the points, or the starting point
+     *
+     * @psalm-param list<Point> $points the points, or the starting point
      */
     public function __construct(array $points)
     {
         if (count($points) < 2) {
             throw new InvalidArgumentException('array must have 2 or more elements.');
         }
-        foreach ($points as $point) {
-            $this->add($point);
-        }
+        $this->geometries = (fn (Point ...$points): array => $points)(...$points);
     }
 
     /**
@@ -128,20 +132,32 @@ final class LineString implements GeometryInterface, IteratorAggregate
         return new self(array_reverse($this->geometries));
     }
 
-    private function add(Point $point): void
+    /**
+     * @deprecated use LineString::withPoint() instead
+     */
+    public function addPoint(Point $point): self
     {
-        $this->geometries[] = $point;
+        return $this->withPoint($point);
     }
 
     /**
      * A new LineString with the new point added.
      */
-    public function addPoint(Point $point): self
+    public function withPoint(Point $point): self
     {
         $points = $this->geometries;
         $points[] = $point;
 
         return new self($points);
+    }
+
+    public function getClosedShape(): self
+    {
+        if ($this->isClosedShape()) {
+            return $this;
+        }
+
+        return $this->withPoint($this->getFirst());
     }
 
     public function isClosedShape(): bool
