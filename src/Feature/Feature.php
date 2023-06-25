@@ -1,15 +1,9 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 17/07/15
- * Time: 11:14.
- */
 
 namespace Ricklab\Location\Feature;
 
-use InvalidArgumentException;
 use JsonSerializable;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryInterface;
@@ -19,30 +13,20 @@ final class Feature implements JsonSerializable
 {
     private string|int|null|float $id;
     private ?GeometryInterface $geometry;
-    private array $properties = [];
+
+    private array $properties;
     private bool $bbox;
     private ?BoundingBox $bboxCache = null;
 
-    public static function fromGeoJson(array $geojson): self
+    public static function createWithExistingBoundingBox(BoundingBox $bbox, array $properties = [], GeometryInterface $geometry = null, float|int|string|null $id = null): self
     {
-        if (isset($geojson['geometry'])) {
-            $decodedGeo = GeoJsonTransformer::fromArray($geojson['geometry']);
-
-            if (!$decodedGeo instanceof GeometryInterface) {
-                throw new InvalidArgumentException('Cannot parse geometry in feature');
-            }
-        }
-
-        $feature = new self($geojson['properties'] ?? [], $decodedGeo ?? null, $geojson['id'] ?? null, isset($geojson['bbox']));
-
-        if (isset($geojson['bbox'])) {
-            $feature->bboxCache = BoundingBox::fromArray($geojson['bbox']);
-        }
+        $feature = new self($properties, $geometry, $id, true);
+        $feature->bboxCache = $bbox;
 
         return $feature;
     }
 
-    public function __construct(array $properties = [], ?GeometryInterface $geometry = null, float|int|string $id = null, bool $bbox = false)
+    public function __construct(array $properties = [], GeometryInterface $geometry = null, float|int|string $id = null, bool $bbox = false)
     {
         $this->properties = $properties;
         $this->geometry = $geometry;

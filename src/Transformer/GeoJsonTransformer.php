@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Ricklab\Location\Transformer;
 
 use function array_key_exists;
-use function class_implements;
+use function count;
 
 use ErrorException;
-
-use function in_array;
-
 use InvalidArgumentException;
+
+use function is_array;
+use function is_float;
+use function is_int;
+use function is_string;
 
 use const JSON_THROW_ON_ERROR;
 
@@ -28,113 +30,219 @@ use Ricklab\Location\Geometry\MultiPolygon;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Geometry\Polygon;
 
+/**
+ * @psalm-immutable
+ */
 final class GeoJsonTransformer
 {
-    private const TYPE_POINT = 'Point';
-    private const TYPE_LINESTRING = 'LineString';
-    private const TYPE_POLYGON = 'Polygon';
-    private const TYPE_MULTIPOINT = 'MultiPoint';
-    private const TYPE_MULTILINESTRING = 'MultiLineString';
-    private const TYPE_MULTIPOLYGON = 'MultiPolygon';
-    private const TYPE_GEOMETRYCOLLECTION = 'GeometryCollection';
+    private const TYPE_GEOMETRY_POINT = 'Point';
+    private const TYPE_GEOMETRY_LINESTRING = 'LineString';
+    private const TYPE_GEOMETRY_POLYGON = 'Polygon';
+    private const TYPE_GEOMETRY_MULTIPOINT = 'MultiPoint';
+    private const TYPE_GEOMETRY_MULTILINESTRING = 'MultiLineString';
+    private const TYPE_GEOMETRY_MULTIPOLYGON = 'MultiPolygon';
+    private const TYPE_GEOMETRY_GEOMETRYCOLLECTION = 'GeometryCollection';
     private const TYPE_FEATURE = 'Feature';
     private const TYPE_FEATURECOLLECTION = 'FeatureCollection';
 
     private const CLASS_MAP = [
-        Point::class => self::TYPE_POINT,
-        LineString::class => self::TYPE_LINESTRING,
-        Polygon::class => self::TYPE_POLYGON,
-        MultiPoint::class => self::TYPE_MULTIPOINT,
-        MultiLineString::class => self::TYPE_MULTILINESTRING,
-        MultiPolygon::class => self::TYPE_MULTIPOLYGON,
-        GeometryCollection::class => self::TYPE_GEOMETRYCOLLECTION,
-        BoundingBox::class => self::TYPE_POLYGON,
+        Point::class => self::TYPE_GEOMETRY_POINT,
+        LineString::class => self::TYPE_GEOMETRY_LINESTRING,
+        Polygon::class => self::TYPE_GEOMETRY_POLYGON,
+        MultiPoint::class => self::TYPE_GEOMETRY_MULTIPOINT,
+        MultiLineString::class => self::TYPE_GEOMETRY_MULTILINESTRING,
+        MultiPolygon::class => self::TYPE_GEOMETRY_MULTIPOLYGON,
+        GeometryCollection::class => self::TYPE_GEOMETRY_GEOMETRYCOLLECTION,
+        BoundingBox::class => self::TYPE_GEOMETRY_POLYGON,
         Feature::class => self::TYPE_FEATURE,
         FeatureCollection::class => self::TYPE_FEATURECOLLECTION,
     ];
 
-    private const TYPE_MAP = [
-        self::TYPE_POINT => Point::class,
-        self::TYPE_LINESTRING => LineString::class,
-        self::TYPE_POLYGON => Polygon::class,
-        self::TYPE_MULTIPOINT => MultiPoint::class,
-        self::TYPE_MULTILINESTRING => MultiLineString::class,
-        self::TYPE_MULTIPOLYGON => MultiPolygon::class,
-        self::TYPE_GEOMETRYCOLLECTION => GeometryCollection::class,
-        self::TYPE_FEATURE => Feature::class,
-        self::TYPE_FEATURECOLLECTION => FeatureCollection::class,
+    private const GEOMETRY_TYPE_MAP = [
+        self::TYPE_GEOMETRY_POINT => Point::class,
+        self::TYPE_GEOMETRY_LINESTRING => LineString::class,
+        self::TYPE_GEOMETRY_POLYGON => Polygon::class,
+        self::TYPE_GEOMETRY_MULTIPOINT => MultiPoint::class,
+        self::TYPE_GEOMETRY_MULTILINESTRING => MultiLineString::class,
+        self::TYPE_GEOMETRY_MULTIPOLYGON => MultiPolygon::class,
+        self::TYPE_GEOMETRY_GEOMETRYCOLLECTION => GeometryCollection::class,
     ];
 
-    /** @var array<string, class-string>|null */
-    private static ?array $typeMap = null;
-
     /**
      * @throws ErrorException
      * @throws JsonException
-     *
-     * @return GeometryInterface|FeatureCollection|Feature
      */
-    public static function decode(string $geojson)
+    public static function decode(string $geoJson): GeometryInterface|FeatureCollection|Feature
     {
-        return self::fromArray(json_decode($geojson, true, 512, JSON_THROW_ON_ERROR));
+        $jsonArray = json_decode($geoJson, true, 512, JSON_THROW_ON_ERROR);
+
+        if (!is_array($jsonArray)) {
+            throw new InvalidArgumentException('Not a valid GeoJSON string');
+        }
+
+        return self::fromArray($jsonArray);
     }
 
     /**
      * @throws ErrorException
      * @throws JsonException
-     *
-     * @return GeometryInterface|FeatureCollection|Feature
      */
-    public static function fromObject(object $geojson)
+    public static function fromObject(object $geoJson): GeometryInterface|FeatureCollection|Feature
     {
-        return self::fromArray(
-            json_decode(
-                json_encode($geojson, JSON_THROW_ON_ERROR),
-                true,
-                512,
-                JSON_THROW_ON_ERROR
-            )
+        $jsonArray = json_decode(
+            json_encode($geoJson, JSON_THROW_ON_ERROR),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
         );
+
+        if (!is_array($jsonArray)) {
+            throw new InvalidArgumentException('Invalid GeoJSON object');
+        }
+
+        return self::fromArray($jsonArray);
     }
 
-    /**
-     * Create a geometry from GeoJSON array.
-     *
-     * @throws ErrorException
-     *
-     * @return GeometryInterface|FeatureCollection|Feature
-     */
-    public static function fromArray(array $geojson)
+    public static function fromArray(array $geoJson): GeometryInterface|FeatureCollection|Feature
     {
-        $type = $geojson['type'] ?? null;
-
-        if (null === $type) {
+        if (!isset($geoJson['type']) || !is_string($geoJson['type'])) {
             throw new InvalidArgumentException('Cannot determine GeoJSON type.');
         }
 
-        $class = self::TYPE_MAP[$type] ?? null;
+        if (self::isGeometryType($geoJson['type'])) {
+            return self::geometryFromArray($geoJson);
+        }
+
+        switch ($geoJson['type']) {
+            case self::TYPE_FEATURE:
+                return self::featureFromArray($geoJson);
+            case self::TYPE_FEATURECOLLECTION:
+                return self::featureCollectionFromArray($geoJson);
+        }
+
+        throw new InvalidArgumentException('Invalid GeoJSON type');
+    }
+
+    private static function featureFromArray(array $geoJson): Feature
+    {
+        $decodedGeo = null;
+
+        if (is_array($geoJson['geometry'])) {
+            $decodedGeo = self::geometryFromArray($geoJson['geometry']);
+        }
+        $properties = $geoJson['properties'] ?? null;
+
+        if (!is_array($properties)) {
+            throw new InvalidArgumentException('Invalid GeoJSON feature');
+        }
+
+        $id = $geoJson['id'] ?? null;
+
+        if (!(
+            null === $id
+            || is_string($id)
+            || is_int($id)
+            || is_float($id)
+        )) {
+            throw new InvalidArgumentException('Invalid GeoJSON feature ID');
+        }
+
+        /** @var array|null $bboxArray */
+        $bboxArray = $geoJson['bbox'] ?? null;
+
+        if (
+            is_array($bboxArray)
+            && self::isBoundingBoxArray($bboxArray)
+        ) {
+            $bbox = BoundingBox::fromArray($bboxArray);
+            $feature = Feature::createWithExistingBoundingBox(
+                $bbox,
+                $properties,
+                $decodedGeo,
+                $id
+            );
+        } else {
+            $feature = new Feature(
+                $properties,
+                $decodedGeo,
+                $id,
+                isset($geoJson['bbox'])
+            );
+        }
+
+        return $feature;
+    }
+
+    /** @psalm-assert-if-true array{0: float, 1: float, 2: float, 3: float} $boundingBoxArray */
+    private static function isBoundingBoxArray(array $boundingBoxArray): bool
+    {
+        return 4 === count($boundingBoxArray)
+            && is_float($boundingBoxArray[0])
+            && is_float($boundingBoxArray[1])
+            && is_float($boundingBoxArray[2])
+            && is_float($boundingBoxArray[3])
+        ;
+    }
+
+    private static function featureCollectionFromArray(array $geoJson): FeatureCollection
+    {
+        if (!is_array($geoJson['features'])) {
+            throw new InvalidArgumentException('Invalid geoJSON feature collection.');
+        }
+
+        $features = array_values(array_map(
+            static fn (array $feature): Feature => self::featureFromArray($feature),
+            $geoJson['features']
+        ));
+
+        if (
+            isset($geoJson['bbox'])
+            && is_array($geoJson['bbox'])
+            && self::isBoundingBoxArray($geoJson['bbox'])
+        ) {
+            $collection = FeatureCollection::createWithExistingBoundingBox(BoundingBox::fromArray($geoJson['bbox']), $features);
+        } else {
+            $collection = new FeatureCollection($features, isset($geoJson['bbox']));
+        }
+
+        return $collection;
+    }
+
+    private static function geometryFromArray(array $geoJson): GeometryInterface
+    {
+        if (!isset($geoJson['type']) || !is_string($geoJson['type'])) {
+            throw new InvalidArgumentException('Cannot determine GeoJSON type.');
+        }
+
+        $class = self::GEOMETRY_TYPE_MAP[$geoJson['type']] ?? null;
 
         if (null === $class) {
-            throw new InvalidArgumentException('GeoJSON type not supported');
+            throw new InvalidArgumentException('Unknown GeoJSON type '.$geoJson['type']);
         }
 
-        switch ($class) {
-            case GeometryCollection::class:
-                $geometries = array_map(
-                    static fn (array $geom) => self::fromArray($geom),
-                    $geojson['geometries'] ?? []
-                );
+        if (GeometryCollection::class === $class) {
+            if (!isset($geoJson['geometries']) || !is_array($geoJson['geometries'])) {
+                throw new InvalidArgumentException('Geometry collection requires an array of geometries');
+            }
 
-                return GeometryCollection::fromArray($geometries);
-            case Feature::class:
-                return Feature::fromGeoJson($geojson);
-            case FeatureCollection::class:
-                return FeatureCollection::fromGeoJson($geojson);
+            $geometries = array_map(static fn (array $g): GeometryInterface => self::geometryFromArray($g), $geoJson['geometries']);
+
+            return new GeometryCollection($geometries);
         }
 
-        self::assertStringGeometryInterface($class);
+        if (!isset($geoJson['coordinates']) || !is_array($geoJson['coordinates'])) {
+            throw new InvalidArgumentException('Geometry requires an array of coordinates');
+        }
 
-        return $class::fromArray($geojson['coordinates']);
+        return $class::fromArray($geoJson['coordinates']);
+    }
+
+    /**
+     * @psalm-assert-if-true self::TYPE_GEOMETRY_* $type
+     */
+    private static function isGeometryType(string $type): bool
+    {
+        return isset(self::GEOMETRY_TYPE_MAP[$type]);
     }
 
     public static function jsonArray(GeometryInterface|FeatureCollection|Feature $object): array
@@ -158,10 +266,7 @@ final class GeoJsonTransformer
         return array_merge($result, $content);
     }
 
-    /**
-     * @param GeometryInterface|Feature|FeatureCollection $object
-     */
-    public static function encode($object): string
+    public static function encode(GeometryInterface|FeatureCollection|Feature $object): string
     {
         return json_encode(self::jsonArray($object));
     }
@@ -224,13 +329,5 @@ final class GeoJsonTransformer
         $result['features'] = $features;
 
         return $result;
-    }
-
-    /** @psalm-assert class-string<GeometryInterface> $geometryClass */
-    private static function assertStringGeometryInterface(string $geometryClass): void
-    {
-        if (!in_array(GeometryInterface::class, class_implements($geometryClass))) {
-            throw new InvalidArgumentException('Unsupported GeoJSON type');
-        }
     }
 }

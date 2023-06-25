@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ricklab\Location\Transformer;
 
 use function array_key_exists;
-use function in_array;
 
 use InvalidArgumentException;
 
@@ -24,6 +23,9 @@ use Ricklab\Location\Geometry\MultiPolygon;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Geometry\Polygon;
 
+/**
+ * @psalm-immutable
+ */
 final class WktTransformer
 {
     private const TYPE_POINT = 'POINT';
@@ -86,17 +88,22 @@ final class WktTransformer
             }
 
             try {
+                /** @var array|null $arrays */
                 $arrays = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
             } catch (JsonException $e) {
                 throw new InvalidArgumentException('This is not recognized WKT.', 0, $e);
             }
 
-            if (!$arrays) {
+            if (!is_array($arrays)) {
                 throw new InvalidArgumentException('This is not recognized WKT.');
             }
 
             if (self::TYPE_MULTIPOINT === $type) {
                 foreach ($arrays as $index => $points) {
+                    if (!is_array($points)) {
+                        throw new InvalidArgumentException('Not a valid WKT format');
+                    }
+
                     if (is_array($points[0])) {
                         $arrays[$index] = $points[0];
                     }
@@ -104,9 +111,7 @@ final class WktTransformer
             }
         }
 
-        $class = self::TYPE_MAP[$type] ?? '';
-
-        self::assertStringGeometryInterface($class);
+        $class = self::getClassFromType($type);
 
         return $class::fromArray($arrays);
     }
@@ -128,11 +133,17 @@ final class WktTransformer
         return $type.$geometry->wktFormat();
     }
 
-    /** @psalm-assert class-string<GeometryInterface> $geometryClass */
-    private static function assertStringGeometryInterface(string $geometryClass): void
+    /**
+     * @return class-string<Point>|class-string<LineString>|class-string<Polygon>|class-string<MultiPoint>|class-string<MultiLineString>|class-string<MultiPolygon>|class-string<GeometryCollection>
+     */
+    private static function getClassFromType(string $type): string
     {
-        if (!in_array(GeometryInterface::class, class_implements($geometryClass))) {
+        $class = self::TYPE_MAP[$type] ?? null;
+
+        if (null === $class) {
             throw new InvalidArgumentException('Unsupported WKT type');
         }
+
+        return $class;
     }
 }

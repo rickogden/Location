@@ -35,14 +35,6 @@ class LineStringTest extends TestCase
         $this->assertInstanceOf(LineString::class, $line2);
     }
 
-    public function testInvalidPointException(): void
-    {
-        $this->expectException(TypeError::class);
-        $point1 = new Point(-2.27354, 53.48575);
-
-        $line = new LineString([$point1, 'foo']);
-    }
-
     public function testOnePointInArrayException(): void
     {
         $this->expectException(InvalidArgumentException::class);

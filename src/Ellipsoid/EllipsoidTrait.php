@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Ellipsoid;
 
 /**
- * @author Rick Ogden <rick@rickogden.com>
+ * @psalm-immutable
  */
 trait EllipsoidTrait
 {

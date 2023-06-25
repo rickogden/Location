@@ -13,8 +13,6 @@ use JsonSerializable;
  */
 interface GeometryInterface extends JsonSerializable
 {
-    public static function fromArray(array $geometries): self;
-
     /**
      * The geometry in an embedded array format.
      */

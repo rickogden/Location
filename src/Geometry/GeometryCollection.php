@@ -1,11 +1,6 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 17/07/15
- * Time: 17:18.
- */
 
 namespace Ricklab\Location\Geometry;
 
@@ -27,6 +22,9 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
 
     public static function fromArray(array $geometries): self
     {
+        /** @psalm-suppress MixedArgument $geometries */
+        $geometries = (fn (GeometryInterface ...$geometries): array => $geometries)(...$geometries);
+
         return new self($geometries);
     }
 
@@ -37,7 +35,7 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
      */
     public function __construct(array $geometries)
     {
-        $this->geometries = (fn (GeometryInterface ...$geometries): array => $geometries)(...$geometries);
+        $this->geometries = array_values((fn (GeometryInterface ...$geometries): array => $geometries)(...$geometries));
     }
 
     /**

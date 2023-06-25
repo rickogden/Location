@@ -6,28 +6,32 @@ namespace Ricklab\Location\Ellipsoid;
 
 use Ricklab\Location\Converter\UnitConverter;
 
+/**
+ * @psalm-immutable
+ */
 interface EllipsoidInterface
 {
     /**
-     * @var array Unit multipliers relative to km
+     * Returns the average radius of the ellipsoid in specified units.
      *
-     * @deprecated use UnitConverter::MULTIPLIERS
-     */
-    public const MULTIPLIERS = UnitConverter::MULTIPLIERS;
-
-    /**
-     * @var array Key translations for multipliers
+     * @param string $unit can be 'km', 'miles', 'metres', 'feet', 'yards', 'nautical miles'
      *
-     * @deprecated use UnitConverter::KEYS;
+     * @psalm-param  UnitConverter::UNIT_* $unit
      */
-    public const KEYS = UnitConverter::KEYS;
-
     public static function radius(string $unit = UnitConverter::UNIT_METERS): float;
 
-    public static function getMultiplier(string $unit = UnitConverter::UNIT_METERS): float;
-
+    /**
+     * @param string $unit unit of measurement
+     *
+     * @psalm-param  UnitConverter::UNIT_* $unit unit of measurement
+     */
     public static function getMajorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float;
 
+    /**
+     * @param string $unit unit of measurement
+     *
+     * @psalm-param  UnitConverter::UNIT_* $unit unit of measurement
+     */
     public static function getMinorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float;
 
     public static function getFlattening(): float;

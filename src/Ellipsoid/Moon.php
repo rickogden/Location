@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Ricklab\Location\Ellipsoid;
 
 /**
- * @author Rick Ogden <rick@rickogden.com>
+ * @psalm-immutable
  */
-class Moon
+class Moon extends Ellipsoid
 {
     use EllipsoidTrait;
     protected const RADIUS = 1737400;

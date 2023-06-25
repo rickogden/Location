@@ -11,6 +11,9 @@ use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
+/**
+ * @implements IteratorAggregate<LineString>
+ */
 final class Polygon implements GeometryInterface, IteratorAggregate
 {
     use GeometryTrait;
@@ -25,6 +28,8 @@ final class Polygon implements GeometryInterface, IteratorAggregate
     public static function fromArray(array $geometries): self
     {
         $result = [];
+
+        /** @var LineString|array $lineString */
         foreach ($geometries as $lineString) {
             if ($lineString instanceof LineString) {
                 $result[] = $lineString;
@@ -52,10 +57,13 @@ final class Polygon implements GeometryInterface, IteratorAggregate
     /**
      * The length of the perimeter of the outer-most polygon in unit specified.
      *
-     * @param string                  $unit       defaults to "meters"
+     * @param string $unit defaults to "meters"
+     *
+     * @psalm-param UnitConverter::UNIT_*                  $unit       defaults to "meters"
+     *
      * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator.
      */
-    public function getPerimeter(string $unit = UnitConverter::UNIT_METERS, ?DistanceCalculator $calculator = null): float
+    public function getPerimeter(string $unit = UnitConverter::UNIT_METERS, DistanceCalculator $calculator = null): float
     {
         return $this->geometries[0]->getLength($unit, $calculator);
     }

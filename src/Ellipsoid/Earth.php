@@ -10,6 +10,9 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Ellipsoid;
 
+/**
+ * @psalm-immutable
+ */
 class Earth extends Ellipsoid
 {
     use EllipsoidTrait;

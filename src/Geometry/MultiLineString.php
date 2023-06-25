@@ -1,11 +1,6 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 16/07/15
- * Time: 16:34.
- */
 
 namespace Ricklab\Location\Geometry;
 
@@ -13,7 +8,7 @@ use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
- * Class MultiLineString.
+ * @implements IteratorAggregate<LineString>
  */
 final class MultiLineString implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
@@ -29,6 +24,8 @@ final class MultiLineString implements GeometryInterface, GeometryCollectionInte
     public static function fromArray(array $geometries): self
     {
         $result = [];
+
+        /** @var LineString|array $lineString */
         foreach ($geometries as $lineString) {
             if ($lineString instanceof LineString) {
                 $result[] = $lineString;
@@ -40,9 +37,14 @@ final class MultiLineString implements GeometryInterface, GeometryCollectionInte
         return new self($result);
     }
 
+    /**
+     * @param LineString[] $lineStrings
+     *
+     * @psalm-param list<LineString> $lineStrings
+     */
     public function __construct(array $lineStrings)
     {
-        $this->geometries = (fn (LineString ...$lineStrings): array => $lineStrings)(...$lineStrings);
+        $this->geometries = $lineStrings;
     }
 
     /**

@@ -67,7 +67,7 @@ final class UnitConverter
         try {
             return self::MULTIPLIERS[self::KEYS[mb_strtolower($unit)]];
         } catch (Exception $e) {
-            throw new InvalidArgumentException('Unit '.$unit.' is not a recognised unit.');
+            throw new InvalidArgumentException('Unit '.$unit.' is not a recognised unit.', 0, $e);
         }
     }
 }

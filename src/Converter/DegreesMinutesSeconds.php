@@ -53,7 +53,7 @@ final class DegreesMinutesSeconds
         self::DIRECTION_E => self::DIRECTION_W,
     ];
 
-    private const REGEX = '/(-?\d+)[^\d]+(\d+)[^\d]+(\d+.?\d+)[^\d]+([NWSE])/';
+    private const REGEX = '/(-?\d+)\D+(\d+)\D+(\d+.?\d+)\D+([NWSE])/';
 
     private int $degrees;
     private int $minutes;

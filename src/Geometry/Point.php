@@ -2,12 +2,6 @@
 
 declare(strict_types=1);
 
-/**
- * Description of Point.
- *
- * @author rick
- */
-
 namespace Ricklab\Location\Geometry;
 
 use function count;
@@ -46,7 +40,7 @@ final class Point implements GeometryInterface
             throw new InvalidArgumentException(sprintf('Must be an array consisting of exactly 2 elements, %d passed', $length));
         }
 
-        return new self($geometries[0], $geometries[1]);
+        return new self((float) $geometries[0], (float) $geometries[1]);
     }
 
     /**
@@ -55,6 +49,9 @@ final class Point implements GeometryInterface
      */
     public static function fromDms(DegreesMinutesSeconds $lat, DegreesMinutesSeconds $lon): self
     {
+        $longitude = null;
+        $latitude = null;
+
         foreach ([$lat, $lon] as $dms) {
             if (DegreesMinutesSeconds::AXIS_LONGITUDE === $dms->getAxis()) {
                 $longitude = $dms;
@@ -67,11 +64,11 @@ final class Point implements GeometryInterface
             }
         }
 
-        if (!isset($longitude)) {
+        if (!$longitude instanceof DegreesMinutesSeconds) {
             throw new InvalidArgumentException('Longitude coordinates missing');
         }
 
-        if (!isset($latitude)) {
+        if (!$latitude instanceof DegreesMinutesSeconds) {
             throw new InvalidArgumentException('Latitude coordinates missing');
         }
 
@@ -150,7 +147,10 @@ final class Point implements GeometryInterface
     /**
      * Find distance to another point.
      *
-     * @param string                  $unit       Defaults to meters
+     * @param string $unit Defaults to meters
+     *
+     * @psalm-param UnitConverter::UNIT_* $unit Defaults to meters
+     *
      * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator.
      *
      * @return float the distance
@@ -158,7 +158,7 @@ final class Point implements GeometryInterface
     public function distanceTo(
         Point $point2,
         string $unit = UnitConverter::UNIT_METERS,
-        ?DistanceCalculator $calculator = null
+        DistanceCalculator $calculator = null
     ): float {
         if (null === $calculator) {
             $result = DefaultDistanceCalculator::calculate($this, $point2, DefaultEllipsoid::get());
@@ -175,6 +175,8 @@ final class Point implements GeometryInterface
      * @param float  $distance distance to other point
      * @param float  $bearing  initial bearing to other point
      * @param string $unit     The unit the distance is in
+     *
+     * @psalm-param UnitConverter::UNIT_* $unit The unit the distance is in
      */
     public function getRelativePoint(float $distance, float $bearing, string $unit = UnitConverter::UNIT_METERS): Point
     {
@@ -257,7 +259,7 @@ final class Point implements GeometryInterface
      *
      * @return self the mid point
      */
-    public function getMidpoint(Point $point, ?DistanceCalculator $calculator = null): self
+    public function getMidpoint(Point $point, DistanceCalculator $calculator = null): self
     {
         return $this->getFractionAlongLineTo($point, 0.5, $calculator);
     }
@@ -269,7 +271,7 @@ final class Point implements GeometryInterface
      *
      * @throw \InvalidArgumentException
      */
-    public function getFractionAlongLineTo(Point $point, float $fraction, ?DistanceCalculator $calculator = null): self
+    public function getFractionAlongLineTo(Point $point, float $fraction, DistanceCalculator $calculator = null): self
     {
         return FractionAlongLineCalculator::calculate(
             $this,
@@ -290,6 +292,8 @@ final class Point implements GeometryInterface
 
     /**
      * @throws BoundBoxRangeException
+     *
+     * @psalm-param UnitConverter::UNIT_* $unit
      */
     public function getBBoxByRadius(float $radius, string $unit = UnitConverter::UNIT_METERS): BoundingBox
     {
@@ -318,8 +322,8 @@ final class Point implements GeometryInterface
 
     public function equals(GeometryInterface $geometry): bool
     {
-        return $this === $geometry ||
-            ($geometry instanceof self
+        return $this === $geometry
+            || ($geometry instanceof self
             && $geometry->latitude === $this->latitude
             && $geometry->longitude === $this->longitude);
     }

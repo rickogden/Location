@@ -16,10 +16,10 @@ final class BearingCalculator implements UsesGeoSpatialExtensionInterface
     public static function calculateInitialBearing(Point $point1, Point $point2): float
     {
         if (
-            self::$useSpatialExtension &&
-            ($geospatialVersion = phpversion('geospatial')) &&
-            version_compare($geospatialVersion, '0.2.2-dev', '>=') &&
-            function_exists('initial_bearing')
+            self::$useSpatialExtension
+            && ($geospatialVersion = phpversion('geospatial'))
+            && version_compare($geospatialVersion, '0.2.2-dev', '>=')
+            && function_exists('initial_bearing')
         ) {
             return initial_bearing($point1->jsonSerialize(), $point2->jsonSerialize());
         }

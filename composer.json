@@ -32,7 +32,7 @@
         "friendsofphp/php-cs-fixer": "^3.13",
         "phpbench/phpbench": "^1.2",
         "phpunit/phpunit": "^9.5",
-        "vimeo/psalm": "^4.30.0"
+        "vimeo/psalm": "^5.1"
     },
     "autoload": {
         "psr-4": {

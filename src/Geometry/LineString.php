@@ -1,24 +1,22 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 14/07/15
- * Time: 13:39.
- */
 
 namespace Ricklab\Location\Geometry;
 
 use function count;
 
 use InvalidArgumentException;
+
+use function is_array;
+
 use IteratorAggregate;
 use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
- * Class LineString.
+ * @implements IteratorAggregate<Point>
  */
 final class LineString implements GeometryInterface, IteratorAggregate
 {
@@ -37,11 +35,14 @@ final class LineString implements GeometryInterface, IteratorAggregate
     public static function fromArray(array $geometries): self
     {
         $result = [];
+        /** @var Point|array|mixed $point */
         foreach ($geometries as $point) {
             if ($point instanceof Point) {
                 $result[] = $point;
-            } else {
+            } elseif (is_array($point)) {
                 $result[] = Point::fromArray($point);
+            } else {
+                throw new InvalidArgumentException('Array element needs to be either an instance of Point or array.');
             }
         }
 
@@ -58,7 +59,7 @@ final class LineString implements GeometryInterface, IteratorAggregate
         if (count($points) < 2) {
             throw new InvalidArgumentException('array must have 2 or more elements.');
         }
-        $this->geometries = (fn (Point ...$points): array => $points)(...$points);
+        $this->geometries = $points;
     }
 
     /**
@@ -70,10 +71,13 @@ final class LineString implements GeometryInterface, IteratorAggregate
     }
 
     /**
-     * @param string                  $unit       defaults to "meters"
+     * @param string $unit defaults to "meters"
+     *
+     * @psalm-param UnitConverter::UNIT_*                  $unit       defaults to "meters"
+     *
      * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator
      */
-    public function getLength(string $unit = UnitConverter::UNIT_METERS, ?DistanceCalculator $calculator = null): float
+    public function getLength(string $unit = UnitConverter::UNIT_METERS, DistanceCalculator $calculator = null): float
     {
         $distance = 0;
 

@@ -1,17 +1,15 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 04/10/15
- * Time: 11:22.
- */
 
 namespace Ricklab\Location\Geometry;
 
 use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
+/**
+ * @implements IteratorAggregate<Polygon>
+ */
 final class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
     use GeometryTrait;
@@ -26,6 +24,8 @@ final class MultiPolygon implements GeometryInterface, GeometryCollectionInterfa
     public static function fromArray(array $geometries): self
     {
         $result = [];
+
+        /** @var Polygon|array $polygon */
         foreach ($geometries as $polygon) {
             if ($polygon instanceof Polygon) {
                 $result[] = $polygon;
@@ -39,10 +39,12 @@ final class MultiPolygon implements GeometryInterface, GeometryCollectionInterfa
 
     /**
      * @param Polygon[] $polygons
+     *
+     * @psalm-param list<Polygon> $polygons
      */
     public function __construct(array $polygons)
     {
-        $this->geometries = (fn (Polygon ...$polygons): array => $polygons)(...$polygons);
+        $this->geometries = $polygons;
     }
 
     /**

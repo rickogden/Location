@@ -28,6 +28,8 @@ final class BoundingBox
 
     /**
      * @throws BoundBoxRangeException currently cannot create a bounding box over the meridian
+     *
+     * @psalm-param UnitConverter::UNIT_* $unit
      */
     public static function fromCenter(Point $point, float $radius, string $unit = UnitConverter::UNIT_METERS): self
     {
@@ -88,7 +90,7 @@ final class BoundingBox
     }
 
     /**
-     * @param array{0: float, 1: float, 2: float, 3: float} Array of coordinates in the order of: minimum longitude, minimum latitude, max longitude and maximum latitude
+     * @param array{0: float, 1: float, 2: float, 3: float} $geometries Array of coordinates in the order of: minimum longitude, minimum latitude, max longitude and maximum latitude
      */
     public static function fromArray(array $geometries): self
     {

@@ -1,17 +1,15 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 04/10/15
- * Time: 11:24.
- */
 
 namespace Ricklab\Location\Geometry;
 
 use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
+/**
+ * @implements IteratorAggregate<Point>
+ */
 final class MultiPoint implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
     use GeometryTrait;
@@ -26,6 +24,7 @@ final class MultiPoint implements GeometryInterface, GeometryCollectionInterface
     public static function fromArray(array $geometries): self
     {
         $result = [];
+        /** @var Point|array $point */
         foreach ($geometries as $point) {
             if ($point instanceof Point) {
                 $result[] = $point;
@@ -39,10 +38,12 @@ final class MultiPoint implements GeometryInterface, GeometryCollectionInterface
 
     /**
      * @param Point[] $points
+     *
+     * @psalm-param list<Point> $points
      */
     public function __construct(array $points)
     {
-        $this->geometries = (fn (Point ...$points): array => $points)(...$points);
+        $this->geometries = $points;
     }
 
     /**
