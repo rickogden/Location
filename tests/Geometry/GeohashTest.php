@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
  */
 class GeohashTest extends TestCase
 {
-    public function geoHahProvider(): Generator
+    public static function geoHahProvider(): Generator
     {
         yield ['u4pruydqqvj', 10.40744, 57.64911, 5];
         yield ['gbsuv7s0k', -4.333913, 48.666751, 6];
@@ -49,7 +49,7 @@ class GeohashTest extends TestCase
         );
     }
 
-    public function geoHashNeighborProvider(): Generator
+    public static function geoHashNeighborProvider(): Generator
     {
         yield 'Arbitrary 5 character geohash' => [
             'gbsuv',
@@ -145,7 +145,7 @@ class GeohashTest extends TestCase
         $this->assertTrue($geoHash2->equals($geoHash), 'True is not returned for equals.');
     }
 
-    public function notEqualsProvider(): Generator
+    public static function notEqualsProvider(): Generator
     {
         yield 'Not equals' => [new Geohash('gcqryemv'), new Geohash('gcqryemy')];
         yield 'Contains' => [new Geohash('gcqryemv'), new Geohash('gcqryem')];
@@ -160,7 +160,7 @@ class GeohashTest extends TestCase
         $this->assertFalse($geoHash2->equals($geoHash), 'False is not returned for equals.');
     }
 
-    public function containsProvider(): Generator
+    public static function containsProvider(): Generator
     {
         yield 'Direct parent' => [new Geohash('gcqryem'), new Geohash('gcqryemy')];
         yield 'Very high parent' => [new Geohash('gcq'), new Geohash('gcqryemy')];

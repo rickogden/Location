@@ -10,7 +10,6 @@ use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Converter\UnitConverter;
-use TypeError;
 
 class LineStringTest extends TestCase
 {
@@ -107,7 +106,7 @@ class LineStringTest extends TestCase
         $this->assertEquals($original[1], $lineString->toArray()[1]);
     }
 
-    public function equalProvider(): Generator
+    public static function equalProvider(): Generator
     {
         $original = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
 

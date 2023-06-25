@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class DegreesMinutesSecondsTest extends TestCase
 {
-    public function decimalDmsProvider(): Generator
+    public static function decimalDmsProvider(): Generator
     {
         yield [1.0342916666666668, 'LATITUDE', 1, 2, 3.45, 'N'];
         yield [1.0342916666666668, 'LONGITUDE', 1, 2, 3.45, 'E'];
@@ -51,7 +51,7 @@ class DegreesMinutesSecondsTest extends TestCase
         $this->assertSame($dec, $dms->toDecimal());
     }
 
-    public function stringDmsProvider(): Generator
+    public static function stringDmsProvider(): Generator
     {
         yield ['40° 26′ 46″ N', 40, 26, 46, 'N'];
         yield ['79° 58′ 56″ W', 79, 58, 56, 'W'];
@@ -59,7 +59,7 @@ class DegreesMinutesSecondsTest extends TestCase
         yield ['79° 58′ 56.5543″ E', 79, 58, 56.5543, 'E'];
     }
 
-    public function malformedStringsToDms(): Generator
+    public static function malformedStringsToDms(): Generator
     {
         yield ['40 26 46 N', 40, 26, 46, 'N'];
         yield ['79 58 56 W', 79, 58, 56, 'W'];
@@ -68,7 +68,7 @@ class DegreesMinutesSecondsTest extends TestCase
         yield ['-79 58 56.5543 E', -79, 58, 56.5543, 'E'];
     }
 
-    public function missingElements(): Generator
+    public static function missingElements(): Generator
     {
         yield ['40° 26′ N', 40, 26, 0, 'N'];
         yield ['79° W', 79, 0, 0, 'W'];

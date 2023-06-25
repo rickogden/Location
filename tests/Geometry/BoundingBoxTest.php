@@ -17,7 +17,7 @@ class BoundingBoxTest extends TestCase
         $this->assertCount(5, $bbox->getPoints());
     }
 
-    public function trueContains(): Generator
+    public static function trueContains(): Generator
     {
         $bbox = new BoundingBox(-1, 50, 1, 52);
         yield [$bbox, new Point(0, 51)];
@@ -51,7 +51,7 @@ class BoundingBoxTest extends TestCase
         $this->assertTrue($boundingBox->contains($geometry));
     }
 
-    public function intersectingProvider(): Generator
+    public static function intersectingProvider(): Generator
     {
         $bbox = new BoundingBox(-2, 50, 1, 52);
         yield [
@@ -76,7 +76,7 @@ class BoundingBoxTest extends TestCase
         ];
     }
 
-    public function doesNotIntersectProvider(): Generator
+    public static function doesNotIntersectProvider(): Generator
     {
         $bbox = new BoundingBox(-2, 50, 1, 52);
         yield [$bbox, new Point(0, 54)];

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Converter;
 
-use Exception;
 use InvalidArgumentException;
 
 final class UnitConverter
@@ -64,10 +63,12 @@ final class UnitConverter
      */
     public static function getMultiplier(string $unit = self::UNIT_METERS): float
     {
-        try {
-            return self::MULTIPLIERS[self::KEYS[mb_strtolower($unit)]];
-        } catch (Exception $e) {
-            throw new InvalidArgumentException('Unit '.$unit.' is not a recognised unit.', 0, $e);
+        $mappedUnit = self::KEYS[mb_strtolower($unit)] ?? null;
+
+        if (null === $mappedUnit) {
+            throw new InvalidArgumentException('Unit '.$unit.' is not a recognised unit.', 0);
         }
+
+        return self::MULTIPLIERS[$mappedUnit];
     }
 }

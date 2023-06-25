@@ -112,7 +112,7 @@ class PointTest extends TestCase
         $this->fractionAlongLine();
     }
 
-    public function equalProvider(): Generator
+    public static function equalProvider(): Generator
     {
         $point1 = new Point(1.1, -1.3);
         $point2 = new Point(1.1, -1.3);
@@ -129,7 +129,7 @@ class PointTest extends TestCase
         $this->assertTrue($point1->equals($point2));
     }
 
-    public function notEqualProvider(): Generator
+    public static function notEqualProvider(): Generator
     {
         $point1 = new Point(1.1, -1.3);
         yield 'Absolute values' => [$point1, new Point(1.1, 1.3)];
@@ -145,7 +145,7 @@ class PointTest extends TestCase
         $this->assertFalse($point1->equals($geometry));
     }
 
-    public function geoHahProvider(): Generator
+    public static function geoHahProvider(): Generator
     {
         yield ['u4pruydqqvj', 10.40744, 57.64911];
     }
