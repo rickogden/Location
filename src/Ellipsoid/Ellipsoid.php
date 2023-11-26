@@ -6,34 +6,56 @@ namespace Ricklab\Location\Ellipsoid;
 
 use Ricklab\Location\Converter\UnitConverter;
 
-/**
- * @psalm-immutable
- */
-abstract class Ellipsoid implements EllipsoidInterface
+class Ellipsoid implements EllipsoidInterface
 {
-    abstract protected static function getRadiusInMeters(): float;
+    private float|int $radius;
+    private float|int $majorSemiAxis;
+    private float|int $minorSemiAxis;
+    private float|int|null $flattening = null;
 
-    abstract protected static function getMinorSemiAxisInMeters(): float;
-
-    abstract protected static function getMajorSemiAxisInMeters(): float;
-
-    public static function radius(string $unit = UnitConverter::UNIT_METERS): float
+    public static function fromRadius(float|int $radius): self
     {
-        return UnitConverter::convertFromMeters(static::getRadiusInMeters(), $unit);
+        return new self($radius, $radius, $radius);
     }
 
-    public static function getMajorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float
+    public static function fromSemiAxes(float|int $majorSemiAxis, float|int $minorSemiAxis): self
     {
-        return UnitConverter::convertFromMeters(static::getMajorSemiAxisInMeters(), $unit);
+        return new self(($majorSemiAxis + $minorSemiAxis) / 2, $majorSemiAxis, $minorSemiAxis);
     }
 
-    public static function getMinorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float
+    /**
+     * @param float|int $radius        in meters
+     * @param float|int $majorSemiAxis in meters
+     * @param float|int $minorSemiAxis in meters
+     */
+    public function __construct(float|int $radius, float|int $majorSemiAxis, float|int $minorSemiAxis)
     {
-        return UnitConverter::convertFromMeters(static::getMinorSemiAxisInMeters(), $unit);
+        $this->radius = $radius;
+        $this->majorSemiAxis = $majorSemiAxis;
+        $this->minorSemiAxis = $minorSemiAxis;
     }
 
-    public static function getFlattening(): float
+    public function radius(string $unit = UnitConverter::UNIT_METERS): float|int
     {
-        return (static::getMajorSemiAxisInMeters() - static::getMinorSemiAxisInMeters()) / static::getMajorSemiAxisInMeters();
+        return UnitConverter::convertFromMeters($this->radius, $unit);
+    }
+
+    public function majorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float|int
+    {
+        return UnitConverter::convertFromMeters($this->majorSemiAxis, $unit);
+    }
+
+    public function minorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float|int
+    {
+        return UnitConverter::convertFromMeters($this->minorSemiAxis, $unit);
+    }
+
+    public function flattening(): float|int
+    {
+        if (null === $this->flattening) {
+            $this->flattening = ($this->majorSemiAxis - $this->minorSemiAxis) / $this->majorSemiAxis;
+        }
+
+        return $this->flattening;
     }
 }

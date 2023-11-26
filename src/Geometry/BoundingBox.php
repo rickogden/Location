@@ -36,7 +36,7 @@ final class BoundingBox
         $maxLat = $point->getRelativePoint($radius, 0, $unit)->getLatitude();
         $minLat = $point->getRelativePoint($radius, 180, $unit)->getLatitude();
 
-        $radDist = $radius / DefaultEllipsoid::get()::radius($unit);
+        $radDist = $radius / DefaultEllipsoid::get()->radius($unit);
         $radLon = $point->longitudeToRad();
         $deltaLon = asin(sin($radDist) / cos($point->latitudeToRad()));
 

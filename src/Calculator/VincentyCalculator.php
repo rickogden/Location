@@ -26,9 +26,9 @@ final class VincentyCalculator implements DistanceCalculator, UsesGeoSpatialExte
             return vincenty($from, $to);
         }
 
-        $flattening = $ellipsoid::getFlattening();
-        $majorSemiAxis = $ellipsoid::getMajorSemiAxis();
-        $minorSemiAxis = $ellipsoid::getMinorSemiAxis();
+        $flattening = $ellipsoid->flattening();
+        $majorSemiAxis = $ellipsoid->majorSemiAxis();
+        $minorSemiAxis = $ellipsoid->minorSemiAxis();
         $U1 = atan((1.0 - $flattening) * tan($point1->latitudeToRad()));
         $U2 = atan((1.0 - $flattening) * tan($point2->latitudeToRad()));
         $L = $point2->longitudeToRad() - $point1->longitudeToRad();

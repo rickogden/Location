@@ -41,7 +41,7 @@ final class UnitConverter
         'nm' => self::UNIT_NAUTICAL_MILES,
     ];
 
-    public static function convert(float $distance, string $from, string $to): float
+    public static function convert(float $distance, string $from, string $to): float|int
     {
         $m = $distance / self::getMultiplier($from);
 
@@ -51,17 +51,15 @@ final class UnitConverter
     /**
      * A micro-optimised static method for converting from meters.
      */
-    public static function convertFromMeters(float $distance, string $to): float
+    public static function convertFromMeters(float $distance, string $to): float|int
     {
         return $distance * self::getMultiplier($to);
     }
 
     /**
      * @param string $unit The unit you want the multiplier of
-     *
-     * @return float The multiplier
      */
-    public static function getMultiplier(string $unit = self::UNIT_METERS): float
+    public static function getMultiplier(string $unit = self::UNIT_METERS): float|int
     {
         $mappedUnit = self::KEYS[mb_strtolower($unit)] ?? null;
 

@@ -35,7 +35,7 @@ final class FractionAlongLineCalculator implements UsesGeoSpatialExtensionInterf
 
             return Point::fromArray($result['coordinates']);
         }
-        $distance = $calculator::calculate($point1, $point2, $ellipsoid) / $ellipsoid::radius();
+        $distance = $calculator::calculate($point1, $point2, $ellipsoid) / $ellipsoid->radius();
 
         $lat1 = $point1->latitudeToRad();
         $lat2 = $point2->latitudeToRad();

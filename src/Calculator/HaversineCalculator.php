@@ -38,7 +38,7 @@ final class HaversineCalculator implements DistanceCalculator, UsesGeoSpatialExt
             $radDistance = 2 * atan2(sqrt($radDistance), sqrt(1 - $radDistance));
         }
 
-        return $radDistance * $ellipsoid::radius();
+        return $radDistance * $ellipsoid->radius();
     }
 
     public static function formula(): string

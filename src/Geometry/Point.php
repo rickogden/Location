@@ -180,7 +180,7 @@ final class Point implements GeometryInterface
      */
     public function getRelativePoint(float $distance, float $bearing, string $unit = UnitConverter::UNIT_METERS): Point
     {
-        $rad = DefaultEllipsoid::get()::radius($unit);
+        $rad = DefaultEllipsoid::get()->radius($unit);
         $lat1 = $this->latitudeToRad();
         $lon1 = $this->longitudeToRad();
         $bearing = deg2rad($bearing);
