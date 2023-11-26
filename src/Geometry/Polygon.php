@@ -63,7 +63,7 @@ final class Polygon implements GeometryInterface, IteratorAggregate
      *
      * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator.
      */
-    public function getPerimeter(string $unit = UnitConverter::UNIT_METERS, DistanceCalculator $calculator = null): float
+    public function getPerimeter(string $unit = UnitConverter::UNIT_METERS, ?DistanceCalculator $calculator = null): float
     {
         return $this->geometries[0]->getLength($unit, $calculator);
     }

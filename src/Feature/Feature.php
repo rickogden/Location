@@ -18,7 +18,7 @@ final class Feature implements JsonSerializable
     private bool $bbox;
     private ?BoundingBox $bboxCache = null;
 
-    public static function createWithExistingBoundingBox(BoundingBox $bbox, array $properties = [], GeometryInterface $geometry = null, float|int|string|null $id = null): self
+    public static function createWithExistingBoundingBox(BoundingBox $bbox, array $properties = [], ?GeometryInterface $geometry = null, float|int|string|null $id = null): self
     {
         $feature = new self($properties, $geometry, $id, true);
         $feature->bboxCache = $bbox;
@@ -26,7 +26,7 @@ final class Feature implements JsonSerializable
         return $feature;
     }
 
-    public function __construct(array $properties = [], GeometryInterface $geometry = null, float|int|string $id = null, bool $bbox = false)
+    public function __construct(array $properties = [], ?GeometryInterface $geometry = null, float|int|string|null $id = null, bool $bbox = false)
     {
         $this->properties = $properties;
         $this->geometry = $geometry;

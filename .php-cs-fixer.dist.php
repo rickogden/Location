@@ -42,6 +42,7 @@ return $config->setRules([
         'no_unreachable_default_argument_value' => true,
         'no_unset_on_property' => true,
         'no_useless_else' => true,
+        'nullable_type_declaration_for_default_null_value' => true,
         'ordered_imports' => true,
         'php_unit_dedicate_assert' => true,
         'php_unit_mock' => true,
