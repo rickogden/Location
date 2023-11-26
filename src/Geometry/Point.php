@@ -138,7 +138,7 @@ class Point implements GeometryInterface
     public function distanceTo(
         Point $point2,
         string $unit = UnitConverter::UNIT_METERS,
-        ?DistanceCalculator $calculator = null
+        DistanceCalculator $calculator = null
     ): float {
         if (null === $calculator) {
             $result = DefaultDistanceCalculator::calculate($this, $point2, DefaultEllipsoid::get());
@@ -237,7 +237,7 @@ class Point implements GeometryInterface
      *
      * @return Point the mid point
      */
-    public function getMidpoint(Point $point, ?DistanceCalculator $calculator = null): Point
+    public function getMidpoint(Point $point, DistanceCalculator $calculator = null): Point
     {
         return $this->getFractionAlongLineTo($point, 0.5, $calculator);
     }
@@ -249,7 +249,7 @@ class Point implements GeometryInterface
      *
      * @throw \InvalidArgumentException
      */
-    public function getFractionAlongLineTo(Point $point, float $fraction, ?DistanceCalculator $calculator = null): self
+    public function getFractionAlongLineTo(Point $point, float $fraction, DistanceCalculator $calculator = null): self
     {
         return FractionAlongLineCalculator::calculate(
             $this,

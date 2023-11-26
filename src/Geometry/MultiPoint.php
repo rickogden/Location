@@ -12,8 +12,12 @@ namespace Ricklab\Location\Geometry;
 use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
+/**
+ * @implements IteratorAggregate<Point>
+ */
 class MultiPoint implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
+    /** @use GeometryTrait<Point> */
     use GeometryTrait;
 
     /**

@@ -13,14 +13,14 @@ use Ricklab\Location\Geometry\Point;
 use Traversable;
 
 /**
- * @author Rick Ogden <rick@rickogden.com>
+ * @template T of GeometryInterface
  */
 trait GeometryTrait
 {
     use TransformationTrait;
 
     /**
-     * @return GeometryInterface[]
+     * @return T[]
      */
     abstract protected function getGeometryArray(): array;
 
@@ -53,6 +53,7 @@ trait GeometryTrait
         return array_merge(...$points);
     }
 
+    /** @return Traversable<mixed, T> */
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->getGeometryArray());

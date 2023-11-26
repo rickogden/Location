@@ -13,10 +13,11 @@ use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
- * Class MultiLineString.
+ * @implements IteratorAggregate<LineString>
  */
 class MultiLineString implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
+    /** @use GeometryTrait<LineString> */
     use GeometryTrait;
 
     /**

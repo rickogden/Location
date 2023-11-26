@@ -18,6 +18,9 @@ use JsonSerializable;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\MultiPoint;
 
+/**
+ * @implements IteratorAggregate<Feature>
+ */
 class FeatureCollection implements IteratorAggregate, JsonSerializable
 {
     /**

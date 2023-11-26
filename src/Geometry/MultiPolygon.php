@@ -12,8 +12,12 @@ namespace Ricklab\Location\Geometry;
 use IteratorAggregate;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
+/**
+ * @implements IteratorAggregate<Polygon>
+ */
 class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
+    /** @use GeometryTrait<Polygon> */
     use GeometryTrait;
 
     /**

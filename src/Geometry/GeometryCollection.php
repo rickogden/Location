@@ -17,6 +17,7 @@ use Ricklab\Location\Geometry\Traits\GeometryTrait;
  */
 class GeometryCollection implements GeometryInterface, GeometryCollectionInterface
 {
+    /** @use GeometryTrait<GeometryInterface> */
     use GeometryTrait;
 
     /**

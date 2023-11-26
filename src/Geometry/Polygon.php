@@ -9,8 +9,12 @@ use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
+/**
+ * @implements IteratorAggregate<LineString>
+ */
 class Polygon implements GeometryInterface, IteratorAggregate
 {
+    /** @use GeometryTrait<LineString> */
     use GeometryTrait;
 
     /**
@@ -60,7 +64,7 @@ class Polygon implements GeometryInterface, IteratorAggregate
      * @param string                  $unit       defaults to "meters"
      * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator.
      */
-    public function getPerimeter(string $unit = UnitConverter::UNIT_METERS, ?DistanceCalculator $calculator = null): float
+    public function getPerimeter(string $unit = UnitConverter::UNIT_METERS, DistanceCalculator $calculator = null): float
     {
         return $this->geometries[0]->getLength($unit, $calculator);
     }
