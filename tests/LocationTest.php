@@ -67,7 +67,7 @@ class LocationTest extends TestCase
         $multiline = Location::fromWkt($multilinewkt);
         $point = Location::fromWkt($pointwkt);
 
-        $this->assertInstanceOf(Geometry\Point::class, $point);
+        $this->assertInstanceOf(Point::class, $point);
         $this->assertInstanceOf(Geometry\MultiPolygon::class, $multipoly);
         $this->assertInstanceOf(Geometry\MultiLineString::class, $multiline);
         $this->assertEquals([4, 5], $point->toArray());

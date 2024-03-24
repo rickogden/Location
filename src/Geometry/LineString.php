@@ -80,7 +80,7 @@ class LineString implements GeometryInterface, IteratorAggregate
      * @param string                  $unit       defaults to "meters"
      * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator
      */
-    public function getLength(string $unit = UnitConverter::UNIT_METERS, DistanceCalculator $calculator = null): float
+    public function getLength(string $unit = UnitConverter::UNIT_METERS, ?DistanceCalculator $calculator = null): float
     {
         $distance = 0;
 
