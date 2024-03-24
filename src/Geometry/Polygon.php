@@ -9,8 +9,12 @@ use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
+/**
+ * @implements IteratorAggregate<LineString>
+ */
 class Polygon implements GeometryInterface, IteratorAggregate
 {
+    /** @use GeometryTrait<LineString> */
     use GeometryTrait;
 
     /**

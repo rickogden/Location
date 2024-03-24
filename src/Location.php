@@ -160,8 +160,8 @@ class Location
      * Converts distances from one unit of measurement to another.
      *
      * @param $distance float the distance measurement
-     * @param $from string the unit the distance measurement is in
-     * @param $to string the unit the distance should be converted into
+     * @param $from     string the unit the distance measurement is in
+     * @param $to       string the unit the distance should be converted into
      *
      * @return float the distance in the new unit of measurement
      *

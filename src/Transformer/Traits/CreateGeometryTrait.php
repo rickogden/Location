@@ -17,7 +17,7 @@ use Ricklab\Location\Geometry\Polygon;
 trait CreateGeometryTrait
 {
     /**
-     * @param $type string the geometry type to create
+     * @param $type        string the geometry type to create
      * @param $coordinates array the coordinates for the geometry type
      */
     private static function createGeometry(string $type, array $coordinates): GeometryInterface

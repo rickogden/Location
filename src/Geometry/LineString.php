@@ -18,10 +18,11 @@ use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
- * Class LineString.
+ * @implements IteratorAggregate<Point>
  */
 class LineString implements GeometryInterface, IteratorAggregate
 {
+    /** @use GeometryTrait<Point> */
     use GeometryTrait;
 
     /**

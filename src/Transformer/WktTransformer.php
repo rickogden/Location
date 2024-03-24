@@ -20,7 +20,9 @@ final class WktTransformer
 
     public static function decode(string $wkt): GeometryInterface
     {
-        $type = trim(mb_substr($wkt, 0, mb_strpos($wkt, '(') ?: 0));
+        $openParen = mb_strpos($wkt, '(');
+        $openParen = false === $openParen ? 0 : $openParen;
+        $type = trim(mb_substr($wkt, 0, $openParen));
         $wkt = trim(str_replace($type, '', $wkt));
 
         if ('geometrycollection' === mb_strtolower($type)) {
