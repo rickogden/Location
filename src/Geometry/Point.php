@@ -29,10 +29,16 @@ final class Point implements GeometryInterface
     public const MIN_LONGITUDE = -180;
 
     /** @readonly  */
-    protected float $longitude;
+    private float $longitude;
 
     /** @readonly  */
-    protected float $latitude;
+    private float $latitude;
+
+    /** @readonly  */
+    private string $longitudeString;
+
+    /** @readonly  */
+    private string $latitudeString;
 
     public static function fromArray(array $geometries): self
     {
@@ -91,21 +97,42 @@ final class Point implements GeometryInterface
      * Usage: new Point(latitude, longitude);
      * or new Point([longitude, latitude]);
      *
-     * @param float $long Longitude coordinates
-     * @param float $lat  Latitude coordinates
+     * @param float|numeric-string $long Longitude coordinates
+     * @param float|numeric-string $lat  Latitude coordinates
      */
-    public function __construct(float $long, float $lat)
+    public function __construct(float|string $long, float|string $lat)
     {
-        if (!self::validateLatitude($lat)) {
+        if (\is_string($lat)) {
+            if (!is_numeric($lat)) {
+                throw new InvalidArgumentException('latitude must be a valid number between -90 and 90.');
+            }
+
+            $this->latitudeString = $lat;
+            $this->latitude = (float) $lat;
+        } else {
+            $this->latitudeString = (string) $lat;
+            $this->latitude = $lat;
+        }
+
+        if (\is_string($long)) {
+            if (!is_numeric($long)) {
+                throw new InvalidArgumentException('longitude must be a valid number between -180 and 180.');
+            }
+
+            $this->longitudeString = $long;
+            $this->longitude = (float) $long;
+        } else {
+            $this->longitudeString = (string) $long;
+            $this->longitude = $long;
+        }
+
+        if (!self::validateLatitude($this->latitude)) {
             throw new InvalidArgumentException('latitude must be a valid number between -90 and 90.');
         }
 
-        if (!self::validLongitude($long)) {
+        if (!self::validLongitude($this->longitude)) {
             throw new InvalidArgumentException('longitude must be a valid number between -180 and 180.');
         }
-
-        $this->latitude = $lat;
-        $this->longitude = $long;
     }
 
     public function getLatitudeInDms(): DegreesMinutesSeconds
@@ -133,7 +160,7 @@ final class Point implements GeometryInterface
 
     public function toString(string $separator): string
     {
-        return $this->longitude.$separator.$this->latitude;
+        return $this->longitudeString.$separator.$this->latitudeString;
     }
 
     /**
@@ -142,6 +169,11 @@ final class Point implements GeometryInterface
     public function getLatitude(): float
     {
         return $this->latitude;
+    }
+
+    public function getLatitudeAsString(): string
+    {
+        return $this->latitudeString;
     }
 
     /**
@@ -254,10 +286,15 @@ final class Point implements GeometryInterface
         return $this->longitude;
     }
 
+    public function getLongitudeAsString(): string
+    {
+        return $this->longitudeString;
+    }
+
     /**
-     * Finds the mid point between two points.
+     * Finds the mid-point between two points.
      *
-     * @return self the mid point
+     * @return self the mid-point
      */
     public function getMidpoint(Point $point, ?DistanceCalculator $calculator = null): self
     {
@@ -337,7 +374,9 @@ final class Point implements GeometryInterface
     {
         $point = clone $this;
         $point->latitude = round($this->latitude, $precision);
+        $point->latitudeString = (string) $point->latitude;
         $point->longitude = round($this->longitude, $precision);
+        $point->longitudeString = (string) $point->longitude;
 
         return $point;
     }
