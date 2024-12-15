@@ -26,6 +26,11 @@ final class BoundingBox
 
     private ?Polygon $polygon = null;
 
+    private ?Point $northEast = null;
+    private ?Point $southEast = null;
+    private ?Point $northWest = null;
+    private ?Point $southWest = null;
+
     /**
      * @throws BoundBoxRangeException currently cannot create a bounding box over the meridian
      *
@@ -197,15 +202,51 @@ final class BoundingBox
     public function getPolygon(): Polygon
     {
         if (null === $this->polygon) {
-            $nw = Point::fromArray([$this->minLon, $this->maxLat]);
-            $ne = Point::fromArray([$this->maxLon, $this->maxLat]);
-            $se = Point::fromArray([$this->maxLon, $this->minLat]);
-            $sw = Point::fromArray([$this->minLon, $this->minLat]);
-
-            $this->polygon = new Polygon([new LineString([$nw, $ne, $se, $sw])]);
+            $this->polygon = new Polygon([new LineString([
+                $this->getNorthWest(),
+                $this->getNorthEast(),
+                $this->getSouthEast(),
+                $this->getSouthWest(),
+            ])]);
         }
 
         return $this->polygon;
+    }
+
+    public function getNorthEast(): Point
+    {
+        if (null === $this->northEast) {
+            $this->northEast = new Point($this->maxLon, $this->maxLat);
+        }
+
+        return $this->northEast;
+    }
+
+    public function getSouthEast(): Point
+    {
+        if (null === $this->southEast) {
+            $this->southEast = new Point($this->maxLon, $this->minLat);
+        }
+
+        return $this->southEast;
+    }
+
+    public function getNorthWest(): Point
+    {
+        if (null === $this->northWest) {
+            $this->northWest = new Point($this->minLon, $this->maxLat);
+        }
+
+        return $this->northWest;
+    }
+
+    public function getSouthWest(): Point
+    {
+        if (null === $this->southWest) {
+            $this->southWest = new Point($this->minLon, $this->minLat);
+        }
+
+        return $this->southWest;
     }
 
     public function getPoints(): array

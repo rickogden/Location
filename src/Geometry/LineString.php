@@ -27,9 +27,9 @@ final class LineString implements GeometryInterface, IteratorAggregate
      *
      * @var Point[]
      *
-     * @psalm-var list<Point>
+     * @psalm-var non-empty-list<Point>
      */
-    protected array $geometries = [];
+    protected array $geometries;
     protected int $position = 0;
 
     public static function fromArray(array $geometries): self
@@ -101,7 +101,7 @@ final class LineString implements GeometryInterface, IteratorAggregate
      */
     public function getLast(): Point
     {
-        return end($this->geometries);
+        return $this->geometries[array_key_last($this->geometries)];
     }
 
     /**

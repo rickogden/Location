@@ -20,7 +20,7 @@ final class FractionAlongLineCalculator implements UsesGeoSpatialExtensionInterf
         Point $point2,
         float $fraction,
         DistanceCalculator $calculator,
-        EllipsoidInterface $ellipsoid
+        EllipsoidInterface $ellipsoid,
     ): Point {
         if ($fraction < 0 || $fraction > 1) {
             throw new InvalidArgumentException('$fraction must be between 0 and 1');

@@ -9,6 +9,8 @@ use function in_array;
 
 use InvalidArgumentException;
 
+use function sprintf;
+
 /**
  * @psalm-immutable
  */
@@ -64,7 +66,7 @@ final class DegreesMinutesSeconds
 
     public static function fromString(string $string): self
     {
-        $string = trim($string);
+        $string = mb_trim($string);
 
         $degreesMatch = [];
         $minuteMatch = [];

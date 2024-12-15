@@ -11,6 +11,8 @@ use function count;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\Point;
 
+use function sprintf;
+
 /**
  * @author Rick Ogden <rick@rickogden.com>
  */

@@ -7,6 +7,8 @@ namespace Ricklab\Location\Geometry;
 use Generator;
 use PHPUnit\Framework\TestCase;
 
+use function sprintf;
+
 /**
  * @coversDefaultClass \Ricklab\Location\Geometry\Geohash
  */
@@ -124,7 +126,7 @@ class GeohashTest extends TestCase
         string $east,
         string $southWest,
         string $south,
-        string $southEast
+        string $southEast,
     ): void {
         $geoHash = new Geohash($origin);
         $this->assertSame($north, (string) $geoHash->getAdjacentNorth());

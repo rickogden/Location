@@ -144,4 +144,66 @@ class LineStringTest extends TestCase
         $collection = new MultiPoint($lineString->getPoints());
         $this->assertFalse($lineString->equals($collection));
     }
+
+    public function testGetFirst(): void
+    {
+        $firstPoint = $this->line->getFirst();
+        $this->assertInstanceOf(Point::class, $firstPoint);
+        $this->assertEquals(-2.27354, $firstPoint->getLongitude());
+        $this->assertEquals(53.48575, $firstPoint->getLatitude());
+    }
+
+    public function testGetLast(): void
+    {
+        $lastPoint = $this->line->getLast();
+        $this->assertInstanceOf(Point::class, $lastPoint);
+        $this->assertEquals(-2.23194, $lastPoint->getLongitude());
+        $this->assertEquals(53.48204, $lastPoint->getLatitude());
+    }
+
+    public function testGetPoints(): void
+    {
+        $points = $this->line->getPoints();
+        $this->assertCount(2, $points);
+        $this->assertInstanceOf(Point::class, $points[0]);
+        $this->assertInstanceOf(Point::class, $points[1]);
+    }
+
+    public function testAddPoint(): void
+    {
+        $newPoint = new Point(-2.20000, 53.40000);
+        $newLine = $this->line->addPoint($newPoint);
+        $this->assertCount(3, $newLine->getPoints());
+        $this->assertEquals($newPoint, $newLine->getLast());
+    }
+
+    public function testWithPoint(): void
+    {
+        $newPoint = new Point(-2.20000, 53.40000);
+        $newLine = $this->line->withPoint($newPoint);
+        $this->assertCount(3, $newLine->getPoints());
+        $this->assertEquals($newPoint, $newLine->getLast());
+    }
+
+    public function testGetClosedShape(): void
+    {
+        $closedLine = $this->line->getClosedShape();
+        $this->assertTrue($closedLine->isClosedShape());
+        $this->assertEquals($closedLine->getFirst(), $closedLine->getLast());
+    }
+
+    public function testIsClosedShape(): void
+    {
+        $this->assertFalse($this->line->isClosedShape());
+        $closedLine = $this->line->getClosedShape();
+        $this->assertTrue($closedLine->isClosedShape());
+    }
+
+    public function testContains(): void
+    {
+        $point = new Point(-2.27354, 53.48575);
+        $this->assertTrue($this->line->contains($point));
+        $pointNotInLine = new Point(-2.20000, 53.40000);
+        $this->assertFalse($this->line->contains($pointNotInLine));
+    }
 }

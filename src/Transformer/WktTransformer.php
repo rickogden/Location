@@ -23,6 +23,8 @@ use Ricklab\Location\Geometry\MultiPolygon;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Geometry\Polygon;
 
+use function sprintf;
+
 /**
  * @psalm-immutable
  */
@@ -59,12 +61,13 @@ final class WktTransformer
 
     public static function decode(string $wkt): GeometryInterface
     {
-        $type = mb_strtoupper(trim(mb_substr($wkt, 0, mb_strpos($wkt, '(') ?: 0)));
-        $wkt = trim(str_replace($type, '', $wkt));
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
+        $type = mb_strtoupper(mb_trim(mb_substr($wkt, 0, mb_strpos($wkt, '(') ?: 0)));
+        $wkt = mb_trim(str_replace($type, '', $wkt));
 
         if (self::TYPE_GEOMETRYCOLLECTION === $type) {
             $geocol = preg_replace('/,?\s*([A-Za-z]+\()/', ':$1', $wkt);
-            $geocol = trim($geocol);
+            $geocol = mb_trim($geocol);
             $geocol = preg_replace('/^\(/', '', $geocol);
             $geocol = preg_replace('/\)$/', '', $geocol);
 

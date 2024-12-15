@@ -10,6 +10,8 @@ use function in_array;
 use InvalidArgumentException;
 use LogicException;
 
+use function sprintf;
+
 final class Geohash
 {
     private const HASH_MAP = [

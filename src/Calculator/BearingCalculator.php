@@ -15,6 +15,7 @@ final class BearingCalculator implements UsesGeoSpatialExtensionInterface
 
     public static function calculateInitialBearing(Point $point1, Point $point2): float
     {
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if (
             self::$useSpatialExtension
             && ($geospatialVersion = phpversion('geospatial'))

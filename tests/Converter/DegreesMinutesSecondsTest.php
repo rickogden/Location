@@ -26,7 +26,7 @@ class DegreesMinutesSecondsTest extends TestCase
         int $degrees,
         int $minutes,
         float $seconds,
-        string $direction
+        string $direction,
     ): void {
         $dms = DegreesMinutesSeconds::fromDecimal($dec, $axis);
         $this->assertSame($degrees, $dms->getDegrees());
@@ -44,7 +44,7 @@ class DegreesMinutesSecondsTest extends TestCase
         int $degrees,
         int $minutes,
         float $seconds,
-        string $direction
+        string $direction,
     ): void {
         $dms = new DegreesMinutesSeconds($degrees, $minutes, $seconds, $direction);
         $this->assertSame($axis, $dms->getAxis());

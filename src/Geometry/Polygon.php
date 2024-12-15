@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use function array_values;
+use function count;
 
+use InvalidArgumentException;
 use IteratorAggregate;
 use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Converter\UnitConverter;
@@ -19,7 +21,7 @@ final class Polygon implements GeometryInterface, IteratorAggregate
     use GeometryTrait;
 
     /**
-     * @var list<LineString>
+     * @var non-empty-list<LineString>
      *
      * @readonly
      */
@@ -48,6 +50,10 @@ final class Polygon implements GeometryInterface, IteratorAggregate
      */
     public function __construct(array $lines)
     {
+        if (count($lines) < 1) {
+            throw new InvalidArgumentException('array must have 1 or more elements.');
+        }
+
         $this->geometries = array_map(
             fn (LineString $ls): LineString => $ls->getClosedShape(),
             array_values($lines)

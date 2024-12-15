@@ -7,6 +7,9 @@ namespace Ricklab\Location\Geometry;
 use function count;
 
 use InvalidArgumentException;
+
+use function is_string;
+
 use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\DistanceCalculator;
@@ -18,6 +21,7 @@ use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
 
 use function round;
+use function sprintf;
 
 final class Point implements GeometryInterface
 {
@@ -102,7 +106,8 @@ final class Point implements GeometryInterface
      */
     public function __construct(float|string $long, float|string $lat)
     {
-        if (\is_string($lat)) {
+        if (is_string($lat)) {
+            /** @psalm-suppress DocblockTypeContradiction for safety */
             if (!is_numeric($lat)) {
                 throw new InvalidArgumentException('latitude must be a valid number between -90 and 90.');
             }
@@ -114,7 +119,8 @@ final class Point implements GeometryInterface
             $this->latitude = $lat;
         }
 
-        if (\is_string($long)) {
+        if (is_string($long)) {
+            /** @psalm-suppress DocblockTypeContradiction for safety */
             if (!is_numeric($long)) {
                 throw new InvalidArgumentException('longitude must be a valid number between -180 and 180.');
             }
@@ -190,7 +196,7 @@ final class Point implements GeometryInterface
     public function distanceTo(
         Point $point2,
         string $unit = UnitConverter::UNIT_METERS,
-        ?DistanceCalculator $calculator = null
+        ?DistanceCalculator $calculator = null,
     ): float {
         if (null === $calculator) {
             $result = DefaultDistanceCalculator::calculate($this, $point2, DefaultEllipsoid::get());

@@ -173,4 +173,83 @@ class PointTest extends TestCase
         $this->assertEquals($midpoint->getLatitude(), $fraction05->getLatitude());
         $this->assertEquals($midpoint->getLongitude(), $fraction05->getLongitude());
     }
+
+    public function testInitialBearingTo(): void
+    {
+        $point2 = new Point(-2.23194, 53.48204);
+        $bearing = $this->point->initialBearingTo($point2);
+        $this->assertSame(98.50702, round($bearing, 5));
+    }
+
+    public function testFinalBearingTo(): void
+    {
+        $point2 = new Point(-2.23194, 53.48204);
+        $bearing = $this->point->finalBearingTo($point2);
+        $this->assertSame(98.54046, round($bearing, 5));
+    }
+
+    public function testGetBBoxByRadius(): void
+    {
+        $bbox = $this->point->getBBoxByRadius(10, UnitConverter::UNIT_KM);
+        $this->assertSame(20000.0, round($bbox->getNorthEast()->distanceTo($bbox->getSouthEast()), 5));
+        $this->assertSame(19957.57328, round($bbox->getNorthWest()->distanceTo($bbox->getNorthEast()), 5));
+    }
+
+    public function testRound(): void
+    {
+        $roundedPoint = $this->point->round(2);
+        $this->assertEquals(53.49, $roundedPoint->getLatitude());
+        $this->assertEquals(-2.27, $roundedPoint->getLongitude());
+    }
+
+    public function testToArray(): void
+    {
+        $array = $this->point->toArray();
+        $this->assertEquals([$this->lon, $this->lat], $array);
+    }
+
+    public function testGetLongitudeAsString(): void
+    {
+        $this->assertEquals((string) $this->lon, $this->point->getLongitudeAsString());
+    }
+
+    public function testGetLatitudeAsString(): void
+    {
+        $this->assertEquals((string) $this->lat, $this->point->getLatitudeAsString());
+    }
+
+    public function testGetPoints(): void
+    {
+        $points = $this->point->getPoints();
+        $this->assertCount(1, $points);
+        $this->assertSame($this->point, $points[0]);
+    }
+
+    public function testLineTo(): void
+    {
+        $point2 = new Point(-2.23194, 53.48204);
+        $line = $this->point->lineTo($point2);
+        $this->assertSame($this->point, $line->getFirst());
+        $this->assertSame($point2, $line->getLast());
+    }
+
+    public function testGetLongitudeInDms(): void
+    {
+        $dms = $this->point->getLongitudeInDms();
+        $this->assertSame(2, $dms->getDegrees());
+        $this->assertSame(16, $dms->getMinutes());
+        $this->assertSame(24.744, round($dms->getSeconds(), 5));
+        $this->assertSame('W', $dms->getDirection());
+        $this->assertSame('LONGITUDE', $dms->getAxis());
+    }
+
+    public function testGetLatitudeInDms(): void
+    {
+        $dms = $this->point->getLatitudeInDms();
+        $this->assertSame(53, $dms->getDegrees());
+        $this->assertSame(29, $dms->getMinutes());
+        $this->assertSame(8.7, round($dms->getSeconds(), 5));
+        $this->assertSame('N', $dms->getDirection());
+        $this->assertSame('LATITUDE', $dms->getAxis());
+    }
 }

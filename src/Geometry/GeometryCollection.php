@@ -8,6 +8,8 @@ use Ricklab\Location\Geometry\Traits\GeometryTrait;
 use Ricklab\Location\Transformer\GeoJsonTransformer;
 use Ricklab\Location\Transformer\WktTransformer;
 
+use function sprintf;
+
 /**
  * Class GeometryCollection.
  */
