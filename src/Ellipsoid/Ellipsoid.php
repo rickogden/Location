@@ -58,4 +58,11 @@ class Ellipsoid implements EllipsoidInterface
 
         return $this->flattening;
     }
+
+    public function equals(Ellipsoid $ellipsoid): bool
+    {
+        return $ellipsoid === $this || ((float) $this->radius === (float) $ellipsoid->radius
+            && (float) $this->majorSemiAxis === (float) $ellipsoid->majorSemiAxis
+            && (float) $this->minorSemiAxis === (float) $ellipsoid->minorSemiAxis);
+    }
 }

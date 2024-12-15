@@ -30,4 +30,6 @@ interface EllipsoidInterface
     public function minorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float|int;
 
     public function flattening(): float|int;
+
+    public function equals(Ellipsoid $ellipsoid): bool;
 }

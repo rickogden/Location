@@ -19,7 +19,9 @@ final class VincentyCalculator implements DistanceCalculator, UsesGeoSpatialExte
 
     public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {
-        if (function_exists('vincenty') && self::$useSpatialExtension && $ellipsoid instanceof Earth) {
+        if (function_exists('vincenty') && self::$useSpatialExtension && (
+            $ellipsoid instanceof Earth || $ellipsoid->equals(new Earth())
+        )) {
             $from = $point1->jsonSerialize();
             $to = $point2->jsonSerialize();
 
