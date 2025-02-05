@@ -12,6 +12,7 @@ use Ricklab\Location\Geometry\Traits\GeometryTrait;
  */
 final class MultiLineString implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
+    /** @use GeometryTrait<LineString> */
     use GeometryTrait;
 
     /**

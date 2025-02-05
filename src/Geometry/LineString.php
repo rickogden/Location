@@ -20,6 +20,7 @@ use Ricklab\Location\Geometry\Traits\GeometryTrait;
  */
 final class LineString implements GeometryInterface, IteratorAggregate
 {
+    /** @use GeometryTrait<Point> */
     use GeometryTrait;
 
     /**

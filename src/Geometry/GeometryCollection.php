@@ -15,6 +15,7 @@ use function sprintf;
  */
 final class GeometryCollection implements GeometryInterface, GeometryCollectionInterface
 {
+    /** @use GeometryTrait<GeometryInterface> */
     use GeometryTrait;
 
     /**
