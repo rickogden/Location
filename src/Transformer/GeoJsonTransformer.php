@@ -270,7 +270,7 @@ final class GeoJsonTransformer
 
     public static function encode(GeometryInterface|FeatureCollection|Feature $object): string
     {
-        return json_encode(self::jsonArray($object));
+        return json_encode(self::jsonArray($object), JSON_THROW_ON_ERROR);
     }
 
     private static function arrayFromGeometry(GeometryInterface $geometry): array

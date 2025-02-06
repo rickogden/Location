@@ -199,9 +199,9 @@ final class Point implements GeometryInterface
         ?DistanceCalculator $calculator = null,
     ): float {
         if (null === $calculator) {
-            $result = DefaultDistanceCalculator::calculate($this, $point2, DefaultEllipsoid::get());
+            $result = DefaultDistanceCalculator::calculateDistance($this, $point2, DefaultEllipsoid::get());
         } else {
-            $result = $calculator::calculate($this, $point2, DefaultEllipsoid::get());
+            $result = $calculator::calculateDistance($this, $point2, DefaultEllipsoid::get());
         }
 
         return UnitConverter::convert($result, UnitConverter::UNIT_METERS, $unit);

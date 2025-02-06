@@ -12,7 +12,7 @@ interface DistanceCalculator
     /**
      * @return float the distance in metres
      */
-    public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float;
+    public static function calculateDistance(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float;
 
     public static function formula(): string;
 }

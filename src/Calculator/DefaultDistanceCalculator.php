@@ -30,9 +30,9 @@ final class DefaultDistanceCalculator implements DistanceCalculator, UsesGeoSpat
         return self::$defaultCalculator;
     }
 
-    public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
+    public static function calculateDistance(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {
-        return self::getDefaultCalculator()::calculate($point1, $point2, $ellipsoid);
+        return self::getDefaultCalculator()::calculateDistance($point1, $point2, $ellipsoid);
     }
 
     public static function formula(): string

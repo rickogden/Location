@@ -16,7 +16,7 @@ final class HaversineCalculator implements DistanceCalculator, UsesGeoSpatialExt
 
     public const FORMULA = 'HAVERSINE';
 
-    public static function calculate(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
+    public static function calculateDistance(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {
         if (self::$useSpatialExtension && function_exists('haversine')) {
             $from = $point1->jsonSerialize();
