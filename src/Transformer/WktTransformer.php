@@ -38,6 +38,7 @@ final class WktTransformer
     private const TYPE_MULTIPOLYGON = 'MULTIPOLYGON';
     private const TYPE_GEOMETRYCOLLECTION = 'GEOMETRYCOLLECTION';
 
+    /** @var array<class-string<GeometryInterface>, string> */
     private const CLASS_MAP = [
         Point::class => self::TYPE_POINT,
         LineString::class => self::TYPE_LINESTRING,
@@ -49,6 +50,7 @@ final class WktTransformer
         BoundingBox::class => self::TYPE_POLYGON,
     ];
 
+    /** @var array<string, class-string<GeometryInterface>> */
     private const TYPE_MAP = [
         self::TYPE_POINT => Point::class,
         self::TYPE_LINESTRING => LineString::class,
@@ -137,7 +139,7 @@ final class WktTransformer
     }
 
     /**
-     * @return class-string<Point>|class-string<LineString>|class-string<Polygon>|class-string<MultiPoint>|class-string<MultiLineString>|class-string<MultiPolygon>|class-string<GeometryCollection>
+     * @return class-string<GeometryInterface>
      */
     private static function getClassFromType(string $type): string
     {

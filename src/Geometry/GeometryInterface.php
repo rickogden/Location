@@ -11,8 +11,10 @@ use JsonSerializable;
  *
  * Interface GeometryInterface
  */
-interface GeometryInterface extends JsonSerializable
+interface GeometryInterface extends JsonSerializable, \Stringable
 {
+    public static function fromArray(array $geometries): self;
+
     /**
      * The geometry in an embedded array format.
      */
@@ -47,4 +49,6 @@ interface GeometryInterface extends JsonSerializable
      * @psalm-assert-if-true self $geometry
      */
     public function equals(GeometryInterface $geometry): bool;
+
+    public function getBBox(): BoundingBox;
 }

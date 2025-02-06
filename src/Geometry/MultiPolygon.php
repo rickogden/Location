@@ -84,4 +84,9 @@ final class MultiPolygon implements GeometryInterface, GeometryCollectionInterfa
     {
         return $this->geometries;
     }
+
+    public function getBBox(): BoundingBox
+    {
+        return BoundingBox::fromGeometry($this);
+    }
 }

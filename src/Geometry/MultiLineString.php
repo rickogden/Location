@@ -89,4 +89,9 @@ final class MultiLineString implements GeometryInterface, GeometryCollectionInte
     {
         return $this->geometries;
     }
+
+    public function getBBox(): BoundingBox
+    {
+        return BoundingBox::fromGeometry($this);
+    }
 }

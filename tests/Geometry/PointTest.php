@@ -252,4 +252,15 @@ class PointTest extends TestCase
         $this->assertSame('N', $dms->getDirection());
         $this->assertSame('LATITUDE', $dms->getAxis());
     }
+
+    public function testGetBBox(): void
+    {
+        $bbox = $this->point->getBBox();
+        $this->assertTrue($this->point->equals($bbox->getNorthEast()));
+        $this->assertTrue($this->point->equals($bbox->getNorthWest()));
+        $this->assertTrue($this->point->equals($bbox->getSouthEast()));
+        $this->assertTrue($this->point->equals($bbox->getSouthWest()));
+        $this->assertTrue($this->point->equals($bbox->getCenter()));
+        $this->assertSame([$this->lon, $this->lat, $this->lon, $this->lat], $bbox->getBounds());
+    }
 }

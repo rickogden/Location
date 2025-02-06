@@ -108,4 +108,9 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
     {
         return $this->geometries;
     }
+
+    public function getBBox(): BoundingBox
+    {
+        return BoundingBox::fromGeometry($this);
+    }
 }

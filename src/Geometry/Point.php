@@ -386,4 +386,9 @@ final class Point implements GeometryInterface
 
         return $point;
     }
+
+    public function getBBox(): BoundingBox
+    {
+        return BoundingBox::fromGeometry($this);
+    }
 }
