@@ -9,6 +9,7 @@ use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
  * @implements IteratorAggregate<LineString>
+ * @implements GeometryCollectionInterface<LineString>
  */
 final class MultiLineString implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
@@ -79,6 +80,11 @@ final class MultiLineString implements GeometryInterface, GeometryCollectionInte
         return new self(array_values($geometries));
     }
 
+    /**
+     * @return LineString[] an array of the LineStrings
+     *
+     * @psalm-return list<LineString> an array of the LineStrings
+     */
     protected function getGeometryArray(): array
     {
         return $this->geometries;

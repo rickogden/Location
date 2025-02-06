@@ -9,9 +9,12 @@ use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
  * @implements IteratorAggregate<Polygon>
+ * @implements GeometryCollectionInterface<Polygon>
  */
 final class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
+    /** @use GeometryTrait<Polygon>
+     */
     use GeometryTrait;
 
     /**
@@ -72,6 +75,11 @@ final class MultiPolygon implements GeometryInterface, GeometryCollectionInterfa
         return new self(array_values($geometries));
     }
 
+    /**
+     * @return Polygon[]
+     *
+     * @psalm-return list<Polygon>
+     */
     protected function getGeometryArray(): array
     {
         return $this->geometries;

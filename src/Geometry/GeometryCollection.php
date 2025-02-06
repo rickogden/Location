@@ -11,7 +11,7 @@ use Ricklab\Location\Transformer\WktTransformer;
 use function sprintf;
 
 /**
- * Class GeometryCollection.
+ * @implements GeometryCollectionInterface<GeometryInterface>
  */
 final class GeometryCollection implements GeometryInterface, GeometryCollectionInterface
 {
@@ -101,6 +101,9 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
         return new self(array_values($geometries));
     }
 
+    /**
+     * @return list<GeometryInterface>
+     */
     protected function getGeometryArray(): array
     {
         return $this->geometries;

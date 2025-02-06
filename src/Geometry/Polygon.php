@@ -18,6 +18,7 @@ use Ricklab\Location\Geometry\Traits\GeometryTrait;
  */
 final class Polygon implements GeometryInterface, IteratorAggregate
 {
+    /** @use GeometryTrait<LineString> */
     use GeometryTrait;
 
     /**
@@ -89,6 +90,11 @@ final class Polygon implements GeometryInterface, IteratorAggregate
         return $this->geometries;
     }
 
+    /**
+     * @return LineString[]
+     *
+     * @psalm-return list<LineString>
+     */
     protected function getGeometryArray(): array
     {
         return $this->geometries;

@@ -9,9 +9,11 @@ use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
  * @implements IteratorAggregate<Point>
+ * @implements GeometryCollectionInterface<Point>
  */
 final class MultiPoint implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
+    /** @use GeometryTrait<Point> */
     use GeometryTrait;
 
     /**
@@ -76,6 +78,11 @@ final class MultiPoint implements GeometryInterface, GeometryCollectionInterface
         return BoundingBox::fromGeometry($this);
     }
 
+    /**
+     * @return Point[]
+     *
+     * @psalm-return list<Point>
+     */
     protected function getGeometryArray(): array
     {
         return $this->geometries;

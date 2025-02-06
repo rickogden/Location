@@ -14,7 +14,7 @@ use Ricklab\Location\Geometry\Point;
 use function sprintf;
 
 /**
- * @author Rick Ogden <rick@rickogden.com>
+ * @template T of GeometryInterface
  */
 trait GeometryTrait
 {
@@ -23,7 +23,7 @@ trait GeometryTrait
     /**
      * @return GeometryInterface[]
      *
-     * @psalm-return list<GeometryInterface>
+     * @psalm-return list<GeometryInterface&T>
      */
     abstract protected function getGeometryArray(): array;
 

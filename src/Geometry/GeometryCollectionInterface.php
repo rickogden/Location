@@ -13,15 +13,17 @@ namespace Ricklab\Location\Geometry;
  * The interface for all collection geometry types.
  *
  * Interface GeometryCollectionInterface
+ *
+ * @template T of GeometryInterface
  */
 interface GeometryCollectionInterface
 {
     /**
      * Returns the geometries in the collection as an array.
      *
-     * @return GeometryInterface[]
+     * @return (GeometryInterface&T)[]
      *
-     * @psalm-return list<GeometryInterface>
+     * @psalm-return list<GeometryInterface&T>
      */
     public function getGeometries(): array;
 }
