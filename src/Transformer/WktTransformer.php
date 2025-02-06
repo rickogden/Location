@@ -66,10 +66,10 @@ final class WktTransformer
         $wkt = mb_trim(str_replace($type, '', $wkt));
 
         if (self::TYPE_GEOMETRYCOLLECTION === $type) {
-            $geocol = preg_replace('/,?\s*([A-Za-z]+\()/', ':$1', $wkt);
+            $geocol = preg_replace('/,?\s*([A-Za-z]+\()/', ':$1', $wkt) ?? '';
             $geocol = mb_trim($geocol);
-            $geocol = preg_replace('/^\(/', '', $geocol);
-            $geocol = preg_replace('/\)$/', '', $geocol);
+            $geocol = preg_replace('/^\(/', '', $geocol) ?? '';
+            $geocol = preg_replace('/\)$/', '', $geocol) ?? '';
 
             $arrays = [];
             foreach (explode(':', $geocol) as $subwkt) {
