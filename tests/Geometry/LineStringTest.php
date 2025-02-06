@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use function extension_loaded;
+
 use Generator;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Calculator\BearingCalculator;
+use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Converter\UnitConverter;
 
@@ -50,9 +52,16 @@ class LineStringTest extends TestCase
 
     public function testInitialBearing(): void
     {
-        BearingCalculator::disableGeoSpatialExtension();
+        CalculatorRegistry::disableGeoSpatialExtension();
         $this->assertEquals(98.50702, round($this->line->getInitialBearing(), 5));
-        BearingCalculator::enableGeoSpatialExtension();
+    }
+
+    public function testInitialBearingWithExtension(): void
+    {
+        if (!extension_loaded('geospatial')) {
+            $this->markTestSkipped('The geospatial extension is not available.');
+        }
+        CalculatorRegistry::enableGeoSpatialExtension();
         $this->assertEquals(98.50702, round($this->line->getInitialBearing(), 5));
     }
 

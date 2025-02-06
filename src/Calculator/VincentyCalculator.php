@@ -17,9 +17,9 @@ final class VincentyCalculator implements DistanceCalculator, UsesGeoSpatialExte
 
     public const FORMULA = 'VINCENTY';
 
-    public static function calculateDistance(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
+    public function calculateDistance(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {
-        if (function_exists('vincenty') && self::$useSpatialExtension && (
+        if ($this->useSpatialExtension && function_exists('vincenty') && (
             $ellipsoid instanceof Earth || $ellipsoid->equals(new Earth())
         )) {
             $from = $point1->jsonSerialize();
@@ -69,7 +69,7 @@ final class VincentyCalculator implements DistanceCalculator, UsesGeoSpatialExte
         return $minorSemiAxis * $A * ($sigma - $deltaSigma);
     }
 
-    public static function formula(): string
+    public function formula(): string
     {
         return self::FORMULA;
     }

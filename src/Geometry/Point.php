@@ -10,10 +10,9 @@ use InvalidArgumentException;
 
 use function is_string;
 
-use Ricklab\Location\Calculator\BearingCalculator;
+use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\DistanceCalculator;
-use Ricklab\Location\Calculator\FractionAlongLineCalculator;
 use Ricklab\Location\Converter\DegreesMinutesSeconds;
 use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
@@ -199,10 +198,10 @@ final class Point implements GeometryInterface
         ?DistanceCalculator $calculator = null,
     ): float {
         if (null === $calculator) {
-            $result = DefaultDistanceCalculator::calculateDistance($this, $point2, DefaultEllipsoid::get());
-        } else {
-            $result = $calculator::calculateDistance($this, $point2, DefaultEllipsoid::get());
+            $calculator = CalculatorRegistry::getDistanceCalculator();
         }
+
+        $result = $calculator->calculateDistance($this, $point2, DefaultEllipsoid::get());
 
         return UnitConverter::convert($result, UnitConverter::UNIT_METERS, $unit);
     }
@@ -261,7 +260,7 @@ final class Point implements GeometryInterface
      */
     public function initialBearingTo(Point $point2): float
     {
-        return BearingCalculator::calculateInitialBearing($this, $point2);
+        return CalculatorRegistry::getBearingCalculator()->calculateInitialBearing($this, $point2);
     }
 
     /**
@@ -271,7 +270,7 @@ final class Point implements GeometryInterface
      */
     public function finalBearingTo(Point $point2): float
     {
-        return BearingCalculator::calculateFinalBearing($this, $point2);
+        return CalculatorRegistry::getBearingCalculator()->calculateFinalBearing($this, $point2);
     }
 
     /**
@@ -316,11 +315,11 @@ final class Point implements GeometryInterface
      */
     public function getFractionAlongLineTo(Point $point, float $fraction, ?DistanceCalculator $calculator = null): self
     {
-        return FractionAlongLineCalculator::calculate(
+        return CalculatorRegistry::getFractionAlongLineCalculator()->calculateFractionAlongLine(
             $this,
             $point,
             $fraction,
-            $calculator ?? DefaultDistanceCalculator::getDefaultCalculator(),
+            $calculator ?? CalculatorRegistry::getDistanceCalculator(),
             DefaultEllipsoid::get()
         );
     }

@@ -7,7 +7,7 @@ namespace Ricklab\Location\Geometry;
 use function count;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Calculator\DefaultDistanceCalculator;
+use Ricklab\Location\Calculator\CalculatorRegistry;
 
 class PolygonTest extends TestCase
 {
@@ -18,7 +18,7 @@ class PolygonTest extends TestCase
 
     protected function setUp(): void
     {
-        DefaultDistanceCalculator::disableGeoSpatialExtension();
+        CalculatorRegistry::disableGeoSpatialExtension();
         $this->polygon = Polygon::fromArray([[new Point(3, 2), new Point(4, 2), new Point(4, 3)]]);
     }
 

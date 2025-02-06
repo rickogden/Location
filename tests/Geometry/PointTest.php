@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use function extension_loaded;
+
 use Generator;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Calculator\DefaultDistanceCalculator;
+use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Converter\DegreesMinutesSeconds;
 use Ricklab\Location\Converter\UnitConverter;
@@ -106,9 +108,17 @@ class PointTest extends TestCase
 
     public function testFractionAlongLine(): void
     {
-        DefaultDistanceCalculator::disableGeoSpatialExtension();
+        CalculatorRegistry::disableGeoSpatialExtension();
         $this->fractionAlongLine();
-        DefaultDistanceCalculator::enableGeoSpatialExtension();
+    }
+
+    public function testFractionAlongLineWithExtension(): void
+    {
+        if (!extension_loaded('geospatial')) {
+            $this->markTestSkipped('The geospatial extension is not available.');
+        }
+
+        CalculatorRegistry::enableGeoSpatialExtension();
         $this->fractionAlongLine();
     }
 
