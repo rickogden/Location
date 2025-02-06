@@ -39,6 +39,9 @@
             "Ricklab\\Location\\": "src/"
         }
     },
+    "suggest": {
+        "ext-geospatial": ">=0.2.2-dev"
+    },
     "autoload-dev": {
         "psr-4": {
             "Ricklab\\Location\\": "tests/",
