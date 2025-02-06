@@ -8,6 +8,7 @@ use function extension_loaded;
 
 use Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\VincentyCalculator;
@@ -131,9 +132,7 @@ class PointTest extends TestCase
         yield 'Same object' => [$point1, $point1];
     }
 
-    /**
-     * @dataProvider equalProvider
-     */
+    #[DataProvider('equalProvider')]
     public function testEqualsIsTrue(Point $point1, Point $point2): void
     {
         $this->assertTrue($point1->equals($point2));
@@ -147,9 +146,7 @@ class PointTest extends TestCase
         yield 'Different geometry' => [$point1, new LineString([new Point(1.1, -1.3), new Point(1.1, -1.31)])];
     }
 
-    /**
-     * @dataProvider notEqualProvider
-     */
+    #[DataProvider('notEqualProvider')]
     public function testEqualsIsFalse(Point $point1, GeometryInterface $geometry): void
     {
         $this->assertFalse($point1->equals($geometry));
@@ -160,9 +157,7 @@ class PointTest extends TestCase
         yield ['u4pruydqqvj', 10.40744, 57.64911];
     }
 
-    /**
-     * @dataProvider geoHahProvider
-     */
+    #[DataProvider('geoHahProvider')]
     public function testGetGeoHash(string $hash, float $lon, float $lat): void
     {
         $point = new Point($lon, $lat);

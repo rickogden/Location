@@ -6,10 +6,15 @@ namespace Ricklab\Location\Calculator;
 
 use function extension_loaded;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Geometry\Point;
 
+#[CoversClass(VincentyCalculator::class)]
+#[UsesClass(Point::class)]
+#[UsesClass(DefaultEllipsoid::class)]
 class VincentyCalculatorTest extends TestCase
 {
     private Point $buninyond;

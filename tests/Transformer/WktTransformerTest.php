@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Transformer;
 
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Geometry\GeometryCollection;
 use Ricklab\Location\Geometry\GeometryInterface;
@@ -112,9 +113,7 @@ class WktTransformerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider geometryProvider
-     */
+    #[DataProvider('geometryProvider')]
     public function testDecode(string $wkt, GeometryInterface $geometry): void
     {
         $decoded = WktTransformer::decode($wkt);
@@ -129,9 +128,7 @@ class WktTransformerTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider geometryProvider
-     */
+    #[DataProvider('geometryProvider')]
     public function testEncode(string $wkt, GeometryInterface $geometry): void
     {
         $encoded = WktTransformer::encode($geometry);

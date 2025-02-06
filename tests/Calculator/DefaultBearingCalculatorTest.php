@@ -6,10 +6,12 @@ namespace Ricklab\Location\Calculator;
 
 use function extension_loaded;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Geometry\Point;
 
-class BearingCalculatorTest extends TestCase
+#[CoversClass(DefaultBearingCalculator::class)]
+class DefaultBearingCalculatorTest extends TestCase
 {
     private Point $point1;
     private Point $point2;

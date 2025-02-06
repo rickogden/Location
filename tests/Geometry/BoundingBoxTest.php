@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class BoundingBoxTest extends TestCase
@@ -43,9 +44,7 @@ class BoundingBoxTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider trueContains
-     */
+    #[DataProvider('trueContains')]
     public function testContains(BoundingBox $boundingBox, GeometryInterface $geometry): void
     {
         $this->assertTrue($boundingBox->contains($geometry));
@@ -83,27 +82,21 @@ class BoundingBoxTest extends TestCase
         yield [$bbox, new LineString([new Point(0, 53), new Point(0, 55)])];
     }
 
-    /**
-     * @dataProvider intersectingProvider
-     * @dataProvider doesNotIntersectProvider
-     */
+    #[DataProvider('intersectingProvider')]
+    #[DataProvider('doesNotIntersectProvider')]
     public function testContainsFalse(BoundingBox $boundingBox, GeometryInterface $geometry): void
     {
         $this->assertFalse($boundingBox->contains($geometry));
     }
 
-    /**
-     * @dataProvider trueContains
-     * @dataProvider intersectingProvider
-     */
+    #[DataProvider('trueContains')]
+    #[DataProvider('intersectingProvider')]
     public function testIntersects(BoundingBox $boundingBox, GeometryInterface $geometry): void
     {
         $this->assertTrue($boundingBox->intersects($geometry));
     }
 
-    /**
-     * @dataProvider doesNotIntersectProvider
-     */
+    #[DataProvider('doesNotIntersectProvider')]
     public function testNotIntersects(BoundingBox $boundingBox, GeometryInterface $geometry): void
     {
         $this->assertFalse($boundingBox->intersects($geometry));

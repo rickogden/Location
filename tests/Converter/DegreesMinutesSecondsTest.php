@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Ricklab\Location\Converter;
 
 use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(DegreesMinutesSeconds::class)]
 class DegreesMinutesSecondsTest extends TestCase
 {
     public static function decimalDmsProvider(): Generator
@@ -17,9 +20,7 @@ class DegreesMinutesSecondsTest extends TestCase
         yield [-1.0342916666666668, 'LATITUDE', 1, 2, 3.45, 'S'];
     }
 
-    /**
-     * @dataProvider decimalDmsProvider
-     */
+    #[DataProvider('decimalDmsProvider')]
     public function testFromDecimal(
         float $dec,
         string $axis,
@@ -35,9 +36,7 @@ class DegreesMinutesSecondsTest extends TestCase
         $this->assertSame($direction, $dms->getDirection());
     }
 
-    /**
-     * @dataProvider decimalDmsProvider
-     */
+    #[DataProvider('decimalDmsProvider')]
     public function testToDecimal(
         float $dec,
         string $axis,
@@ -76,9 +75,7 @@ class DegreesMinutesSecondsTest extends TestCase
         yield ['-79° 58\' E', -79, 58, 0, 'E'];
     }
 
-    /**
-     * @dataProvider stringDmsProvider
-     */
+    #[DataProvider('stringDmsProvider')]
     public function testToString(string $string, int $degrees, int $minutes, float $seconds, string $direction): void
     {
         $dms = new DegreesMinutesSeconds($degrees, $minutes, $seconds, $direction);
@@ -86,11 +83,9 @@ class DegreesMinutesSecondsTest extends TestCase
         $this->assertSame($string, (string) $dms);
     }
 
-    /**
-     * @dataProvider stringDmsProvider
-     * @dataProvider malformedStringsToDms
-     * @dataProvider missingElements
-     */
+    #[DataProvider('stringDmsProvider')]
+    #[DataProvider('malformedStringsToDms')]
+    #[DataProvider('missingElements')]
     public function testFromString(string $string, int $degrees, int $minutes, float $seconds, string $direction): void
     {
         $dms = DegreesMinutesSeconds::fromString($string);

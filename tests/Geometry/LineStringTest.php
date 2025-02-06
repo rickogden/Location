@@ -8,6 +8,7 @@ use function extension_loaded;
 
 use Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\VincentyCalculator;
@@ -126,9 +127,7 @@ class LineStringTest extends TestCase
         yield 'Same object' => [$lineString, $lineString];
     }
 
-    /**
-     * @dataProvider equalProvider
-     */
+    #[DataProvider('equalProvider')]
     public function testEqualsIsTrue(LineString $lineString, LineString $lineString2): void
     {
         $this->assertTrue($lineString->equals($lineString2));
