@@ -26,7 +26,6 @@ return $config->setRules([
         'is_null' => true,
         'linebreak_after_opening_tag' => true,
         'list_syntax' => ['syntax' => 'short'],
-        'mb_str_functions' => true,
         'method_argument_space' => ['on_multiline' => 'ensure_fully_multiline'],
         'native_constant_invocation' => true,
         'native_function_invocation' => ['scope' => 'namespaced'],

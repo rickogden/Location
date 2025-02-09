@@ -13,8 +13,7 @@ use Ricklab\Location\Geometry\Traits\GeometryTrait;
  */
 final class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
-    /** @use GeometryTrait<Polygon>
-     */
+    /** @use GeometryTrait<Polygon> */
     use GeometryTrait;
 
     /**
