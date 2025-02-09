@@ -184,7 +184,7 @@ final class LineString implements GeometryInterface, IteratorAggregate
     /**
      * @return list<Point>
      */
-    protected function getGeometryArray(): array
+    public function getChildren(): array
     {
         return $this->geometries;
     }

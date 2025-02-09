@@ -83,7 +83,7 @@ final class MultiPoint implements GeometryInterface, GeometryCollectionInterface
      *
      * @psalm-return list<Point>
      */
-    protected function getGeometryArray(): array
+    public function getChildren(): array
     {
         return $this->geometries;
     }

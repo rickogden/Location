@@ -259,4 +259,10 @@ final class BoundingBox implements GeometryInterface
     {
         return $geometry instanceof self && $this->getBounds() === $geometry->getBounds();
     }
+
+    /** @return list<LineString> */
+    public function getChildren(): array
+    {
+        return $this->getPolygon()->getChildren();
+    }
 }

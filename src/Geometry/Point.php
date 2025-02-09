@@ -390,4 +390,9 @@ final class Point implements GeometryInterface
     {
         return BoundingBox::fromGeometry($this);
     }
+
+    public function getChildren(): array
+    {
+        return [];
+    }
 }

@@ -95,7 +95,7 @@ final class Polygon implements GeometryInterface, IteratorAggregate
      *
      * @psalm-return list<LineString>
      */
-    protected function getGeometryArray(): array
+    public function getChildren(): array
     {
         return $this->geometries;
     }

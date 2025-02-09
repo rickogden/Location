@@ -80,7 +80,7 @@ final class MultiPolygon implements GeometryInterface, GeometryCollectionInterfa
      *
      * @psalm-return list<Polygon>
      */
-    protected function getGeometryArray(): array
+    public function getChildren(): array
     {
         return $this->geometries;
     }

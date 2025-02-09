@@ -25,7 +25,7 @@ trait GeometryTrait
      *
      * @psalm-return list<GeometryInterface&T>
      */
-    abstract protected function getGeometryArray(): array;
+    abstract public function getChildren(): array;
 
     public function __toString(): string
     {
@@ -40,7 +40,7 @@ trait GeometryTrait
                 ', ',
                 array_map(
                     fn (GeometryInterface $g): string => $g->wktFormat(),
-                    $this->getGeometryArray()
+                    $this->getChildren()
                 )
             )
         );
@@ -55,7 +55,7 @@ trait GeometryTrait
     {
         return array_map(
             static fn (GeometryInterface $geometry): array => $geometry->toArray(),
-            $this->getGeometryArray()
+            $this->getChildren()
         );
     }
 
@@ -68,7 +68,7 @@ trait GeometryTrait
     {
         $points = array_map(
             static fn (GeometryInterface $geometry): array => $geometry->getPoints(),
-            $this->getGeometryArray()
+            $this->getChildren()
         );
 
         return array_merge(...$points);
@@ -76,7 +76,7 @@ trait GeometryTrait
 
     public function getIterator(): ArrayIterator
     {
-        return new ArrayIterator($this->getGeometryArray());
+        return new ArrayIterator($this->getChildren());
     }
 
     public function equals(GeometryInterface $geometry): bool

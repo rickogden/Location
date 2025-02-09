@@ -85,7 +85,7 @@ final class MultiLineString implements GeometryInterface, GeometryCollectionInte
      *
      * @psalm-return list<LineString> an array of the LineStrings
      */
-    protected function getGeometryArray(): array
+    public function getChildren(): array
     {
         return $this->geometries;
     }

@@ -51,4 +51,7 @@ interface GeometryInterface extends JsonSerializable, \Stringable
     public function equals(GeometryInterface $geometry): bool;
 
     public function getBBox(): BoundingBox;
+
+    /** @return list<GeometryInterface> */
+    public function getChildren(): array;
 }

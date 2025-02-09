@@ -104,7 +104,7 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
     /**
      * @return list<GeometryInterface>
      */
-    protected function getGeometryArray(): array
+    public function getChildren(): array
     {
         return $this->geometries;
     }
