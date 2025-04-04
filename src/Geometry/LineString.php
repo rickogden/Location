@@ -30,7 +30,7 @@ final class LineString implements GeometryInterface, IteratorAggregate
      *
      * @psalm-var non-empty-list<Point>
      */
-    protected array $geometries;
+    protected readonly array $geometries;
     protected int $position = 0;
 
     public static function fromArray(array $geometries): self

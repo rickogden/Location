@@ -23,10 +23,8 @@ final class Polygon implements GeometryInterface, IteratorAggregate
 
     /**
      * @var non-empty-list<LineString>
-     *
-     * @readonly
      */
-    private array $geometries;
+    private readonly array $geometries;
 
     public static function fromArray(array $geometries): self
     {

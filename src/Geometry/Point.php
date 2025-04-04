@@ -31,17 +31,10 @@ final class Point implements GeometryInterface
     public const MAX_LONGITUDE = 180;
     public const MIN_LONGITUDE = -180;
 
-    /** @readonly  */
-    private float $longitude;
-
-    /** @readonly  */
-    private float $latitude;
-
-    /** @readonly  */
-    private string $longitudeString;
-
-    /** @readonly  */
-    private string $latitudeString;
+    private readonly float $longitude;
+    private readonly float $latitude;
+    private readonly string $longitudeString;
+    private readonly string $latitudeString;
 
     public static function fromArray(array $geometries): self
     {
@@ -377,13 +370,10 @@ final class Point implements GeometryInterface
 
     public function round(int $precision): Point
     {
-        $point = clone $this;
-        $point->latitude = round($this->latitude, $precision);
-        $point->latitudeString = (string) $point->latitude;
-        $point->longitude = round($this->longitude, $precision);
-        $point->longitudeString = (string) $point->longitude;
+        $latitude = round($this->latitude, $precision);
+        $longitude = round($this->longitude, $precision);
 
-        return $point;
+        return new self($longitude, $latitude);
     }
 
     public function getBBox(): BoundingBox

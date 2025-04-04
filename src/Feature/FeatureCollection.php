@@ -22,13 +22,10 @@ use Ricklab\Location\Transformer\GeoJsonTransformer;
 final class FeatureCollection implements IteratorAggregate, JsonSerializable
 {
     /**
-     * @readonly
-     *
      * @var list<Feature>
      */
-    private array $features;
-    /** @readonly */
-    private bool $withBbox;
+    private readonly array $features;
+    private readonly bool $withBbox;
     private ?BoundingBox $bboxCache = null;
 
     /**

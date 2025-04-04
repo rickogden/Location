@@ -21,7 +21,7 @@ trait GeometryTrait
     use TransformationTrait;
 
     /**
-     * @return GeometryInterface[]
+     * @return GeometryInterface&T[]
      *
      * @psalm-return list<GeometryInterface&T>
      */

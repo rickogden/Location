@@ -146,11 +146,11 @@ class WkbTransformer
         }
 
         if (Point::class === $type) {
-            /** @var array{1: mixed, 2: mixed} $latlon */
-            $latlon = self::unpack('d2', $wkb);
-            $wkb = substr($wkb, 16);
+            /** @var array{1: mixed, 2: mixed} $lonlat */
+            $lonlat = self::unpack('d2', $wkb);
+            $wkb = substr($wkb, self::WKB_POINT_SIZE);
 
-            return new Point((float) $latlon[1], (float) $latlon[2]);
+            return new Point((float) $lonlat[1], (float) $lonlat[2]);
         }
 
         $childrenCount = (int) self::unpack('L', $wkb)[1];
@@ -215,7 +215,7 @@ class WkbTransformer
     {
         foreach ($geometries as $geometry) {
             if (!$geometry instanceof $type) {
-                throw new InvalidArgumentException('Invalid geometry type');
+                throw new InvalidArgumentException('Unexpected geometry type');
             }
         }
     }

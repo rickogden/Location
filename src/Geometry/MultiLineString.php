@@ -21,7 +21,7 @@ final class MultiLineString implements GeometryInterface, GeometryCollectionInte
      *
      * @var list<LineString>
      */
-    protected array $geometries = [];
+    protected readonly array $geometries;
 
     public static function fromArray(array $geometries): self
     {

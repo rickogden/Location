@@ -21,7 +21,7 @@ final class MultiPoint implements GeometryInterface, GeometryCollectionInterface
      *
      * @var list<Point>
      */
-    protected array $geometries = [];
+    protected readonly array $geometries;
 
     public static function fromArray(array $geometries): self
     {

@@ -11,11 +11,11 @@ use Ricklab\Location\Transformer\GeoJsonTransformer;
 
 final class Feature implements JsonSerializable
 {
-    private string|int|float|null $id;
-    private ?GeometryInterface $geometry;
+    private readonly string|int|float|null $id;
+    private readonly ?GeometryInterface $geometry;
 
-    private array $properties;
-    private bool $bbox;
+    private readonly array $properties;
+    private readonly bool $bbox;
     private ?BoundingBox $bboxCache = null;
 
     public static function createWithExistingBoundingBox(BoundingBox $bbox, array $properties = [], ?GeometryInterface $geometry = null, float|int|string|null $id = null): self

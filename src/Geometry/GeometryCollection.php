@@ -21,7 +21,7 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
     /**
      * @var list<GeometryInterface>
      */
-    protected array $geometries = [];
+    protected readonly array $geometries;
 
     public static function fromArray(array $geometries): self
     {
