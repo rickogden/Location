@@ -22,6 +22,6 @@ jobs:
       - name: Install dependencies
         run: composer update --no-progress --prefer-dist --optimize-autoloader ${{matrix.dependencies}}
       - name: Psalm
-        run: php vendor/bin/psalm --output-format=github --php-version=8.0
+        run: php vendor/bin/psalm --output-format=github --php-version=8.1
       - name: PHPUnit
         run: php vendor/bin/phpunit
