@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
-use Ricklab\Location\Converter\Unit;
 use function array_values;
 use function count;
 
 use InvalidArgumentException;
 use IteratorAggregate;
 use Ricklab\Location\Calculator\DistanceCalculator;
-use Ricklab\Location\Converter\NativeUnitConverter;
+use Ricklab\Location\Converter\Unit;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
@@ -63,8 +62,7 @@ final class Polygon implements GeometryInterface, IteratorAggregate
     /**
      * The length of the perimeter of the outer-most polygon in unit specified.
      *
-     * @param Unit $unit defaults to "meters"
-     *
+     * @param Unit                    $unit       defaults to "meters"
      * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator.
      */
     public function getPerimeter(Unit $unit = Unit::METERS, ?DistanceCalculator $calculator = null): float

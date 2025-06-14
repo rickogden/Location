@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
-use Ricklab\Location\Converter\Unit;
 use function extension_loaded;
 
 use Generator;
@@ -13,7 +12,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\VincentyCalculator;
-use Ricklab\Location\Converter\NativeUnitConverter;
+use Ricklab\Location\Converter\Unit;
 
 class LineStringTest extends TestCase
 {

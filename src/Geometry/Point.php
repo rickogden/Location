@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
-use Ricklab\Location\Converter\Axis;
 use function count;
 
 use InvalidArgumentException;
@@ -16,6 +15,7 @@ use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Calculator\FractionAlongLineCalculator;
+use Ricklab\Location\Converter\Axis;
 use Ricklab\Location\Converter\DegreesMinutesSeconds;
 use Ricklab\Location\Converter\Unit;
 use Ricklab\Location\Converter\UnitConverter;

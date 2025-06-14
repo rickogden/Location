@@ -8,6 +8,7 @@ use function extension_loaded;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Ricklab\Location\Converter\UnitConverter;
 use Ricklab\Location\Geometry\Point;
 
 #[CoversClass(DefaultBearingCalculator::class)]
@@ -24,7 +25,7 @@ class DefaultBearingCalculatorTest extends TestCase
 
     public function testCalculateFinalBearing(): void
     {
-        $bearingCalculator = new DefaultBearingCalculator(false);
+        $bearingCalculator = new DefaultBearingCalculator($this->createMock(UnitConverter::class), false);
         $finalBearing = $bearingCalculator->calculateFinalBearing($this->point1, $this->point2);
         $this->assertSame(157.9, round($finalBearing, 1));
     }
@@ -35,7 +36,7 @@ class DefaultBearingCalculatorTest extends TestCase
             $this->markTestSkipped('The geospatial extension is not available.');
         }
 
-        $bearingCalculator = new DefaultBearingCalculator(true);
+        $bearingCalculator = new DefaultBearingCalculator($this->createMock(UnitConverter::class), true);
         $finalBearing = $bearingCalculator->calculateFinalBearing($this->point1, $this->point2);
         $this->assertSame(157.9, round($finalBearing, 1));
     }

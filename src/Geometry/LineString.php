@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
-use Ricklab\Location\Converter\Unit;
 use function count;
 
 use InvalidArgumentException;
@@ -13,7 +12,7 @@ use function is_array;
 
 use IteratorAggregate;
 use Ricklab\Location\Calculator\DistanceCalculator;
-use Ricklab\Location\Converter\NativeUnitConverter;
+use Ricklab\Location\Converter\Unit;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
@@ -73,8 +72,7 @@ final class LineString implements GeometryInterface, IteratorAggregate
     }
 
     /**
-     * @param Unit $unit defaults to "meters"
-     *
+     * @param Unit                    $unit       defaults to "meters"
      * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator
      */
     public function getLength(Unit $unit = Unit::METERS, ?DistanceCalculator $calculator = null): float

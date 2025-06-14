@@ -4,29 +4,22 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Ellipsoid;
 
-use Ricklab\Location\Converter\Unit;
-use Ricklab\Location\Converter\NativeUnitConverter;
-
 interface EllipsoidInterface
 {
     /**
-     * @return float|numeric-string
+     * @return float|numeric-string in meters
      */
-    public function radius(Unit $unit = Unit::METERS): float|string;
+    public function radius(): float|string;
+
+    /**     *
+     * @return float|numeric-string in meters
+     */
+    public function majorSemiAxis(): float|string;
 
     /**
-     * @param Unit $unit unit of measurement
-     *
-     * @return float|numeric-string
+     * @return float|numeric-string in meters
      */
-    public function majorSemiAxis(Unit $unit = Unit::METERS): float|string;
-
-    /**
-     * @param Unit $unit unit of measurement
-     *
-     * @return float|numeric-string
-     */
-    public function minorSemiAxis(Unit $unit = Unit::METERS): float|string;
+    public function minorSemiAxis(): float|string;
 
     /**
      * @return float|numeric-string

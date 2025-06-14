@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
-use Ricklab\Location\Converter\Axis;
-use Ricklab\Location\Converter\Direction;
-use Ricklab\Location\Converter\Unit;
 use function extension_loaded;
 
 use Generator;
-use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\VincentyCalculator;
+use Ricklab\Location\Converter\Axis;
 use Ricklab\Location\Converter\DegreesMinutesSeconds;
-use Ricklab\Location\Converter\NativeUnitConverter;
+use Ricklab\Location\Converter\Direction;
+use Ricklab\Location\Converter\Unit;
 
 class PointTest extends TestCase
 {

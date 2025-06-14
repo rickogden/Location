@@ -22,4 +22,9 @@ final class Earth extends Ellipsoid
     {
         parent::__construct(self::RADIUS, self::MAJOR_SEMI_AXIS, self::MINOR_SEMI_AXIS);
     }
+
+    public function equals(Ellipsoid $ellipsoid): bool
+    {
+        return $ellipsoid instanceof self || parent::equals($ellipsoid);
+    }
 }

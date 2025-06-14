@@ -30,24 +30,36 @@ enum Unit: string
     case YARDS = '1.0936133';
     case NAUTICAL_MILES = '0.0005399568';
 
-    public static function convert(float $distance, Unit $from, Unit $to): float
+    /**
+     * @param float|numeric-string $distance
+     *
+     * @return float|numeric-string
+     */
+    public static function convert(float|string $distance, Unit $from, Unit $to): float|string
     {
-        $m = $from->toMeters($distance);
-
-        return $to->fromMeters($m);
+        return UnitConverterRegistry::getUnitConverter()->convert($distance, $from, $to);
     }
 
     /**
      * A micro-optimised static method for converting from meters.
+     *
+     * @param float|numeric-string $distance
+     *
+     * @return float|numeric-string
      */
-    public function fromMeters(float $distance): float
+    public function fromMeters(float|string $distance): float|string
     {
-        return $distance * (float) $this->value;
+        return UnitConverterRegistry::getUnitConverter()->convertFromMeters($distance, $this);
     }
 
-    public function toMeters(float $distance): float
+    /**
+     * @param float|numeric-string $distance
+     *
+     * @return float|numeric-string
+     */
+    public function toMeters(float|string $distance): float|string
     {
-        return $distance / (float) $this->value;
+        return UnitConverterRegistry::getUnitConverter()->convert($distance, $this, Unit::METERS);
     }
 
     public static function fromString(string $unit): ?self

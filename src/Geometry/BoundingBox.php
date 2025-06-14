@@ -6,10 +6,9 @@ namespace Ricklab\Location\Geometry;
 
 use InvalidArgumentException;
 
-use Ricklab\Location\Converter\Unit;
 use const M_PI;
 
-use Ricklab\Location\Converter\NativeUnitConverter;
+use Ricklab\Location\Converter\Unit;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 
@@ -30,7 +29,7 @@ final class BoundingBox implements GeometryInterface
         $maxLat = $point->getRelativePoint($radius, 0, $unit)->getLatitude();
         $minLat = $point->getRelativePoint($radius, 180, $unit)->getLatitude();
 
-        $radDist = $radius / DefaultEllipsoid::get()->radius($unit);
+        $radDist = $radius / $unit->fromMeters(DefaultEllipsoid::get()->radius());
         $radLon = $point->longitudeToRad();
         $deltaLon = asin(sin($radDist) / cos($point->latitudeToRad()));
 

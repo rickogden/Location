@@ -4,20 +4,8 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Ellipsoid;
 
-use Ricklab\Location\Converter\Unit;
-use Ricklab\Location\Converter\UnitConverterRegistry;
-
 class Ellipsoid implements EllipsoidInterface
 {
-    /** @var float|numeric-string */
-    private float|string $radius;
-
-    /** @var float|numeric-string */
-    private float|string $majorSemiAxis;
-
-    /** @var float|numeric-string */
-    private float|string $minorSemiAxis;
-
     /** @var float|numeric-string|null */
     private float|string|null $flattening = null;
 
@@ -36,26 +24,26 @@ class Ellipsoid implements EllipsoidInterface
      * @param float|numeric-string $majorSemiAxis in meters
      * @param float|numeric-string $minorSemiAxis in meters
      */
-    public function __construct(float|string $radius, float|string $majorSemiAxis, float|string $minorSemiAxis)
-    {
-        $this->radius = $radius;
-        $this->majorSemiAxis = $majorSemiAxis;
-        $this->minorSemiAxis = $minorSemiAxis;
+    public function __construct(
+        private readonly float|string $radius,
+        private readonly float|string $majorSemiAxis,
+        private readonly float|string $minorSemiAxis,
+    ) {
     }
 
-    public function radius(Unit $unit = Unit::METERS): float|string
+    public function radius(): float|string
     {
-        return UnitConverterRegistry::getUnitConverter()->convertFromMeters($this->radius, $unit);
+        return $this->radius;
     }
 
-    public function majorSemiAxis(Unit $unit = Unit::METERS): float|string
+    public function majorSemiAxis(): float|string
     {
-        return UnitConverterRegistry::getUnitConverter()->convertFromMeters($this->majorSemiAxis, $unit);
+        return $this->majorSemiAxis;
     }
 
-    public function minorSemiAxis(Unit $unit = Unit::METERS): float|string
+    public function minorSemiAxis(): float|string
     {
-        return UnitConverterRegistry::getUnitConverter()->convertFromMeters($this->minorSemiAxis, $unit);
+        return $this->minorSemiAxis;
     }
 
     public function flattening(): float|string

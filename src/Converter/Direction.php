@@ -32,7 +32,7 @@ enum Direction: string
 
     public function multiplier(): int
     {
-        return match($this) {
+        return match ($this) {
             self::SOUTH, self::WEST => -1,
             self::NORTH, self::EAST => 1,
         };

@@ -4,17 +4,23 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Calculator;
 
-use Ricklab\Location\Converter\Unit;
-use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
-use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use function function_exists;
 
 use Ricklab\Location\Calculator\Traits\GeoSpatialExtensionTrait;
+use Ricklab\Location\Converter\Unit;
+use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Geometry\Point;
 
 final class DefaultBearingCalculator implements BearingCalculator, UsesGeoSpatialExtensionInterface
 {
     use GeoSpatialExtensionTrait;
+
+    public function __construct(
+        private UnitConverter $unitConverter,
+        private bool $useSpatialExtension = true,
+    ) {
+    }
 
     public function calculateInitialBearing(Point $point1, Point $point2): float
     {
@@ -54,7 +60,7 @@ final class DefaultBearingCalculator implements BearingCalculator, UsesGeoSpatia
         float|string $bearing,
         Unit $unit = Unit::METERS,
     ): Point {
-        $rad = (float) $ellipsoid->radius($unit);
+        $rad = (float) $this->unitConverter->convertFromMeters($ellipsoid->radius(), $unit);
         $lat1 = $point->latitudeToRad();
         $lon1 = $point->longitudeToRad();
         $bearing = deg2rad((float) $bearing);

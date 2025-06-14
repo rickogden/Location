@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Calculator;
 
+use Ricklab\Location\Converter\UnitConverterRegistry;
+
 class CalculatorRegistry
 {
     private static ?DistanceCalculator $distanceCalculator = null;
@@ -23,7 +25,10 @@ class CalculatorRegistry
     public static function getBearingCalculator(): BearingCalculator
     {
         if (null === self::$bearingCalculator) {
-            self::$bearingCalculator = new DefaultBearingCalculator(self::$geoSpatialExtensionEnabled);
+            self::$bearingCalculator = new DefaultBearingCalculator(
+                UnitConverterRegistry::getUnitConverter(),
+                self::$geoSpatialExtensionEnabled
+            );
         }
 
         return self::$bearingCalculator;
