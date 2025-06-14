@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Converter\Unit;
 use function count;
 
 use InvalidArgumentException;
@@ -12,7 +13,7 @@ use function is_array;
 
 use IteratorAggregate;
 use Ricklab\Location\Calculator\DistanceCalculator;
-use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Converter\NativeUnitConverter;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
@@ -64,21 +65,19 @@ final class LineString implements GeometryInterface, IteratorAggregate
     }
 
     /**
-     * @return float The initial bearing from the first to second point
+     * @return float|numeric-string The initial bearing from the first to second point
      */
-    public function getInitialBearing(): float
+    public function getInitialBearing(): float|string
     {
         return $this->geometries[0]->initialBearingTo($this->geometries[1]);
     }
 
     /**
-     * @param string $unit defaults to "meters"
-     *
-     * @psalm-param UnitConverter::UNIT_*                  $unit       defaults to "meters"
+     * @param Unit $unit defaults to "meters"
      *
      * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator
      */
-    public function getLength(string $unit = UnitConverter::UNIT_METERS, ?DistanceCalculator $calculator = null): float
+    public function getLength(Unit $unit = Unit::METERS, ?DistanceCalculator $calculator = null): float
     {
         $distance = 0;
 

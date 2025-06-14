@@ -32,7 +32,10 @@ class CalculatorRegistry
     public static function getFractionAlongLineCalculator(): FractionAlongLineCalculator
     {
         if (null === self::$fractionAlongLineCalculator) {
-            self::$fractionAlongLineCalculator = new DefaultFractionAlongLineCalculator(self::$geoSpatialExtensionEnabled);
+            self::$fractionAlongLineCalculator = new DefaultFractionAlongLineCalculator(
+                self::getDistanceCalculator(),
+                self::$geoSpatialExtensionEnabled,
+            );
         }
 
         return self::$fractionAlongLineCalculator;

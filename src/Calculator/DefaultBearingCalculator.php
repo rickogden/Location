@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Calculator;
 
+use Ricklab\Location\Converter\Unit;
+use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
+use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use function function_exists;
 
 use Ricklab\Location\Calculator\Traits\GeoSpatialExtensionTrait;
@@ -42,5 +45,29 @@ final class DefaultBearingCalculator implements BearingCalculator, UsesGeoSpatia
     public function calculateFinalBearing(Point $point1, Point $point2): float
     {
         return fmod($this->calculateInitialBearing($point2, $point1) + 180, 360);
+    }
+
+    public function calculateRelativePoint(
+        EllipsoidInterface $ellipsoid,
+        Point $point,
+        float|string $distance,
+        float|string $bearing,
+        Unit $unit = Unit::METERS,
+    ): Point {
+        $rad = (float) $ellipsoid->radius($unit);
+        $lat1 = $point->latitudeToRad();
+        $lon1 = $point->longitudeToRad();
+        $bearing = deg2rad((float) $bearing);
+        $distance = (float) $distance;
+
+        $lat2 = sin($lat1) * cos($distance / $rad) +
+            cos($lat1) * sin($distance / $rad) * cos($bearing);
+        $lat2 = asin($lat2);
+
+        $lon2y = sin($bearing) * sin($distance / $rad) * cos($lat1);
+        $lon2x = cos($distance / $rad) - sin($lat1) * sin($lat2);
+        $lon2 = $lon1 + atan2($lon2y, $lon2x);
+
+        return new Point(rad2deg($lon2), rad2deg($lat2));
     }
 }

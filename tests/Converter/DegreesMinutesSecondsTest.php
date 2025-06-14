@@ -14,20 +14,20 @@ class DegreesMinutesSecondsTest extends TestCase
 {
     public static function decimalDmsProvider(): Generator
     {
-        yield [1.0342916666666668, 'LATITUDE', 1, 2, 3.45, 'N'];
-        yield [1.0342916666666668, 'LONGITUDE', 1, 2, 3.45, 'E'];
-        yield [-1.0342916666666668, 'LONGITUDE', 1, 2, 3.45, 'W'];
-        yield [-1.0342916666666668, 'LATITUDE', 1, 2, 3.45, 'S'];
+        yield [1.0342916666666668, Axis::LATITUDE, 1, 2, 3.45, Direction::NORTH];
+        yield [1.0342916666666668, Axis::LONGITUDE, 1, 2, 3.45, Direction::EAST];
+        yield [-1.0342916666666668, Axis::LONGITUDE, 1, 2, 3.45, Direction::WEST];
+        yield [-1.0342916666666668, Axis::LATITUDE, 1, 2, 3.45, Direction::SOUTH];
     }
 
     #[DataProvider('decimalDmsProvider')]
     public function testFromDecimal(
         float $dec,
-        string $axis,
+        Axis $axis,
         int $degrees,
         int $minutes,
         float $seconds,
-        string $direction,
+        Direction $direction,
     ): void {
         $dms = DegreesMinutesSeconds::fromDecimal($dec, $axis);
         $this->assertSame($degrees, $dms->getDegrees());
@@ -39,11 +39,11 @@ class DegreesMinutesSecondsTest extends TestCase
     #[DataProvider('decimalDmsProvider')]
     public function testToDecimal(
         float $dec,
-        string $axis,
+        Axis $axis,
         int $degrees,
         int $minutes,
         float $seconds,
-        string $direction,
+        Direction $direction,
     ): void {
         $dms = new DegreesMinutesSeconds($degrees, $minutes, $seconds, $direction);
         $this->assertSame($axis, $dms->getAxis());
@@ -52,31 +52,31 @@ class DegreesMinutesSecondsTest extends TestCase
 
     public static function stringDmsProvider(): Generator
     {
-        yield ['40° 26′ 46″ N', 40, 26, 46, 'N'];
-        yield ['79° 58′ 56″ W', 79, 58, 56, 'W'];
-        yield ['40° 26′ 46.2345″ S', 40, 26, 46.2345, 'S'];
-        yield ['79° 58′ 56.5543″ E', 79, 58, 56.5543, 'E'];
+        yield ['40° 26′ 46″ N', 40, 26, 46, Direction::NORTH];
+        yield ['79° 58′ 56″ W', 79, 58, 56, Direction::WEST];
+        yield ['40° 26′ 46.2345″ S', 40, 26, 46.2345, Direction::SOUTH];
+        yield ['79° 58′ 56.5543″ E', 79, 58, 56.5543, Direction::EAST];
     }
 
     public static function malformedStringsToDms(): Generator
     {
-        yield ['40 26 46 N', 40, 26, 46, 'N'];
-        yield ['79 58 56 W', 79, 58, 56, 'W'];
-        yield ['40 26 46.2345 S', 40, 26, 46.2345, 'S'];
-        yield ['79 58 56.5543 E', 79, 58, 56.5543, 'E'];
-        yield ['-79 58 56.5543 E', -79, 58, 56.5543, 'E'];
+        yield ['40 26 46 N', 40, 26, 46, Direction::NORTH];
+        yield ['79 58 56 W', 79, 58, 56, Direction::WEST];
+        yield ['40 26 46.2345 S', 40, 26, 46.2345, Direction::SOUTH];
+        yield ['79 58 56.5543 E', 79, 58, 56.5543, Direction::EAST];
+        yield ['-79 58 56.5543 E', -79, 58, 56.5543, Direction::EAST];
     }
 
     public static function missingElements(): Generator
     {
-        yield ['40° 26′ N', 40, 26, 0, 'N'];
-        yield ['79° W', 79, 0, 0, 'W'];
-        yield ['40° 46.2345" S', 40, 0, 46.2345, 'S'];
-        yield ['-79° 58\' E', -79, 58, 0, 'E'];
+        yield ['40° 26′ N', 40, 26, 0, Direction::NORTH];
+        yield ['79° W', 79, 0, 0, Direction::WEST];
+        yield ['40° 46.2345" S', 40, 0, 46.2345, Direction::SOUTH];
+        yield ['-79° 58\' E', -79, 58, 0, Direction::EAST];
     }
 
     #[DataProvider('stringDmsProvider')]
-    public function testToString(string $string, int $degrees, int $minutes, float $seconds, string $direction): void
+    public function testToString(string $string, int $degrees, int $minutes, float $seconds, Direction $direction): void
     {
         $dms = new DegreesMinutesSeconds($degrees, $minutes, $seconds, $direction);
         $this->assertSame($string, $dms->toString());
@@ -86,7 +86,7 @@ class DegreesMinutesSecondsTest extends TestCase
     #[DataProvider('stringDmsProvider')]
     #[DataProvider('malformedStringsToDms')]
     #[DataProvider('missingElements')]
-    public function testFromString(string $string, int $degrees, int $minutes, float $seconds, string $direction): void
+    public function testFromString(string $string, int $degrees, int $minutes, float $seconds, Direction $direction): void
     {
         $dms = DegreesMinutesSeconds::fromString($string);
         $this->assertSame($degrees, $dms->getDegrees());

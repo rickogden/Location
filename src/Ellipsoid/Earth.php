@@ -16,7 +16,7 @@ final class Earth extends Ellipsoid
 
     protected const MAJOR_SEMI_AXIS = 6378137;
 
-    protected const MINOR_SEMI_AXIS = 6356752.314245;
+    protected const MINOR_SEMI_AXIS = '6356752.314245';
 
     public function __construct()
     {

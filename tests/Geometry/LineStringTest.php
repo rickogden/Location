@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Converter\Unit;
 use function extension_loaded;
 
 use Generator;
@@ -12,7 +13,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\VincentyCalculator;
-use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Converter\NativeUnitConverter;
 
 class LineStringTest extends TestCase
 {
@@ -47,8 +48,8 @@ class LineStringTest extends TestCase
 
     public function testGetLength(): void
     {
-        $this->assertEquals(2.783, round($this->line->getLength(UnitConverter::UNIT_KM), 3));
-        $this->assertEquals(2.792, round($this->line->getLength(UnitConverter::UNIT_KM, new VincentyCalculator()), 3));
+        $this->assertEquals(2.783, round($this->line->getLength(Unit::KM), 3));
+        $this->assertEquals(2.792, round($this->line->getLength(Unit::KM, new VincentyCalculator()), 3));
     }
 
     public function testInitialBearing(): void

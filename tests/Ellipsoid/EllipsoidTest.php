@@ -14,7 +14,7 @@ class EllipsoidTest extends TestCase
         $this->assertSame(2000.0, $e->radius());
         $this->assertSame(2000.0, $e->majorSemiAxis());
         $this->assertSame(2000.0, $e->minorSemiAxis());
-        $this->assertSame(0, $e->flattening());
+        $this->assertSame(0.0, $e->flattening());
     }
 
     public function testFromSemiAxes(): void

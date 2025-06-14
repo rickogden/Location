@@ -4,18 +4,24 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Converter\Axis;
 use function count;
 
 use InvalidArgumentException;
 
 use function is_string;
 
+use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\DistanceCalculator;
+use Ricklab\Location\Calculator\FractionAlongLineCalculator;
 use Ricklab\Location\Converter\DegreesMinutesSeconds;
+use Ricklab\Location\Converter\Unit;
 use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Converter\UnitConverterRegistry;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
+use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 use Ricklab\Location\Geometry\Traits\TransformationTrait;
 
@@ -55,13 +61,13 @@ final class Point implements GeometryInterface
         $latitude = null;
 
         foreach ([$lat, $lon] as $dms) {
-            if (DegreesMinutesSeconds::AXIS_LONGITUDE === $dms->getAxis()) {
+            if (Axis::LONGITUDE === $dms->getAxis()) {
                 $longitude = $dms;
 
                 continue;
             }
 
-            if (DegreesMinutesSeconds::AXIS_LATITUDE === $dms->getAxis()) {
+            if (Axis::LATITUDE === $dms->getAxis()) {
                 $latitude = $dms;
             }
         }
@@ -98,31 +104,21 @@ final class Point implements GeometryInterface
      */
     public function __construct(float|string $long, float|string $lat)
     {
-        if (is_string($lat)) {
-            /** @psalm-suppress DocblockTypeContradiction for safety */
-            if (!is_numeric($lat)) {
-                throw new InvalidArgumentException('latitude must be a valid number between -90 and 90.');
-            }
-
-            $this->latitudeString = $lat;
-            $this->latitude = (float) $lat;
-        } else {
-            $this->latitudeString = (string) $lat;
-            $this->latitude = $lat;
+        /** @psalm-suppress DocblockTypeContradiction for safety */
+        if (is_string($lat) && !is_numeric($lat)) {
+            throw new InvalidArgumentException('latitude must be a valid number between -90 and 90.');
         }
 
-        if (is_string($long)) {
-            /** @psalm-suppress DocblockTypeContradiction for safety */
-            if (!is_numeric($long)) {
-                throw new InvalidArgumentException('longitude must be a valid number between -180 and 180.');
-            }
+        $this->latitude = (float) $lat;
+        $this->latitudeString = (string) $lat;
 
-            $this->longitudeString = $long;
-            $this->longitude = (float) $long;
-        } else {
-            $this->longitudeString = (string) $long;
-            $this->longitude = $long;
+        /** @psalm-suppress DocblockTypeContradiction for safety */
+        if (is_string($long) && !is_numeric($long)) {
+            throw new InvalidArgumentException('longitude must be a valid number between -180 and 180.');
         }
+
+        $this->longitude = (float) $long;
+        $this->longitudeString = (string) $long;
 
         if (!self::validateLatitude($this->latitude)) {
             throw new InvalidArgumentException('latitude must be a valid number between -90 and 90.');
@@ -135,12 +131,12 @@ final class Point implements GeometryInterface
 
     public function getLatitudeInDms(): DegreesMinutesSeconds
     {
-        return DegreesMinutesSeconds::fromDecimal($this->latitude, DegreesMinutesSeconds::AXIS_LATITUDE);
+        return DegreesMinutesSeconds::fromDecimal($this->latitude, Axis::LATITUDE);
     }
 
     public function getLongitudeInDms(): DegreesMinutesSeconds
     {
-        return DegreesMinutesSeconds::fromDecimal($this->longitude, DegreesMinutesSeconds::AXIS_LONGITUDE);
+        return DegreesMinutesSeconds::fromDecimal($this->longitude, Axis::LONGITUDE);
     }
 
     public function wktFormat(): string
@@ -177,53 +173,42 @@ final class Point implements GeometryInterface
     /**
      * Find distance to another point.
      *
-     * @param string $unit Defaults to meters
-     *
-     * @psalm-param UnitConverter::UNIT_* $unit Defaults to meters
-     *
+     * @param Unit                    $unit       Defaults to meters
      * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator.
      *
-     * @return float the distance
+     * @return float|numeric-string the distance
      */
     public function distanceTo(
         Point $point2,
-        string $unit = UnitConverter::UNIT_METERS,
+        Unit $unit = Unit::METERS,
         ?DistanceCalculator $calculator = null,
-    ): float {
-        if (null === $calculator) {
-            $calculator = CalculatorRegistry::getDistanceCalculator();
-        }
+        ?UnitConverter $unitConverter = null,
+    ): float|string {
+        $calculator ??= CalculatorRegistry::getDistanceCalculator();
+        $unitConverter ??= UnitConverterRegistry::getUnitConverter();
 
         $result = $calculator->calculateDistance($this, $point2, DefaultEllipsoid::get());
 
-        return UnitConverter::convert($result, UnitConverter::UNIT_METERS, $unit);
+        return $unitConverter->convertFromMeters($result, $unit);
     }
 
     /**
      * Find a location a distance and bearing from this one.
      *
-     * @param float  $distance distance to other point
-     * @param float  $bearing  initial bearing to other point
-     * @param string $unit     The unit the distance is in
-     *
-     * @psalm-param UnitConverter::UNIT_* $unit The unit the distance is in
+     * @param float|numeric-string $distance distance to other point
+     * @param float|numeric-string $bearing  initial bearing to other point
      */
-    public function getRelativePoint(float $distance, float $bearing, string $unit = UnitConverter::UNIT_METERS): Point
-    {
-        $rad = DefaultEllipsoid::get()->radius($unit);
-        $lat1 = $this->latitudeToRad();
-        $lon1 = $this->longitudeToRad();
-        $bearing = deg2rad($bearing);
+    public function getRelativePoint(
+        float|string $distance,
+        float|string $bearing,
+        Unit $unit = Unit::METERS,
+        ?BearingCalculator $bearingCalculator = null,
+        ?EllipsoidInterface $ellipsoid = null,
+    ): Point {
+        $bearingCalculator ??= CalculatorRegistry::getBearingCalculator();
+        $ellipsoid ??= DefaultEllipsoid::get();
 
-        $lat2 = sin($lat1) * cos($distance / $rad) +
-            cos($lat1) * sin($distance / $rad) * cos($bearing);
-        $lat2 = asin($lat2);
-
-        $lon2y = sin($bearing) * sin($distance / $rad) * cos($lat1);
-        $lon2x = cos($distance / $rad) - sin($lat1) * sin($lat2);
-        $lon2 = $lon1 + atan2($lon2y, $lon2x);
-
-        return new self(rad2deg($lon2), rad2deg($lat2));
+        return $bearingCalculator->calculateRelativePoint($ellipsoid, $this, $distance, $bearing, $unit);
     }
 
     /**
@@ -249,21 +234,25 @@ final class Point implements GeometryInterface
     /**
      * Get the initial bearing from this Point to another.
      *
-     * @return float bearing
+     * @return float|numeric-string bearing
      */
-    public function initialBearingTo(Point $point2): float
+    public function initialBearingTo(Point $point2, ?BearingCalculator $bearingCalculator = null): float|string
     {
-        return CalculatorRegistry::getBearingCalculator()->calculateInitialBearing($this, $point2);
+        $bearingCalculator ??= CalculatorRegistry::getBearingCalculator();
+
+        return $bearingCalculator->calculateInitialBearing($this, $point2);
     }
 
     /**
      * Get the final bearing from this Point to another.
      *
-     * @return float bearing
+     * @return float|numeric-string bearing
      */
-    public function finalBearingTo(Point $point2): float
+    public function finalBearingTo(Point $point2, ?BearingCalculator $bearingCalculator = null): float|string
     {
-        return CalculatorRegistry::getBearingCalculator()->calculateFinalBearing($this, $point2);
+        $bearingCalculator ??= CalculatorRegistry::getBearingCalculator();
+
+        return $bearingCalculator->calculateFinalBearing($this, $point2);
     }
 
     /**
@@ -294,7 +283,7 @@ final class Point implements GeometryInterface
      *
      * @return self the mid-point
      */
-    public function getMidpoint(Point $point, ?DistanceCalculator $calculator = null): self
+    public function getMidpoint(Point $point, ?FractionAlongLineCalculator $calculator = null): self
     {
         return $this->getFractionAlongLineTo($point, 0.5, $calculator);
     }
@@ -306,13 +295,17 @@ final class Point implements GeometryInterface
      *
      * @throw \InvalidArgumentException
      */
-    public function getFractionAlongLineTo(Point $point, float $fraction, ?DistanceCalculator $calculator = null): self
-    {
-        return CalculatorRegistry::getFractionAlongLineCalculator()->calculateFractionAlongLine(
+    public function getFractionAlongLineTo(
+        Point $point,
+        float $fraction,
+        ?FractionAlongLineCalculator $calculator = null,
+    ): self {
+        $calculator ??= CalculatorRegistry::getFractionAlongLineCalculator();
+
+        return $calculator->calculateFractionAlongLine(
             $this,
             $point,
             $fraction,
-            $calculator ?? CalculatorRegistry::getDistanceCalculator(),
             DefaultEllipsoid::get()
         );
     }
@@ -327,10 +320,8 @@ final class Point implements GeometryInterface
 
     /**
      * @throws BoundBoxRangeException
-     *
-     * @psalm-param UnitConverter::UNIT_* $unit
      */
-    public function getBBoxByRadius(float $radius, string $unit = UnitConverter::UNIT_METERS): BoundingBox
+    public function getBBoxByRadius(float $radius, Unit $unit = Unit::METERS): BoundingBox
     {
         return BoundingBox::fromCenter($this, $radius, $unit);
     }
@@ -359,8 +350,8 @@ final class Point implements GeometryInterface
     {
         return $this === $geometry
             || ($geometry instanceof self
-            && $geometry->latitude === $this->latitude
-            && $geometry->longitude === $this->longitude);
+                && $geometry->latitude === $this->latitude
+                && $geometry->longitude === $this->longitude);
     }
 
     public function getGeoHash(int $resolution = 12): Geohash

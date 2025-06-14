@@ -4,32 +4,34 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Ellipsoid;
 
-use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Converter\Unit;
+use Ricklab\Location\Converter\NativeUnitConverter;
 
 interface EllipsoidInterface
 {
     /**
-     * Returns the average radius of the ellipsoid in specified units.
-     *
-     * @param string $unit can be 'km', 'miles', 'metres', 'feet', 'yards', 'nautical miles'
-     *
-     * @psalm-param  UnitConverter::UNIT_* $unit
+     * @return float|numeric-string
      */
-    public function radius(string $unit = UnitConverter::UNIT_METERS): float|int;
+    public function radius(Unit $unit = Unit::METERS): float|string;
 
     /**
-     * @param string $unit unit of measurement
+     * @param Unit $unit unit of measurement
      *
-     * @psalm-param  UnitConverter::UNIT_* $unit unit of measurement
+     * @return float|numeric-string
      */
-    public function majorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float|int;
+    public function majorSemiAxis(Unit $unit = Unit::METERS): float|string;
 
     /**
-     * @param UnitConverter::UNIT_* $unit unit of measurement
+     * @param Unit $unit unit of measurement
+     *
+     * @return float|numeric-string
      */
-    public function minorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float|int;
+    public function minorSemiAxis(Unit $unit = Unit::METERS): float|string;
 
-    public function flattening(): float|int;
+    /**
+     * @return float|numeric-string
+     */
+    public function flattening(): float|string;
 
     public function equals(Ellipsoid $ellipsoid): bool;
 }

@@ -13,7 +13,6 @@ interface FractionAlongLineCalculator
         Point $point1,
         Point $point2,
         float $fraction,
-        DistanceCalculator $calculator,
         EllipsoidInterface $ellipsoid,
     ): Point;
 }

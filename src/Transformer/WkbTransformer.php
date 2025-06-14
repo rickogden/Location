@@ -39,7 +39,12 @@ class WkbTransformer
         self::WKB_GEOMETRYCOLLECTION => GeometryCollection::class,
     ];
 
-    /** @var array<class-string<GeometryInterface>, array{class: class-string<GeometryInterface>, child_type: class-string<GeometryInterface>|null}> */
+    /**
+     * @var array<class-string<GeometryInterface>, array{
+     *     class: class-string<GeometryInterface>,
+     *     child_type: class-string<GeometryInterface>|null
+     * }>
+     */
     private const GEOMETRY_DATA = [
         Point::class => [
             'class' => Point::class,

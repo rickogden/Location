@@ -11,7 +11,7 @@ Using composer, run `composer require ricklab/location`
 A brief example of how this library can be used:
 
 ```php
-use Ricklab\Location\Calculator\VincentyCalculator;use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Calculator\VincentyCalculator;use Ricklab\Location\Converter\NativeUnitConverter;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Geometry\LineString;
 use Ricklab\Location\Geometry\BoundingBox;
@@ -21,7 +21,7 @@ $point = new Point($longitude, $latitude);
 $point2 = new Point($lon2, $lat2);
 
 // Calculate distance between two points in miles using the Vincenty formula
-$distance = $point->distanceTo($point2, UnitConverter::UNIT_MILES, new VincentyCalculator());
+$distance = $point->distanceTo($point2, NativeUnitConverter::UNIT_MILES, new VincentyCalculator());
 
 // Usage of LineString
 $line = new LineString([$point, $point2]);

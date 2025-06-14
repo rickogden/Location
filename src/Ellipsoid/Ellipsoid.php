@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Ellipsoid;
 
-use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Converter\Unit;
+use Ricklab\Location\Converter\UnitConverterRegistry;
 
 class Ellipsoid implements EllipsoidInterface
 {
-    private float|int $radius;
-    private float|int $majorSemiAxis;
-    private float|int $minorSemiAxis;
-    private float|int|null $flattening = null;
+    /** @var float|numeric-string */
+    private float|string $radius;
+
+    /** @var float|numeric-string */
+    private float|string $majorSemiAxis;
+
+    /** @var float|numeric-string */
+    private float|string $minorSemiAxis;
+
+    /** @var float|numeric-string|null */
+    private float|string|null $flattening = null;
 
     public static function fromRadius(float|int $radius): self
     {
@@ -24,33 +32,33 @@ class Ellipsoid implements EllipsoidInterface
     }
 
     /**
-     * @param float|int $radius        in meters
-     * @param float|int $majorSemiAxis in meters
-     * @param float|int $minorSemiAxis in meters
+     * @param float|numeric-string $radius        in meters
+     * @param float|numeric-string $majorSemiAxis in meters
+     * @param float|numeric-string $minorSemiAxis in meters
      */
-    public function __construct(float|int $radius, float|int $majorSemiAxis, float|int $minorSemiAxis)
+    public function __construct(float|string $radius, float|string $majorSemiAxis, float|string $minorSemiAxis)
     {
         $this->radius = $radius;
         $this->majorSemiAxis = $majorSemiAxis;
         $this->minorSemiAxis = $minorSemiAxis;
     }
 
-    public function radius(string $unit = UnitConverter::UNIT_METERS): float|int
+    public function radius(Unit $unit = Unit::METERS): float|string
     {
-        return UnitConverter::convertFromMeters($this->radius, $unit);
+        return UnitConverterRegistry::getUnitConverter()->convertFromMeters($this->radius, $unit);
     }
 
-    public function majorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float|int
+    public function majorSemiAxis(Unit $unit = Unit::METERS): float|string
     {
-        return UnitConverter::convertFromMeters($this->majorSemiAxis, $unit);
+        return UnitConverterRegistry::getUnitConverter()->convertFromMeters($this->majorSemiAxis, $unit);
     }
 
-    public function minorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float|int
+    public function minorSemiAxis(Unit $unit = Unit::METERS): float|string
     {
-        return UnitConverter::convertFromMeters($this->minorSemiAxis, $unit);
+        return UnitConverterRegistry::getUnitConverter()->convertFromMeters($this->minorSemiAxis, $unit);
     }
 
-    public function flattening(): float|int
+    public function flattening(): float|string
     {
         if (null === $this->flattening) {
             $this->flattening = ($this->majorSemiAxis - $this->minorSemiAxis) / $this->majorSemiAxis;
@@ -62,7 +70,7 @@ class Ellipsoid implements EllipsoidInterface
     public function equals(Ellipsoid $ellipsoid): bool
     {
         return $ellipsoid === $this || ((float) $this->radius === (float) $ellipsoid->radius
-            && (float) $this->majorSemiAxis === (float) $ellipsoid->majorSemiAxis
-            && (float) $this->minorSemiAxis === (float) $ellipsoid->minorSemiAxis);
+                && (float) $this->majorSemiAxis === (float) $ellipsoid->majorSemiAxis
+                && (float) $this->minorSemiAxis === (float) $ellipsoid->minorSemiAxis);
     }
 }

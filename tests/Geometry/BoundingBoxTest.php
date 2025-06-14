@@ -7,13 +7,14 @@ namespace Ricklab\Location\Geometry;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Ricklab\Location\Converter\Unit;
 
 class BoundingBoxTest extends TestCase
 {
     public function testFromCenter(): void
     {
         $point = new Point(-2, 53);
-        $bbox = BoundingBox::fromCenter($point, 2, 'km');
+        $bbox = BoundingBox::fromCenter($point, 2, Unit::KM);
 
         $this->assertCount(5, $bbox->getPoints());
     }

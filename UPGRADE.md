@@ -75,10 +75,10 @@ The `Point::distanceTo()` method now takes an instance of `DistanceCalculator` a
 ```injectablephp
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\VincentyCalculator;
-use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Converter\NativeUnitConverter;
 
 // Override the default calculator
-$point1->distanceTo($point2, UnitConverter::UNIT_METERS, new VincentyCalculator());
+$point1->distanceTo($point2, NativeUnitConverter::UNIT_METERS, new VincentyCalculator());
 
 // Use the Vincenty Calculator as the default calculator
 DefaultDistanceCalculator::setDefaultCalculator(new VincentyCalculator());
@@ -103,10 +103,10 @@ There is now a dedicated `UnitConverter` class, which handles all the unit conve
 ```injectablephp
 
 // Deprecated
-use Ricklab\Location\Converter\UnitConverter;use Ricklab\Location\Location;Location::UNIT_METRES;
+use Ricklab\Location\Converter\NativeUnitConverter;use Ricklab\Location\Location;Location::UNIT_METRES;
 
 // From version 6
-UnitConverter::UNIT_METERS;
+NativeUnitConverter::UNIT_METERS;
 ```
 
 ### Immutable Features

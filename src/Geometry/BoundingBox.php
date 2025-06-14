@@ -6,9 +6,10 @@ namespace Ricklab\Location\Geometry;
 
 use InvalidArgumentException;
 
+use Ricklab\Location\Converter\Unit;
 use const M_PI;
 
-use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Converter\NativeUnitConverter;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 
@@ -23,10 +24,8 @@ final class BoundingBox implements GeometryInterface
 
     /**
      * @throws BoundBoxRangeException currently cannot create a bounding box over the meridian
-     *
-     * @psalm-param UnitConverter::UNIT_* $unit
      */
-    public static function fromCenter(Point $point, float $radius, string $unit = UnitConverter::UNIT_METERS): self
+    public static function fromCenter(Point $point, float $radius, Unit $unit = Unit::METERS): self
     {
         $maxLat = $point->getRelativePoint($radius, 0, $unit)->getLatitude();
         $minLat = $point->getRelativePoint($radius, 180, $unit)->getLatitude();

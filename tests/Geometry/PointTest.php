@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Ricklab\Location\Converter\Axis;
+use Ricklab\Location\Converter\Direction;
+use Ricklab\Location\Converter\Unit;
 use function extension_loaded;
 
 use Generator;
@@ -13,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\VincentyCalculator;
 use Ricklab\Location\Converter\DegreesMinutesSeconds;
-use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Converter\NativeUnitConverter;
 
 class PointTest extends TestCase
 {
@@ -55,7 +58,7 @@ class PointTest extends TestCase
 
     public function testRelativePoint(): void
     {
-        $newPoint = $this->point->getRelativePoint(2.783, 98.50833, 'km');
+        $newPoint = $this->point->getRelativePoint(2.783, 98.50833, Unit::fromString('km'));
         $this->assertEquals(53.48204, round($newPoint->getLatitude(), 5));
         $this->assertEquals(-2.23194, round($newPoint->getLongitude(), 5));
     }
@@ -63,19 +66,12 @@ class PointTest extends TestCase
     public function testDistanceTo(): void
     {
         $newPoint = new Point(-2.23194, 53.48204);
-        $this->assertEquals(1.729, round($this->point->distanceTo($newPoint, UnitConverter::UNIT_MILES), 3));
-        $this->assertEquals(2.783, round($this->point->distanceTo($newPoint, UnitConverter::UNIT_KM), 3));
+        $this->assertEquals(1.729, round($this->point->distanceTo($newPoint, Unit::MILES), 3));
+        $this->assertEquals(2.783, round($this->point->distanceTo($newPoint, Unit::KM), 3));
         $this->assertEquals(
             2.792,
-            round($this->point->distanceTo($newPoint, UnitConverter::UNIT_KM, new VincentyCalculator()), 3)
+            round($this->point->distanceTo($newPoint, Unit::KM, new VincentyCalculator()), 3)
         );
-    }
-
-    public function testDistanceToException(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $newPoint = new Point(-2.23194, 53.48204);
-        $this->point->distanceTo($newPoint, 'foo');
     }
 
     public function testJsonSerializable(): void
@@ -88,8 +84,8 @@ class PointTest extends TestCase
     public function testFromDms(): void
     {
         $point = Point::fromDms(
-            new DegreesMinutesSeconds(1, 2, 3.45, 'N'),
-            new DegreesMinutesSeconds(0, 6, 9, 'W')
+            new DegreesMinutesSeconds(1, 2, 3.45, Direction::NORTH),
+            new DegreesMinutesSeconds(0, 6, 9, Direction::WEST)
         );
 
         $this->assertSame(1.0342916666667, round($point->getLatitude(), 13));
@@ -99,8 +95,8 @@ class PointTest extends TestCase
     public function testFromDmsInverted(): void
     {
         $point = Point::fromDms(
-            new DegreesMinutesSeconds(0, 6, 9, 'W'),
-            new DegreesMinutesSeconds(1, 2, 3.45, 'N')
+            new DegreesMinutesSeconds(0, 6, 9, Direction::WEST),
+            new DegreesMinutesSeconds(1, 2, 3.45, Direction::NORTH)
         );
 
         $this->assertSame(1.0342916666667, round($point->getLatitude(), 13));
@@ -195,7 +191,7 @@ class PointTest extends TestCase
 
     public function testGetBBoxByRadius(): void
     {
-        $bbox = $this->point->getBBoxByRadius(10, UnitConverter::UNIT_KM);
+        $bbox = $this->point->getBBoxByRadius(10, Unit::KM);
         $this->assertSame(20000.0, round($bbox->getNorthEast()->distanceTo($bbox->getSouthEast()), 5));
         $this->assertSame(19957.57328, round($bbox->getNorthWest()->distanceTo($bbox->getNorthEast()), 5));
     }
@@ -244,8 +240,8 @@ class PointTest extends TestCase
         $this->assertSame(2, $dms->getDegrees());
         $this->assertSame(16, $dms->getMinutes());
         $this->assertSame(24.744, round($dms->getSeconds(), 5));
-        $this->assertSame('W', $dms->getDirection());
-        $this->assertSame('LONGITUDE', $dms->getAxis());
+        $this->assertSame(Direction::WEST, $dms->getDirection());
+        $this->assertSame(Axis::LONGITUDE, $dms->getAxis());
     }
 
     public function testGetLatitudeInDms(): void
@@ -254,8 +250,8 @@ class PointTest extends TestCase
         $this->assertSame(53, $dms->getDegrees());
         $this->assertSame(29, $dms->getMinutes());
         $this->assertSame(8.7, round($dms->getSeconds(), 5));
-        $this->assertSame('N', $dms->getDirection());
-        $this->assertSame('LATITUDE', $dms->getAxis());
+        $this->assertSame(Direction::NORTH, $dms->getDirection());
+        $this->assertSame(Axis::LATITUDE, $dms->getAxis());
     }
 
     public function testGetBBox(): void

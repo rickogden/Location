@@ -6,9 +6,7 @@ namespace Ricklab\Location\Calculator\Traits;
 
 trait GeoSpatialExtensionTrait
 {
-    private bool $useSpatialExtension = true;
-
-    public function __construct(bool $useSpatialExtension = true)
+    public function __construct(private bool $useSpatialExtension = true)
     {
     }
 
