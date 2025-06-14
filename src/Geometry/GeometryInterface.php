@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use JsonSerializable;
+use Override;
 
 /**
  * The interface for all the Geometry objects.
@@ -43,6 +44,7 @@ interface GeometryInterface extends JsonSerializable, \Stringable
     /**
      * Returns a GeoJSON representation of the geometry.
      */
+    #[Override]
     public function jsonSerialize(): array;
 
     /**

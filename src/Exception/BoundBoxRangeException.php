@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Exception;
 
-/**
- * @author Rick Ogden <rick@airtimerewards.com>
- */
-class BoundBoxRangeException extends GeometryException
+final class BoundBoxRangeException extends GeometryException
 {
 }

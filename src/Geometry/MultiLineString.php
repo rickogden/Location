@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use IteratorAggregate;
+use Override;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
@@ -23,6 +24,7 @@ final class MultiLineString implements GeometryInterface, GeometryCollectionInte
      */
     protected readonly array $geometries;
 
+    #[Override]
     public static function fromArray(array $geometries): self
     {
         $result = [];
@@ -54,6 +56,7 @@ final class MultiLineString implements GeometryInterface, GeometryCollectionInte
      *
      * @psalm-return list<LineString> an array of the LineStrings
      */
+    #[Override]
     public function getGeometries(): array
     {
         return $this->geometries;
@@ -85,11 +88,13 @@ final class MultiLineString implements GeometryInterface, GeometryCollectionInte
      *
      * @psalm-return list<LineString> an array of the LineStrings
      */
+    #[Override]
     public function getChildren(): array
     {
         return $this->geometries;
     }
 
+    #[Override]
     public function getBBox(): BoundingBox
     {
         return BoundingBox::fromGeometry($this);

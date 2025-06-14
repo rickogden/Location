@@ -8,6 +8,7 @@ use InvalidArgumentException;
 
 use const M_PI;
 
+use Override;
 use Ricklab\Location\Converter\Unit;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
@@ -22,14 +23,16 @@ final class BoundingBox implements GeometryInterface
     private Point $southWest;
 
     /**
+     * @param float|numeric-string $radius
+     *
      * @throws BoundBoxRangeException currently cannot create a bounding box over the meridian
      */
-    public static function fromCenter(Point $point, float $radius, Unit $unit = Unit::METERS): self
+    public static function fromCenter(Point $point, float|string $radius, Unit $unit = Unit::METERS): self
     {
         $maxLat = $point->getRelativePoint($radius, 0, $unit)->getLatitude();
         $minLat = $point->getRelativePoint($radius, 180, $unit)->getLatitude();
 
-        $radDist = $radius / $unit->fromMeters(DefaultEllipsoid::get()->radius());
+        $radDist = (float) $radius / (float) $unit->fromMeters(DefaultEllipsoid::get()->radius());
         $radLon = $point->longitudeToRad();
         $deltaLon = asin(sin($radDist) / cos($point->latitudeToRad()));
 
@@ -39,12 +42,12 @@ final class BoundingBox implements GeometryInterface
         $minLon = $radLon - $deltaLon;
 
         if ($minLon < deg2rad(-180)) {
-            $minLon += 2 * M_PI;
+            $minLon += 2.0 * M_PI;
         }
         $maxLon = $radLon + $deltaLon;
 
         if ($maxLon > deg2rad(180)) {
-            $maxLon -= 2 * M_PI;
+            $maxLon -= 2.0 * M_PI;
         }
 
         $minLon = rad2deg($minLon);
@@ -82,6 +85,7 @@ final class BoundingBox implements GeometryInterface
         return self::fromGeometry(new GeometryCollection($geometries));
     }
 
+    #[Override]
     public static function fromArray(array $geometries): self
     {
         if (!is_numeric($geometries[0]) || !is_numeric($geometries[1]) || !is_numeric($geometries[2]) || !is_numeric($geometries[3])) {
@@ -96,6 +100,7 @@ final class BoundingBox implements GeometryInterface
         );
     }
 
+    #[Override]
     public function getBBox(): self
     {
         return $this;
@@ -122,8 +127,8 @@ final class BoundingBox implements GeometryInterface
 
     public function getCenter(): Point
     {
-        $lat = ($this->getMinLat() + $this->getMaxLat()) / 2;
-        $lon = ($this->getMinLon() + $this->getMaxLon()) / 2;
+        $lat = ($this->getMinLat() + $this->getMaxLat()) / 2.0;
+        $lon = ($this->getMinLon() + $this->getMaxLon()) / 2.0;
 
         return new Point($lon, $lat);
     }
@@ -228,11 +233,13 @@ final class BoundingBox implements GeometryInterface
         return $this->southWest;
     }
 
+    #[Override]
     public function getPoints(): array
     {
         return $this->getPolygon()->getPoints();
     }
 
+    #[Override]
     public function toArray(): array
     {
         return $this->getPolygon()->toArray();
@@ -243,22 +250,26 @@ final class BoundingBox implements GeometryInterface
         return (string) $this->getPolygon();
     }
 
+    #[Override]
     public function wktFormat(): string
     {
         return $this->getPolygon()->wktFormat();
     }
 
+    #[Override]
     public function jsonSerialize(): array
     {
         return $this->getPolygon()->jsonSerialize();
     }
 
+    #[Override]
     public function equals(GeometryInterface $geometry): bool
     {
         return $geometry instanceof self && $this->getBounds() === $geometry->getBounds();
     }
 
     /** @return list<LineString> */
+    #[Override]
     public function getChildren(): array
     {
         return $this->getPolygon()->getChildren();

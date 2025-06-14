@@ -87,7 +87,7 @@ final class Geohash
 
         while (count($hash) < $resolution) {
             if (0 === $i % 2) {
-                $midLon = ($minLon + $maxLon) / 2;
+                $midLon = ($minLon + $maxLon) / 2.0;
 
                 if ($longitude >= $midLon) {
                     $idx = $idx * 2 + 1;
@@ -97,7 +97,7 @@ final class Geohash
                     $maxLon = $midLon;
                 }
             } else {
-                $midLat = ($minLat + $maxLat) / 2;
+                $midLat = ($minLat + $maxLat) / 2.0;
 
                 if ($latitude >= $midLat) {
                     $idx = $idx * 2 + 1;
@@ -170,7 +170,7 @@ final class Geohash
                 $bitN = $index >> $i & 1;
 
                 if ($evenBit) {
-                    $midLon = ($minLon + $maxLon) / 2;
+                    $midLon = ($minLon + $maxLon) / 2.0;
 
                     if (1 === $bitN) {
                         $minLon = $midLon;
@@ -178,7 +178,7 @@ final class Geohash
                         $maxLon = $midLon;
                     }
                 } else {
-                    $midLat = ($minLat + $maxLat) / 2;
+                    $midLat = ($minLat + $maxLat) / 2.0;
 
                     if (1 === $bitN) {
                         $minLat = $midLat;
@@ -248,7 +248,7 @@ final class Geohash
         $type = mb_strlen($hash) % 2;
 
         if (false !== mb_strpos(self::BORDER[$direction][$type], $lastChar) && '' !== $parent) {
-            $parent = self::getAdjacent($parent, $direction);
+            $parent = (string) self::getAdjacent($parent, $direction);
         }
 
         return new self($parent.self::HASH_MAP[mb_strpos(self::NEIGHBOUR[$direction][$type], $lastChar)]);

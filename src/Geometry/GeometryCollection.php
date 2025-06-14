@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use Override;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 use Ricklab\Location\Transformer\GeoJsonTransformer;
 use Ricklab\Location\Transformer\WktTransformer;
@@ -23,6 +24,7 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
      */
     protected readonly array $geometries;
 
+    #[Override]
     public static function fromArray(array $geometries): self
     {
         /** @psalm-suppress MixedArgument $geometries */
@@ -44,6 +46,7 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
     /**
      * {@inheritdoc}
      */
+    #[Override]
     public function jsonSerialize(): array
     {
         return GeoJsonTransformer::jsonArray($this);
@@ -54,6 +57,7 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
         return $this->wktFormat();
     }
 
+    #[Override]
     public function wktFormat(): string
     {
         return sprintf(
@@ -75,6 +79,7 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
      *
      * @psalm-return list<GeometryInterface>
      */
+    #[Override]
     public function getGeometries(): array
     {
         return $this->geometries;
@@ -104,11 +109,13 @@ final class GeometryCollection implements GeometryInterface, GeometryCollectionI
     /**
      * @return list<GeometryInterface>
      */
+    #[Override]
     public function getChildren(): array
     {
         return $this->geometries;
     }
 
+    #[Override]
     public function getBBox(): BoundingBox
     {
         return BoundingBox::fromGeometry($this);

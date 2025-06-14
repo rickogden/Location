@@ -9,6 +9,7 @@ use function count;
 
 use InvalidArgumentException;
 use IteratorAggregate;
+use Override;
 use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Converter\Unit;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
@@ -26,6 +27,7 @@ final class Polygon implements GeometryInterface, IteratorAggregate
      */
     private readonly array $geometries;
 
+    #[Override]
     public static function fromArray(array $geometries): self
     {
         $result = [];
@@ -70,6 +72,7 @@ final class Polygon implements GeometryInterface, IteratorAggregate
         return $this->geometries[0]->getLength($unit, $calculator);
     }
 
+    #[Override]
     public function getBBox(): BoundingBox
     {
         return BoundingBox::fromGeometry($this);
@@ -90,6 +93,7 @@ final class Polygon implements GeometryInterface, IteratorAggregate
      *
      * @psalm-return list<LineString>
      */
+    #[Override]
     public function getChildren(): array
     {
         return $this->geometries;

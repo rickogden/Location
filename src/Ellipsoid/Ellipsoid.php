@@ -4,19 +4,28 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Ellipsoid;
 
+use Override;
+
 class Ellipsoid implements EllipsoidInterface
 {
     /** @var float|numeric-string|null */
     private float|string|null $flattening = null;
 
-    public static function fromRadius(float|int $radius): self
+    /**
+     * @param float|numeric-string $radius
+     */
+    public static function fromRadius(float|string $radius): self
     {
         return new self($radius, $radius, $radius);
     }
 
-    public static function fromSemiAxes(float|int $majorSemiAxis, float|int $minorSemiAxis): self
+    /**
+     * @param float|numeric-string $majorSemiAxis
+     * @param float|numeric-string $minorSemiAxis
+     */
+    public static function fromSemiAxes(float|string $majorSemiAxis, float|string $minorSemiAxis): self
     {
-        return new self(($majorSemiAxis + $minorSemiAxis) / 2, $majorSemiAxis, $minorSemiAxis);
+        return new self(((float) $majorSemiAxis + (float) $minorSemiAxis) / 2.0, $majorSemiAxis, $minorSemiAxis);
     }
 
     /**
@@ -31,30 +40,35 @@ class Ellipsoid implements EllipsoidInterface
     ) {
     }
 
+    #[Override]
     public function radius(): float|string
     {
         return $this->radius;
     }
 
+    #[Override]
     public function majorSemiAxis(): float|string
     {
         return $this->majorSemiAxis;
     }
 
+    #[Override]
     public function minorSemiAxis(): float|string
     {
         return $this->minorSemiAxis;
     }
 
+    #[Override]
     public function flattening(): float|string
     {
         if (null === $this->flattening) {
-            $this->flattening = ($this->majorSemiAxis - $this->minorSemiAxis) / $this->majorSemiAxis;
+            $this->flattening = ((float) $this->majorSemiAxis - (float) $this->minorSemiAxis) / (float) $this->majorSemiAxis;
         }
 
         return $this->flattening;
     }
 
+    #[Override]
     public function equals(Ellipsoid $ellipsoid): bool
     {
         return $ellipsoid === $this || ((float) $this->radius === (float) $ellipsoid->radius

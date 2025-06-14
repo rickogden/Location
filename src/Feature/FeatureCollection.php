@@ -12,6 +12,7 @@ namespace Ricklab\Location\Feature;
 use ArrayIterator;
 use IteratorAggregate;
 use JsonSerializable;
+use Override;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\MultiPoint;
 use Ricklab\Location\Transformer\GeoJsonTransformer;
@@ -113,6 +114,7 @@ final class FeatureCollection implements IteratorAggregate, JsonSerializable
         return new self(array_values($features), $this->withBbox);
     }
 
+    #[Override]
     public function jsonSerialize(): array
     {
         return GeoJsonTransformer::jsonArray($this);
@@ -121,6 +123,7 @@ final class FeatureCollection implements IteratorAggregate, JsonSerializable
     /**
      * @return ArrayIterator<int<0, max>, Feature>
      */
+    #[Override]
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->features);

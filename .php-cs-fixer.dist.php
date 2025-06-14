@@ -5,10 +5,7 @@ $finder = PhpCsFixer\Finder::create()
 ;
 $config = new PhpCsFixer\Config();
 return $config->setRules([
-        '@PHP80Migration' => true,
-        '@PHP80Migration:risky' => true,
-        '@PHP81Migration' => true,
-        '@PSR12' => true,
+        '@PER' => true,
         '@Symfony' => true,
         'align_multiline_comment' => ['comment_type' => 'phpdocs_only'],
         'array_indentation' => true,

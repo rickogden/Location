@@ -6,6 +6,7 @@ namespace Ricklab\Location\Calculator;
 
 use function function_exists;
 
+use Override;
 use Ricklab\Location\Calculator\Traits\GeoSpatialExtensionTrait;
 use Ricklab\Location\Converter\Unit;
 use Ricklab\Location\Converter\UnitConverter;
@@ -22,6 +23,7 @@ final class DefaultBearingCalculator implements BearingCalculator, UsesGeoSpatia
     ) {
     }
 
+    #[Override]
     public function calculateInitialBearing(Point $point1, Point $point2): float
     {
         /** @psalm-suppress RiskyTruthyFalsyComparison */
@@ -45,14 +47,16 @@ final class DefaultBearingCalculator implements BearingCalculator, UsesGeoSpatia
             );
         $result = atan2($y, $x);
 
-        return fmod(rad2deg($result) + 360, 360);
+        return fmod(rad2deg($result) + 360.0, 360);
     }
 
+    #[Override]
     public function calculateFinalBearing(Point $point1, Point $point2): float
     {
-        return fmod($this->calculateInitialBearing($point2, $point1) + 180, 360);
+        return fmod($this->calculateInitialBearing($point2, $point1) + 180.0, 360);
     }
 
+    #[Override]
     public function calculateRelativePoint(
         EllipsoidInterface $ellipsoid,
         Point $point,

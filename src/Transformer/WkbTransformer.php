@@ -17,7 +17,7 @@ use Ricklab\Location\Geometry\MultiPolygon;
 use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Geometry\Polygon;
 
-class WkbTransformer
+final class WkbTransformer
 {
     private const WKB_POINT = 1;
     private const WKB_LINESTRING = 2;

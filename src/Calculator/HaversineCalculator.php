@@ -6,6 +6,7 @@ namespace Ricklab\Location\Calculator;
 
 use function function_exists;
 
+use Override;
 use Ricklab\Location\Calculator\Traits\GeoSpatialExtensionTrait;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Geometry\Point;
@@ -16,6 +17,7 @@ final class HaversineCalculator implements DistanceCalculator, UsesGeoSpatialExt
 
     public const FORMULA = 'HAVERSINE';
 
+    #[Override]
     public function calculateDistance(Point $point1, Point $point2, EllipsoidInterface $ellipsoid): float
     {
         if ($this->useSpatialExtension && function_exists('haversine')) {
@@ -32,15 +34,16 @@ final class HaversineCalculator implements DistanceCalculator, UsesGeoSpatialExt
             $distanceLat = $lat1 - $lat2;
             $distanceLong = $lon1 - $lon2;
 
-            $radDistance = sin($distanceLat / 2) * sin($distanceLat / 2) +
+            $radDistance = sin($distanceLat / 2.0) * sin($distanceLat / 2.0) +
                 cos($lat1) * cos($lat2) *
-                sin($distanceLong / 2) * sin($distanceLong / 2);
-            $radDistance = 2 * atan2(sqrt($radDistance), sqrt(1 - $radDistance));
+                sin($distanceLong / 2.0) * sin($distanceLong / 2.0);
+            $radDistance = 2.0 * atan2(sqrt($radDistance), sqrt(1.0 - $radDistance));
         }
 
-        return $radDistance * $ellipsoid->radius();
+        return $radDistance * (float) $ellipsoid->radius();
     }
 
+    #[Override]
     public function formula(): string
     {
         return self::FORMULA;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use IteratorAggregate;
+use Override;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
@@ -23,6 +24,7 @@ final class MultiPoint implements GeometryInterface, GeometryCollectionInterface
      */
     protected readonly array $geometries;
 
+    #[Override]
     public static function fromArray(array $geometries): self
     {
         $result = [];
@@ -53,6 +55,7 @@ final class MultiPoint implements GeometryInterface, GeometryCollectionInterface
      *
      * @psalm-return list<Point>
      */
+    #[Override]
     public function getGeometries(): array
     {
         return $this->getPoints();
@@ -73,6 +76,7 @@ final class MultiPoint implements GeometryInterface, GeometryCollectionInterface
         return new self(array_values($geometries));
     }
 
+    #[Override]
     public function getBBox(): BoundingBox
     {
         return BoundingBox::fromGeometry($this);
@@ -83,6 +87,7 @@ final class MultiPoint implements GeometryInterface, GeometryCollectionInterface
      *
      * @psalm-return list<Point>
      */
+    #[Override]
     public function getChildren(): array
     {
         return $this->geometries;

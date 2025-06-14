@@ -10,6 +10,7 @@ use InvalidArgumentException;
 
 use function is_string;
 
+use Override;
 use Ricklab\Location\Calculator\BearingCalculator;
 use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
@@ -32,16 +33,17 @@ final class Point implements GeometryInterface
 {
     use TransformationTrait;
 
-    public const MAX_LATITUDE = 90;
-    public const MIN_LATITUDE = -90;
-    public const MAX_LONGITUDE = 180;
-    public const MIN_LONGITUDE = -180;
+    public const MAX_LATITUDE = 90.0;
+    public const MIN_LATITUDE = -90.0;
+    public const MAX_LONGITUDE = 180.0;
+    public const MIN_LONGITUDE = -180.0;
 
     private readonly float $longitude;
     private readonly float $latitude;
     private readonly string $longitudeString;
     private readonly string $latitudeString;
 
+    #[Override]
     public static function fromArray(array $geometries): self
     {
         if (2 !== $length = count($geometries)) {
@@ -139,6 +141,7 @@ final class Point implements GeometryInterface
         return DegreesMinutesSeconds::fromDecimal($this->longitude, Axis::LONGITUDE);
     }
 
+    #[Override]
     public function wktFormat(): string
     {
         return $this->toString(' ');
@@ -260,6 +263,7 @@ final class Point implements GeometryInterface
      *
      * @return array{0: float, 1: float}
      */
+    #[Override]
     public function toArray(): array
     {
         return $this->getCoordinates();
@@ -341,11 +345,13 @@ final class Point implements GeometryInterface
      *
      * @return list<Point>
      */
+    #[Override]
     public function getPoints(): array
     {
         return [$this];
     }
 
+    #[Override]
     public function equals(GeometryInterface $geometry): bool
     {
         return $this === $geometry
@@ -367,11 +373,13 @@ final class Point implements GeometryInterface
         return new self($longitude, $latitude);
     }
 
+    #[Override]
     public function getBBox(): BoundingBox
     {
         return BoundingBox::fromGeometry($this);
     }
 
+    #[Override]
     public function getChildren(): array
     {
         return [];

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Feature;
 
 use JsonSerializable;
+use Override;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Transformer\GeoJsonTransformer;
@@ -104,6 +105,7 @@ final class Feature implements JsonSerializable
         return $this->bboxCache;
     }
 
+    #[Override]
     public function jsonSerialize(): array
     {
         return GeoJsonTransformer::jsonArray($this);

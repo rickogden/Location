@@ -6,7 +6,7 @@ namespace Ricklab\Location\Calculator;
 
 use Ricklab\Location\Converter\UnitConverterRegistry;
 
-class CalculatorRegistry
+final class CalculatorRegistry
 {
     private static ?DistanceCalculator $distanceCalculator = null;
     private static ?BearingCalculator $bearingCalculator = null;

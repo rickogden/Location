@@ -7,6 +7,7 @@ namespace Ricklab\Location\Calculator;
 use function function_exists;
 
 use InvalidArgumentException;
+use Override;
 use Ricklab\Location\Ellipsoid\EllipsoidInterface;
 use Ricklab\Location\Geometry\Point;
 
@@ -21,6 +22,7 @@ final class DefaultFractionAlongLineCalculator implements UsesGeoSpatialExtensio
     /**
      * @param float|numeric-string $fraction
      */
+    #[Override]
     public function calculateFractionAlongLine(
         Point $point1,
         Point $point2,
@@ -43,31 +45,33 @@ final class DefaultFractionAlongLineCalculator implements UsesGeoSpatialExtensio
             return Point::fromArray($result['coordinates']);
         }
 
-        $distance = $this->calculator->calculateDistance($point1, $point2, $ellipsoid) / $ellipsoid->radius();
+        $distance = $this->calculator->calculateDistance($point1, $point2, $ellipsoid) / (float) $ellipsoid->radius();
 
         $lat1 = $point1->latitudeToRad();
         $lat2 = $point2->latitudeToRad();
         $lon1 = $point1->longitudeToRad();
         $lon2 = $point2->longitudeToRad();
 
-        $a = sin((1 - $fraction) * $distance) / sin($distance);
+        $a = sin((1.0 - $fraction) * $distance) / sin($distance);
         $b = sin($fraction * $distance) / sin($distance);
         $x = $a * cos($lat1) * cos($lon1) +
             $b * cos($lat2) * cos($lon2);
         $y = $a * cos($lat1) * sin($lon1) +
             $b * cos($lat2) * sin($lon2);
         $z = $a * sin($lat1) + $b * sin($lat2);
-        $res_lat = atan2($z, sqrt(($x ** 2) + ($y ** 2)));
+        $res_lat = atan2($z, sqrt(($x ** 2.0) + ($y ** 2.0)));
         $res_long = atan2($y, $x);
 
         return new Point(rad2deg($res_long), rad2deg($res_lat));
     }
 
+    #[Override]
     public function enableGeoSpatialExtension(): void
     {
         $this->useSpatialExtension = true;
     }
 
+    #[Override]
     public function disableGeoSpatialExtension(): void
     {
         $this->useSpatialExtension = false;

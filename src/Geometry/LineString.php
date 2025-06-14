@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use function is_array;
 
 use IteratorAggregate;
+use Override;
 use Ricklab\Location\Calculator\DistanceCalculator;
 use Ricklab\Location\Converter\Unit;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
@@ -33,6 +34,7 @@ final class LineString implements GeometryInterface, IteratorAggregate
     protected readonly array $geometries;
     protected int $position = 0;
 
+    #[Override]
     public static function fromArray(array $geometries): self
     {
         $result = [];
@@ -77,10 +79,10 @@ final class LineString implements GeometryInterface, IteratorAggregate
      */
     public function getLength(Unit $unit = Unit::METERS, ?DistanceCalculator $calculator = null): float
     {
-        $distance = 0;
+        $distance = 0.0;
 
         for ($i = 1, $iMax = count($this->geometries); $i < $iMax; ++$i) {
-            $distance += $this->geometries[$i - 1]->distanceTo($this->geometries[$i], $unit, $calculator);
+            $distance += (float) $this->geometries[$i - 1]->distanceTo($this->geometries[$i], $unit, $calculator);
         }
 
         return $distance;
@@ -105,6 +107,7 @@ final class LineString implements GeometryInterface, IteratorAggregate
     /**
      * Gets the bounding box which will contain the entire geometry.
      */
+    #[Override]
     public function getBBox(): BoundingBox
     {
         return BoundingBox::fromGeometry($this);
@@ -121,6 +124,7 @@ final class LineString implements GeometryInterface, IteratorAggregate
     /**
      * {@inheritdoc}
      */
+    #[Override]
     public function getPoints(): array
     {
         return $this->geometries;
@@ -181,6 +185,7 @@ final class LineString implements GeometryInterface, IteratorAggregate
     /**
      * @return list<Point>
      */
+    #[Override]
     public function getChildren(): array
     {
         return $this->geometries;

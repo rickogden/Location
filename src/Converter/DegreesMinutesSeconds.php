@@ -66,12 +66,12 @@ final class DegreesMinutesSeconds
 
         if (0 > $decimal) {
             $direction = $direction->invert();
-            $decimal *= -1;
+            $decimal *= -1.0;
         }
 
         $deg = (int) floor($decimal);
-        $min = (int) floor(($decimal - $deg) * 60);
-        $sec = ($decimal - $deg - $min / 60) * 3600;
+        $min = (int) floor(($decimal - (float) $deg) * 60.0);
+        $sec = ($decimal - (float) $deg - (float) $min / 60.0) * 3600.0;
 
         return new self($deg, $min, $sec, $direction);
     }
@@ -111,9 +111,9 @@ final class DegreesMinutesSeconds
 
     public function toDecimal(): float
     {
-        $decimal = $this->degrees + ($this->minutes / 60) + ($this->seconds / 3600);
+        $decimal = (float) $this->degrees + ((float) $this->minutes / 60.0) + ($this->seconds / 3600.0);
 
-        return $decimal * $this->direction->multiplier();
+        return $decimal * (float) $this->direction->multiplier();
     }
 
     /**
