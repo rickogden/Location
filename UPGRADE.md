@@ -1,12 +1,24 @@
 # Upgrade from Version 6 to Version 7
 
+Basic usage should require minimal changes.
+
+* PHP 8.0 minimum version
 * BoundingBox is no longer a polygon, any polygon operations on bounding box use `getPolygon`.
 * Geometry and feature classes are now all final, they should be decorated rather than extended.
-
-## Changes
-
-* Made all classes final
+* Numeric-strings are also valid for coordinates, for future calculator improvements (such as use of BC Math)
 * Removed deprecated methods
+* Calculator class methods are no longer static to allow for easier injection/replacement
+* Calculator registry is used to store default calculators
+* Improved type-safety
+* Deprecated methods removed
+* BoundingBox is no longer a Polygon (but `->getPolygon()` will create one from it)
+* ENUMs are now used for Unit, and Degrees/Minutes/Seconds direction/axis
+
+## New Features
+
+### Well-Known Binary (WKB)
+
+There is now a WKB transformer.
 
 # Upgrading from Version 5 to Version 6
 
