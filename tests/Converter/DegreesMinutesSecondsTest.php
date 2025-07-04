@@ -92,6 +92,7 @@ class DegreesMinutesSecondsTest extends TestCase
         $this->assertSame($degrees, $dms->getDegrees());
         $this->assertSame($minutes, $dms->getMinutes());
         $this->assertSame($seconds, round($dms->getSeconds(), 5));
+        $this->assertSame((string) $seconds, $dms->getSecondsString());
         $this->assertSame($direction, $dms->getDirection());
     }
 }

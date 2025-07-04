@@ -44,10 +44,19 @@ final class DegreesMinutesSeconds
         $success = preg_match(self::REGEX, $string, $results);
 
         if ($success && 5 === count($results)) {
+            /**
+             * @var array{
+             *     0: string,
+             *     1: numeric-string,
+             *     2: numeric-string,
+             *     3: numeric-string,
+             *     4: string,
+             * } $results
+             */
             return new self(
                 (int) $results[1],
                 (int) $results[2],
-                (float) $results[3],
+                $results[3],
                 Direction::from($results[4]),
             );
         }
@@ -76,10 +85,13 @@ final class DegreesMinutesSeconds
         return new self($deg, $min, $sec, $direction);
     }
 
+    /**
+     * @param float|numeric-string $seconds
+     */
     public function __construct(
         private readonly int $degrees,
         private readonly int $minutes,
-        private readonly float $seconds,
+        private readonly float|string $seconds,
         private readonly Direction $direction,
     ) {
     }
@@ -96,7 +108,12 @@ final class DegreesMinutesSeconds
 
     public function getSeconds(): float
     {
-        return $this->seconds;
+        return (float) $this->seconds;
+    }
+
+    public function getSecondsString(): string
+    {
+        return (string) $this->seconds;
     }
 
     public function getDirection(): Direction
@@ -111,7 +128,7 @@ final class DegreesMinutesSeconds
 
     public function toDecimal(): float
     {
-        $decimal = (float) $this->degrees + ((float) $this->minutes / 60.0) + ($this->seconds / 3600.0);
+        $decimal = (float) $this->degrees + ((float) $this->minutes / 60.0) + ((float) $this->seconds / 3600.0);
 
         return $decimal * (float) $this->direction->multiplier();
     }
@@ -124,7 +141,7 @@ final class DegreesMinutesSeconds
         return [
             $this->degrees,
             $this->minutes,
-            $this->seconds,
+            (float) $this->seconds,
             $this->direction,
         ];
     }

@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use function count;
+
 use InvalidArgumentException;
+
+use function is_float;
+use function is_int;
+use function is_string;
 
 use const M_PI;
 
@@ -88,16 +94,32 @@ final class BoundingBox implements GeometryInterface
     #[Override]
     public static function fromArray(array $geometries): self
     {
-        if (!is_numeric($geometries[0]) || !is_numeric($geometries[1]) || !is_numeric($geometries[2]) || !is_numeric($geometries[3])) {
-            throw new InvalidArgumentException('Array element needs to be a float.');
+        if (4 !== count($geometries)) {
+            throw new InvalidArgumentException('Array needs to have exactly 4 elements.');
         }
 
         return new self(
-            (float) $geometries[0],
-            (float) $geometries[1],
-            (float) $geometries[2],
-            (float) $geometries[3],
+            self::toCoordinate($geometries[0]),
+            self::toCoordinate($geometries[1]),
+            self::toCoordinate($geometries[2]),
+            self::toCoordinate($geometries[3]),
         );
+    }
+
+    /**
+     * @return float|numeric-string
+     */
+    private static function toCoordinate(mixed $coordinate): float|string
+    {
+        if (is_float($coordinate) || is_int($coordinate)) {
+            return (float) $coordinate;
+        }
+
+        if (is_string($coordinate) && is_numeric($coordinate)) {
+            return $coordinate;
+        }
+
+        throw new InvalidArgumentException('Coordinate needs to be a float or a numeric-string.');
     }
 
     #[Override]
@@ -106,8 +128,18 @@ final class BoundingBox implements GeometryInterface
         return $this;
     }
 
-    public function __construct(float $minLon, float $minLat, float $maxLon, float $maxLat)
-    {
+    /**
+     * @param float|numeric-string $minLon
+     * @param float|numeric-string $maxLon
+     * @param float|numeric-string $minLat
+     * @param float|numeric-string $maxLat
+     */
+    public function __construct(
+        float|string $minLon,
+        float|string $minLat,
+        float|string $maxLon,
+        float|string $maxLat,
+    ) {
         $this->southWest = new Point($minLon, $minLat);
         $this->northEast = new Point($maxLon, $maxLat);
     }
@@ -174,15 +206,16 @@ final class BoundingBox implements GeometryInterface
 
     public function intersects(GeometryInterface $geometry): bool
     {
+        [$minLon, $minLat, $maxLon, $maxLat] = $this->getBounds();
         foreach ($geometry->getPoints() as $point) {
             $lat = $point->getLatitude();
             $lon = $point->getLongitude();
 
             if (
-                $lat >= $this->getMinLat()
-                && $lat <= $this->getMaxLat()
-                && $lon >= $this->getMinLon()
-                && $lon <= $this->getMaxLon()
+                $lat >= $minLat
+                && $lat <= $maxLat
+                && $lon >= $minLon
+                && $lon <= $maxLon
             ) {
                 return true;
             }

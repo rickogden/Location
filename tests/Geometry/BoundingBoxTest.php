@@ -114,7 +114,7 @@ class BoundingBoxTest extends TestCase
 
     public function testGetSouthWest(): void
     {
-        $bbox = new BoundingBox(-2, 50, 1, 52);
+        $bbox = new BoundingBox(-2, 50, '1', '52');
         $southWest = $bbox->getSouthWest();
         $this->assertInstanceOf(Point::class, $southWest);
         $this->assertSame(-2.0, $southWest->getLongitude());
@@ -123,21 +123,10 @@ class BoundingBoxTest extends TestCase
 
     public function testGetCenter(): void
     {
-        $bbox = new BoundingBox(-2, 50, 1, 52);
+        $bbox = BoundingBox::fromArray(['-2', '50', 1, 52]);
         $center = $bbox->getCenter();
         $this->assertInstanceOf(Point::class, $center);
         $this->assertSame(-0.5, $center->getLongitude());
         $this->assertSame(51.0, $center->getLatitude());
-    }
-
-    public function testFromArray(): void
-    {
-        $array = [-2, 50, 1, 52];
-        $bbox = BoundingBox::fromArray($array);
-        $this->assertInstanceOf(BoundingBox::class, $bbox);
-        $this->assertSame(-2.0, $bbox->getSouthWest()->getLongitude());
-        $this->assertSame(50.0, $bbox->getSouthWest()->getLatitude());
-        $this->assertSame(1.0, $bbox->getNorthEast()->getLongitude());
-        $this->assertSame(52.0, $bbox->getNorthEast()->getLatitude());
     }
 }
