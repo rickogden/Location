@@ -14,7 +14,7 @@
     "authors":[{
         "name":"Rick Ogden",
         "email":"rick@rickogden.com",
-        "homepage":"http://www.rickogden.com",
+        "homepage":"https://www.rickogden.com",
         "role":"developer"
     }],
     "config": {
@@ -24,20 +24,23 @@
         }
     },
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.1",
         "ext-json": "*"
     },
     "require-dev": {
         "ext-simplexml": "*",
-        "friendsofphp/php-cs-fixer": "^3.13",
-        "phpbench/phpbench": "^1.2",
-        "phpunit/phpunit": "^9.5",
-        "vimeo/psalm": "^5.16"
+        "friendsofphp/php-cs-fixer": "3.75.0",
+        "phpbench/phpbench": "1.3.1",
+        "phpunit/phpunit": "^10.5 || ^11.5",
+        "vimeo/psalm": "6.12.0"
     },
     "autoload": {
         "psr-4": {
             "Ricklab\\Location\\": "src/"
         }
+    },
+    "suggest": {
+        "ext-geospatial": ">=0.2.2-dev"
     },
     "autoload-dev": {
         "psr-4": {

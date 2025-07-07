@@ -5,19 +5,21 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Ricklab\Location\Converter\Unit;
 
 class BoundingBoxTest extends TestCase
 {
     public function testFromCenter(): void
     {
         $point = new Point(-2, 53);
-        $bbox = BoundingBox::fromCenter($point, 2, 'km');
+        $bbox = BoundingBox::fromCenter($point, 2, Unit::KM);
 
         $this->assertCount(5, $bbox->getPoints());
     }
 
-    public function trueContains(): Generator
+    public static function trueContains(): Generator
     {
         $bbox = new BoundingBox(-1, 50, 1, 52);
         yield [$bbox, new Point(0, 51)];
@@ -43,15 +45,13 @@ class BoundingBoxTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider trueContains
-     */
+    #[DataProvider('trueContains')]
     public function testContains(BoundingBox $boundingBox, GeometryInterface $geometry): void
     {
         $this->assertTrue($boundingBox->contains($geometry));
     }
 
-    public function intersectingProvider(): Generator
+    public static function intersectingProvider(): Generator
     {
         $bbox = new BoundingBox(-2, 50, 1, 52);
         yield [
@@ -76,36 +76,57 @@ class BoundingBoxTest extends TestCase
         ];
     }
 
-    public function doesNotIntersectProvider(): Generator
+    public static function doesNotIntersectProvider(): Generator
     {
         $bbox = new BoundingBox(-2, 50, 1, 52);
         yield [$bbox, new Point(0, 54)];
         yield [$bbox, new LineString([new Point(0, 53), new Point(0, 55)])];
     }
 
-    /**
-     * @dataProvider intersectingProvider
-     * @dataProvider doesNotIntersectProvider
-     */
+    #[DataProvider('intersectingProvider')]
+    #[DataProvider('doesNotIntersectProvider')]
     public function testContainsFalse(BoundingBox $boundingBox, GeometryInterface $geometry): void
     {
         $this->assertFalse($boundingBox->contains($geometry));
     }
 
-    /**
-     * @dataProvider trueContains
-     * @dataProvider intersectingProvider
-     */
+    #[DataProvider('trueContains')]
+    #[DataProvider('intersectingProvider')]
     public function testIntersects(BoundingBox $boundingBox, GeometryInterface $geometry): void
     {
         $this->assertTrue($boundingBox->intersects($geometry));
     }
 
-    /**
-     * @dataProvider doesNotIntersectProvider
-     */
+    #[DataProvider('doesNotIntersectProvider')]
     public function testNotIntersects(BoundingBox $boundingBox, GeometryInterface $geometry): void
     {
         $this->assertFalse($boundingBox->intersects($geometry));
+    }
+
+    public function testGetNorthEast(): void
+    {
+        $bbox = new BoundingBox(-2, 50, 1, 52);
+        $northEast = $bbox->getNorthEast();
+        $this->assertInstanceOf(Point::class, $northEast);
+        $this->assertSame(1.0, $northEast->getLongitude());
+        $this->assertSame(52.0, $northEast->getLatitude());
+    }
+
+    public function testGetSouthWest(): void
+    {
+        $bbox = new BoundingBox(-2, 50, '1', '52');
+        $southWest = $bbox->getSouthWest();
+        $this->assertInstanceOf(Point::class, $southWest);
+        $this->assertSame(-2.0, $southWest->getLongitude());
+        $this->assertSame(50.0, $southWest->getLatitude());
+    }
+
+    public function testGetCenter(): void
+    {
+        $bbox = BoundingBox::fromArray(['-2', '50', 1, 52]);
+        $center = $bbox->getCenter();
+        $this->assertInstanceOf(Point::class, $center);
+        $this->assertSame(-0.5, $center->getLongitude());
+        $this->assertSame(51.0, $center->getLatitude());
     }
 }

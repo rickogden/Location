@@ -1,42 +1,35 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 17/07/15
- * Time: 17:18.
- */
 
 namespace Ricklab\Location\Geometry;
 
-use InvalidArgumentException;
+use Override;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
+use Ricklab\Location\Transformer\GeoJsonTransformer;
+use Ricklab\Location\Transformer\WktTransformer;
+
+use function sprintf;
 
 /**
- * Class GeometryCollection.
+ * @implements GeometryCollectionInterface<GeometryInterface>
  */
-class GeometryCollection implements GeometryInterface, GeometryCollectionInterface
+final class GeometryCollection implements GeometryInterface, GeometryCollectionInterface
 {
     /** @use GeometryTrait<GeometryInterface> */
     use GeometryTrait;
 
     /**
-     * @var GeometryInterface[]
+     * @var list<GeometryInterface>
      */
-    protected array $geometries = [];
+    protected readonly array $geometries;
 
-    public static function getWktType(): string
-    {
-        return 'GEOMETRYCOLLECTION';
-    }
-
-    public static function getGeoJsonType(): string
-    {
-        return 'GeometryCollection';
-    }
-
+    #[Override]
     public static function fromArray(array $geometries): self
     {
+        /** @psalm-suppress MixedArgument $geometries */
+        $geometries = (fn (GeometryInterface ...$geometries): array => $geometries)(...$geometries);
+
         return new self($geometries);
     }
 
@@ -47,46 +40,46 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
      */
     public function __construct(array $geometries)
     {
-        foreach ($geometries as $geometry) {
-            if (!$geometry instanceof GeometryInterface) {
-                throw new InvalidArgumentException('Array must contain geometries only');
-            }
-        }
-        $this->geometries = $geometries;
+        $this->geometries = array_values((fn (GeometryInterface ...$geometries): array => $geometries)(...$geometries));
     }
 
     /**
      * {@inheritdoc}
      */
+    #[Override]
     public function jsonSerialize(): array
     {
-        $json = ['type' => self::getGeoJsonType()];
-
-        foreach ($this->geometries as $geometry) {
-            $json['geometries'][] = $geometry->jsonSerialize();
-        }
-
-        return $json;
+        return GeoJsonTransformer::jsonArray($this);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __toString(): string
     {
-        $collection = [];
-        foreach ($this->geometries as $geometry) {
-            $collection[] = $geometry->toWkt();
-        }
+        return $this->wktFormat();
+    }
 
-        return '('.implode(', ', $collection).')';
+    #[Override]
+    public function wktFormat(): string
+    {
+        return sprintf(
+            '(%s)',
+            implode(
+                ', ',
+                array_map(
+                    fn (GeometryInterface $g) => WktTransformer::encode($g),
+                    $this->geometries
+                )
+            )
+        );
     }
 
     /**
      * All the geometries in the collection.
      *
      * @return GeometryInterface[]
+     *
+     * @psalm-return list<GeometryInterface>
      */
+    #[Override]
     public function getGeometries(): array
     {
         return $this->geometries;
@@ -95,25 +88,36 @@ class GeometryCollection implements GeometryInterface, GeometryCollectionInterfa
     /**
      * Adds a geometry to the collection.
      */
-    public function addGeometry(GeometryInterface $geometry): void
+    public function withGeometry(GeometryInterface $geometry): self
     {
-        $this->geometries[] = $geometry;
+        $geometries = $this->geometries;
+        $geometries[] = $geometry;
+
+        return new self($geometries);
     }
 
     /**
      * Removes a geometry from the collection.
      */
-    public function removeGeometry(GeometryInterface $geometry): void
+    public function removeGeometry(GeometryInterface $geometry): self
     {
-        foreach ($this->geometries as $index => $geom) {
-            if ($geom === $geometry) {
-                unset($this->geometries[$index]);
-            }
-        }
+        $geometries = array_filter($this->geometries, fn (GeometryInterface $g): bool => $g !== $geometry);
+
+        return new self(array_values($geometries));
     }
 
-    protected function getGeometryArray(): array
+    /**
+     * @return list<GeometryInterface>
+     */
+    #[Override]
+    public function getChildren(): array
     {
         return $this->geometries;
+    }
+
+    #[Override]
+    public function getBBox(): BoundingBox
+    {
+        return BoundingBox::fromGeometry($this);
     }
 }

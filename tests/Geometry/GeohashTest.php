@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @coversDefaultClass \Ricklab\Location\Geometry\Geohash
- */
+use function sprintf;
+
+#[CoversClass(Geohash::class)]
 class GeohashTest extends TestCase
 {
-    public function geoHahProvider(): Generator
+    public static function geoHahProvider(): Generator
     {
         yield ['u4pruydqqvj', 10.40744, 57.64911, 5];
         yield ['gbsuv7s0k', -4.333913, 48.666751, 6];
@@ -20,11 +22,7 @@ class GeohashTest extends TestCase
         yield ['gbsu', -4.39, 48.6, 2];
     }
 
-    /**
-     * @dataProvider geoHahProvider
-     *
-     * @covers ::fromPoint
-     */
+    #[DataProvider('geoHahProvider')]
     public function testGeoHashFromPoint(string $hash, float $lon, float $lat, float $precision): void
     {
         $point = new Point($lon, $lat);
@@ -32,12 +30,7 @@ class GeohashTest extends TestCase
         $this->assertSame($hash, $geoHash->getHash());
     }
 
-    /**
-     * @dataProvider geoHahProvider
-     *
-     * @covers ::getBounds
-     * @covers ::getCenter
-     */
+    #[DataProvider('geoHahProvider')]
     public function testGetCenter(string $hash, float $lon, float $lat, int $precision): void
     {
         $geoHash = new Geohash($hash);
@@ -49,7 +42,7 @@ class GeohashTest extends TestCase
         );
     }
 
-    public function geoHashNeighborProvider(): Generator
+    public static function geoHashNeighborProvider(): Generator
     {
         yield 'Arbitrary 5 character geohash' => [
             'gbsuv',
@@ -112,9 +105,7 @@ class GeohashTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider geoHashNeighborProvider
-     */
+    #[DataProvider('geoHashNeighborProvider')]
     public function testAdjacent(
         string $origin,
         string $northWest,
@@ -124,7 +115,7 @@ class GeohashTest extends TestCase
         string $east,
         string $southWest,
         string $south,
-        string $southEast
+        string $southEast,
     ): void {
         $geoHash = new Geohash($origin);
         $this->assertSame($north, (string) $geoHash->getAdjacentNorth());
@@ -145,30 +136,26 @@ class GeohashTest extends TestCase
         $this->assertTrue($geoHash2->equals($geoHash), 'True is not returned for equals.');
     }
 
-    public function notEqualsProvider(): Generator
+    public static function notEqualsProvider(): Generator
     {
         yield 'Not equals' => [new Geohash('gcqryemv'), new Geohash('gcqryemy')];
         yield 'Contains' => [new Geohash('gcqryemv'), new Geohash('gcqryem')];
     }
 
-    /**
-     * @dataProvider notEqualsProvider
-     */
+    #[DataProvider('notEqualsProvider')]
     public function testEqualsFalse(Geohash $geoHash, Geohash $geoHash2): void
     {
         $this->assertFalse($geoHash->equals($geoHash2), 'False is not returned for equals.');
         $this->assertFalse($geoHash2->equals($geoHash), 'False is not returned for equals.');
     }
 
-    public function containsProvider(): Generator
+    public static function containsProvider(): Generator
     {
         yield 'Direct parent' => [new Geohash('gcqryem'), new Geohash('gcqryemy')];
         yield 'Very high parent' => [new Geohash('gcq'), new Geohash('gcqryemy')];
     }
 
-    /**
-     * @dataProvider containsProvider
-     */
+    #[DataProvider('containsProvider')]
     public function testContainsTrue(Geohash $parent, Geohash $child): void
     {
         $this->assertTrue($parent->contains($child), 'Parent does not contain the child');

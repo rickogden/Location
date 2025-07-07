@@ -26,27 +26,6 @@ class MultiLineStringTest extends TestCase
         $this->assertEquals($geojson, json_encode($multiLineString));
     }
 
-    public function testToWkt(): void
-    {
-        $wkt = 'MULTILINESTRING((3 4, 10 50, 20 25), (-5 -8, -10 -8, -15 -4))';
-
-        $lineString1 = new LineString([
-            Point::fromArray([3, 4]),
-            Point::fromArray([10, 50]),
-            Point::fromArray([20, 25]),
-        ]);
-
-        $lineString2 = LineString::fromArray([
-            [-5, -8],
-            [-10, -8],
-            [-15, -4],
-        ]);
-
-        $multiLineString = new MultiLineString([$lineString1, $lineString2]);
-
-        $this->assertEquals($wkt, $multiLineString->toWkt());
-    }
-
     public function testAddAndRemoveGeometries(): void
     {
         $lineString = new LineString([
@@ -63,10 +42,10 @@ class MultiLineStringTest extends TestCase
             Point::fromArray([-15, -4]),
         ]);
 
-        $multiLineString->addGeometry($lineString2);
+        $multiLineString = $multiLineString->withGeometry($lineString2);
         $this->assertContains($lineString, $multiLineString->getGeometries());
         $this->assertContains($lineString2, $multiLineString->getGeometries());
-        $multiLineString->removeGeometry($lineString);
+        $multiLineString = $multiLineString->withoutGeometry($lineString);
         $this->assertCount(1, $multiLineString->getGeometries());
         $this->assertNotContains($lineString, $multiLineString->getGeometries());
     }

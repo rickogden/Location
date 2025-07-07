@@ -1,43 +1,35 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 04/10/15
- * Time: 11:22.
- */
 
 namespace Ricklab\Location\Geometry;
 
 use IteratorAggregate;
+use Override;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
  * @implements IteratorAggregate<Polygon>
+ * @implements GeometryCollectionInterface<Polygon>
  */
-class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
+final class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
     /** @use GeometryTrait<Polygon> */
     use GeometryTrait;
 
     /**
-     * @var Polygon[]
+     * @readonly
+     *
+     * @var list<Polygon>
      */
-    protected array $geometries = [];
+    protected readonly array $geometries;
 
-    public static function getWktType(): string
-    {
-        return 'MULTIPOLYGON';
-    }
-
-    public static function getGeoJsonType(): string
-    {
-        return 'MultiPolygon';
-    }
-
+    #[Override]
     public static function fromArray(array $geometries): self
     {
         $result = [];
+
+        /** @var Polygon|array $polygon */
         foreach ($geometries as $polygon) {
             if ($polygon instanceof Polygon) {
                 $result[] = $polygon;
@@ -51,38 +43,54 @@ class MultiPolygon implements GeometryInterface, GeometryCollectionInterface, It
 
     /**
      * @param Polygon[] $polygons
+     *
+     * @psalm-param list<Polygon> $polygons
      */
     public function __construct(array $polygons)
     {
-        foreach ($polygons as $polygon) {
-            $this->addGeometry($polygon);
-        }
+        $this->geometries = $polygons;
     }
 
     /**
      * @return Polygon[]
+     *
+     * @psalm-return list<Polygon>
      */
+    #[Override]
     public function getGeometries(): array
     {
         return $this->geometries;
     }
 
-    public function addGeometry(Polygon $polygon): void
+    public function withGeometry(Polygon $polygon): self
     {
-        $this->geometries[] = $polygon;
+        $geometries = $this->geometries;
+        $geometries[] = $polygon;
+
+        return new self($geometries);
     }
 
-    public function removeGeometry(Polygon $polygon): void
+    public function withoutGeometry(Polygon $polygon): self
     {
-        foreach ($this->geometries as $index => $geom) {
-            if ($polygon === $geom) {
-                unset($this->geometries[$index]);
-            }
-        }
+        $geometries = array_filter($this->geometries, fn (Polygon $p): bool => $p !== $polygon);
+
+        return new self(array_values($geometries));
     }
 
-    protected function getGeometryArray(): array
+    /**
+     * @return Polygon[]
+     *
+     * @psalm-return list<Polygon>
+     */
+    #[Override]
+    public function getChildren(): array
     {
         return $this->geometries;
+    }
+
+    #[Override]
+    public function getBBox(): BoundingBox
+    {
+        return BoundingBox::fromGeometry($this);
     }
 }

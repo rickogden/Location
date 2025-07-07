@@ -1,54 +1,51 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 14/07/15
- * Time: 13:39.
- */
 
 namespace Ricklab\Location\Geometry;
 
 use function count;
 
 use InvalidArgumentException;
+
+use function is_array;
+
 use IteratorAggregate;
+use Override;
 use Ricklab\Location\Calculator\DistanceCalculator;
-use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Converter\Unit;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
  * @implements IteratorAggregate<Point>
  */
-class LineString implements GeometryInterface, IteratorAggregate
+final class LineString implements GeometryInterface, IteratorAggregate
 {
     /** @use GeometryTrait<Point> */
     use GeometryTrait;
 
     /**
+     * @readonly
+     *
      * @var Point[]
+     *
+     * @psalm-var non-empty-list<Point>
      */
-    protected array $geometries = [];
+    protected readonly array $geometries;
     protected int $position = 0;
 
-    public static function getWktType(): string
-    {
-        return 'LINESTRING';
-    }
-
-    public static function getGeoJsonType(): string
-    {
-        return 'LineString';
-    }
-
+    #[Override]
     public static function fromArray(array $geometries): self
     {
         $result = [];
+        /** @var Point|array|mixed $point */
         foreach ($geometries as $point) {
             if ($point instanceof Point) {
                 $result[] = $point;
-            } else {
+            } elseif (is_array($point)) {
                 $result[] = Point::fromArray($point);
+            } else {
+                throw new InvalidArgumentException('Array element needs to be either an instance of Point or array.');
             }
         }
 
@@ -57,35 +54,35 @@ class LineString implements GeometryInterface, IteratorAggregate
 
     /**
      * @param Point[] $points the points, or the starting point
+     *
+     * @psalm-param list<Point> $points the points, or the starting point
      */
     public function __construct(array $points)
     {
         if (count($points) < 2) {
             throw new InvalidArgumentException('array must have 2 or more elements.');
         }
-        foreach ($points as $point) {
-            $this->add($point);
-        }
+        $this->geometries = $points;
     }
 
     /**
-     * @return float The initial bearing from the first to second point
+     * @return float|numeric-string The initial bearing from the first to second point
      */
-    public function getInitialBearing(): float
+    public function getInitialBearing(): float|string
     {
         return $this->geometries[0]->initialBearingTo($this->geometries[1]);
     }
 
     /**
-     * @param string                  $unit       defaults to "meters"
+     * @param Unit                    $unit       defaults to "meters"
      * @param DistanceCalculator|null $calculator The calculator that is used for calculating the distance. If null, uses DefaultDistanceCalculator
      */
-    public function getLength(string $unit = UnitConverter::UNIT_METERS, ?DistanceCalculator $calculator = null): float
+    public function getLength(Unit $unit = Unit::METERS, ?DistanceCalculator $calculator = null): float
     {
-        $distance = 0;
+        $distance = 0.0;
 
         for ($i = 1, $iMax = count($this->geometries); $i < $iMax; ++$i) {
-            $distance += $this->geometries[$i - 1]->distanceTo($this->geometries[$i], $unit, $calculator);
+            $distance += (float) $this->geometries[$i - 1]->distanceTo($this->geometries[$i], $unit, $calculator);
         }
 
         return $distance;
@@ -104,13 +101,14 @@ class LineString implements GeometryInterface, IteratorAggregate
      */
     public function getLast(): Point
     {
-        return end($this->geometries);
+        return $this->geometries[array_key_last($this->geometries)];
     }
 
     /**
      * Gets the bounding box which will contain the entire geometry.
      */
-    public function getBBox(): Polygon
+    #[Override]
+    public function getBBox(): BoundingBox
     {
         return BoundingBox::fromGeometry($this);
     }
@@ -126,6 +124,7 @@ class LineString implements GeometryInterface, IteratorAggregate
     /**
      * {@inheritdoc}
      */
+    #[Override]
     public function getPoints(): array
     {
         return $this->geometries;
@@ -139,20 +138,32 @@ class LineString implements GeometryInterface, IteratorAggregate
         return new self(array_reverse($this->geometries));
     }
 
-    private function add(Point $point): void
+    /**
+     * @deprecated use LineString::withPoint() instead
+     */
+    public function addPoint(Point $point): self
     {
-        $this->geometries[] = $point;
+        return $this->withPoint($point);
     }
 
     /**
      * A new LineString with the new point added.
      */
-    public function addPoint(Point $point): self
+    public function withPoint(Point $point): self
     {
         $points = $this->geometries;
         $points[] = $point;
 
         return new self($points);
+    }
+
+    public function getClosedShape(): self
+    {
+        if ($this->isClosedShape()) {
+            return $this;
+        }
+
+        return $this->withPoint($this->getFirst());
     }
 
     public function isClosedShape(): bool
@@ -171,7 +182,11 @@ class LineString implements GeometryInterface, IteratorAggregate
         return false;
     }
 
-    protected function getGeometryArray(): array
+    /**
+     * @return list<Point>
+     */
+    #[Override]
+    public function getChildren(): array
     {
         return $this->geometries;
     }

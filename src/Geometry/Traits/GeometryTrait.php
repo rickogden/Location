@@ -10,7 +10,8 @@ use function count;
 
 use Ricklab\Location\Geometry\GeometryInterface;
 use Ricklab\Location\Geometry\Point;
-use Traversable;
+
+use function sprintf;
 
 /**
  * @template T of GeometryInterface
@@ -20,47 +21,70 @@ trait GeometryTrait
     use TransformationTrait;
 
     /**
-     * @return T[]
+     * @return GeometryInterface&T[]
+     *
+     * @psalm-return list<GeometryInterface&T>
      */
-    abstract protected function getGeometryArray(): array;
+    abstract public function getChildren(): array;
 
     public function __toString(): string
     {
-        return sprintf('(%s)', implode(', ', $this->getGeometryArray()));
+        return $this->wktFormat();
     }
 
+    public function wktFormat(): string
+    {
+        return sprintf(
+            '(%s)',
+            implode(
+                ', ',
+                array_map(
+                    fn (GeometryInterface $g): string => $g->wktFormat(),
+                    $this->getChildren()
+                )
+            )
+        );
+    }
+
+    /**
+     * @return array[]
+     *
+     * @psalm-return list<array>
+     */
     public function toArray(): array
     {
-        $return = [];
-        foreach ($this->getGeometryArray() as $geometry) {
-            $return[] = $geometry->toArray();
-        }
-
-        return $return;
+        return array_map(
+            static fn (GeometryInterface $geometry): array => $geometry->toArray(),
+            $this->getChildren()
+        );
     }
 
     /**
      * @return Point[]
+     *
+     * @psalm-return list<Point>
      */
     public function getPoints(): array
     {
-        $points = [];
-        foreach ($this->getGeometryArray() as $geometry) {
-            $linePoints = $geometry->getPoints();
-            $points[] = $linePoints;
-        }
+        $points = array_map(
+            static fn (GeometryInterface $geometry): array => $geometry->getPoints(),
+            $this->getChildren()
+        );
 
         return array_merge(...$points);
     }
 
-    /** @return Traversable<mixed, T> */
-    public function getIterator(): Traversable
+    public function getIterator(): ArrayIterator
     {
-        return new ArrayIterator($this->getGeometryArray());
+        return new ArrayIterator($this->getChildren());
     }
 
     public function equals(GeometryInterface $geometry): bool
     {
+        if ($geometry === $this) {
+            return true;
+        }
+
         if (!$geometry instanceof self) {
             return false;
         }

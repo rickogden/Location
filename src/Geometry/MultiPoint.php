@@ -1,43 +1,34 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 04/10/15
- * Time: 11:24.
- */
 
 namespace Ricklab\Location\Geometry;
 
 use IteratorAggregate;
+use Override;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
  * @implements IteratorAggregate<Point>
+ * @implements GeometryCollectionInterface<Point>
  */
-class MultiPoint implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
+final class MultiPoint implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
     /** @use GeometryTrait<Point> */
     use GeometryTrait;
 
     /**
-     * @var Point[]
+     * @readonly
+     *
+     * @var list<Point>
      */
-    protected array $geometries = [];
+    protected readonly array $geometries;
 
-    public static function getWktType(): string
-    {
-        return 'MULTIPOINT';
-    }
-
-    public static function getGeoJsonType(): string
-    {
-        return 'MultiPoint';
-    }
-
+    #[Override]
     public static function fromArray(array $geometries): self
     {
         $result = [];
+        /** @var Point|array $point */
         foreach ($geometries as $point) {
             if ($point instanceof Point) {
                 $result[] = $point;
@@ -49,43 +40,55 @@ class MultiPoint implements GeometryInterface, GeometryCollectionInterface, Iter
         return new self($result);
     }
 
+    /**
+     * @param Point[] $points
+     *
+     * @psalm-param list<Point> $points
+     */
     public function __construct(array $points)
     {
-        foreach ($points as $point) {
-            $this->addGeometry($point);
-        }
+        $this->geometries = $points;
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @return Point[]
+     *
+     * @psalm-return list<Point>
      */
+    #[Override]
     public function getGeometries(): array
     {
         return $this->getPoints();
     }
 
-    public function addGeometry(Point $point): void
+    public function withGeometry(Point $point): self
     {
-        $this->geometries[] = $point;
+        $geometries = $this->geometries;
+        $geometries[] = $point;
+
+        return new self($geometries);
     }
 
-    public function removeGeometry(Point $point): void
+    public function withoutGeometry(Point $point): self
     {
-        foreach ($this->geometries as $index => $geom) {
-            if ($point === $geom) {
-                unset($this->geometries[$index]);
-            }
-        }
+        $geometries = array_filter($this->geometries, fn (Point $p): bool => $p !== $point);
+
+        return new self(array_values($geometries));
     }
 
-    public function getBBox(): Polygon
+    #[Override]
+    public function getBBox(): BoundingBox
     {
         return BoundingBox::fromGeometry($this);
     }
 
-    protected function getGeometryArray(): array
+    /**
+     * @return Point[]
+     *
+     * @psalm-return list<Point>
+     */
+    #[Override]
+    public function getChildren(): array
     {
         return $this->geometries;
     }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Location;
+use Ricklab\Location\Transformer\GeoJsonTransformer;
 
 class MultiPointTest extends TestCase
 {
@@ -15,7 +15,7 @@ class MultiPointTest extends TestCase
     "coordinates": [ [100.0, 0.0], [101.0, 1.0] ]
     }';
 
-        $multipoint = Location::fromGeoJson($geojson);
+        $multipoint = GeoJsonTransformer::decode($geojson);
 
         $this->assertInstanceOf(MultiPoint::class, $multipoint);
 
@@ -25,23 +25,6 @@ class MultiPointTest extends TestCase
         $geojson = json_encode(json_decode($geojson));
 
         $this->assertEquals($geojson, json_encode($multipoint));
-    }
-
-    public function testWkt(): void
-    {
-        $wktv1 = 'MULTIPOINT ((10 40), (40 30), (20 20), (30 10))';
-        $wktv2 = 'MULTIPOINT(10 40, 40 30, 20 20, 30 10)';
-
-        $mp1 = Location::fromWkt($wktv1);
-        $mp2 = Location::fromWkt($wktv2);
-
-        $this->assertInstanceOf(MultiPoint::class, $mp1);
-        $this->assertInstanceOf(MultiPoint::class, $mp2);
-
-        $this->assertEquals([10, 40], $mp1->getGeometries()[0]->toArray());
-        $this->assertEquals([10, 40], $mp2->getGeometries()[0]->toArray());
-
-        $this->assertEquals($wktv2, $mp2->toWkt());
     }
 
     public function testEquals(): void
@@ -71,5 +54,48 @@ class MultiPointTest extends TestCase
 
         $lineString = new LineString($multiPoint->getPoints());
         $this->assertFalse($multiPoint->equals($lineString));
+    }
+
+    public function testFromArray(): void
+    {
+        $pointsArray = [[100.0, 0.0], [101.0, 1.0]];
+        $multiPoint = MultiPoint::fromArray($pointsArray);
+
+        $this->assertInstanceOf(MultiPoint::class, $multiPoint);
+        $this->assertCount(2, $multiPoint->getGeometries());
+        $this->assertEquals($pointsArray[0], $multiPoint->getGeometries()[0]->toArray());
+        $this->assertEquals($pointsArray[1], $multiPoint->getGeometries()[1]->toArray());
+    }
+
+    public function testWithGeometry(): void
+    {
+        $pointsArray = [[100.0, 0.0], [101.0, 1.0]];
+        $multiPoint = MultiPoint::fromArray($pointsArray);
+        $newPoint = new Point(102.0, 2.0);
+        $newMultiPoint = $multiPoint->withGeometry($newPoint);
+
+        $this->assertCount(3, $newMultiPoint->getGeometries());
+        $this->assertEquals([102.0, 2.0], $newMultiPoint->getGeometries()[2]->toArray());
+    }
+
+    public function testWithoutGeometry(): void
+    {
+        $pointsArray = [[100.0, 0.0], [101.0, 1.0]];
+        $multiPoint = MultiPoint::fromArray($pointsArray);
+        $pointToRemove = $multiPoint->getGeometries()[0];
+        $newMultiPoint = $multiPoint->withoutGeometry($pointToRemove);
+
+        $this->assertCount(1, $newMultiPoint->getGeometries());
+        $this->assertEquals([101.0, 1.0], $newMultiPoint->getGeometries()[0]->toArray());
+    }
+
+    public function testGetBBox(): void
+    {
+        $pointsArray = [[100.0, 0.0], [101.0, 1.0]];
+        $multiPoint = MultiPoint::fromArray($pointsArray);
+        $bbox = $multiPoint->getBBox();
+
+        $this->assertInstanceOf(BoundingBox::class, $bbox);
+        $this->assertEquals([100.0, 0.0, 101.0, 1.0], $bbox->getBounds());
     }
 }

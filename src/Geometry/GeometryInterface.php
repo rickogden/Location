@@ -5,30 +5,16 @@ declare(strict_types=1);
 namespace Ricklab\Location\Geometry;
 
 use JsonSerializable;
-use Ricklab\Location\Transformer\WktTransformer;
+use Override;
 
 /**
  * The interface for all the Geometry objects.
  *
  * Interface GeometryInterface
  */
-interface GeometryInterface extends JsonSerializable
+interface GeometryInterface extends JsonSerializable, \Stringable
 {
-    public static function getWktType(): string;
-
-    public static function getGeoJsonType(): string;
-
-    /**
-     * @return self
-     */
-    public static function fromArray(array $geometries);
-
-    /**
-     * Representation of the geometry in Well-Known Text.
-     *
-     * @deprecated use WktTransformer::encode();
-     */
-    public function toWkt(): string;
+    public static function fromArray(array $geometries): self;
 
     /**
      * The geometry in an embedded array format.
@@ -39,6 +25,8 @@ interface GeometryInterface extends JsonSerializable
      * Gets all the points in a geometry. Note, order is not necessarily representative.
      *
      * @return Point[]
+     *
+     * @psalm-return list<Point>
      */
     public function getPoints(): array;
 
@@ -49,9 +37,23 @@ interface GeometryInterface extends JsonSerializable
     public function __toString(): string;
 
     /**
+     * @return string A representation of the geometry for use in generating WKT
+     */
+    public function wktFormat(): string;
+
+    /**
      * Returns a GeoJSON representation of the geometry.
      */
+    #[Override]
     public function jsonSerialize(): array;
 
+    /**
+     * @psalm-assert-if-true self $geometry
+     */
     public function equals(GeometryInterface $geometry): bool;
+
+    public function getBBox(): BoundingBox;
+
+    /** @return list<GeometryInterface> */
+    public function getChildren(): array;
 }

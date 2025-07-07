@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+function initial_bearing(array $point1, array $point2): float
+{
+}
+
+function vincenty(array $point1, array $point2): float
+{
+}
+
+function haversine(array $point1, array $point2, float $multiplier): float
+{
+}
+
+/**
+ * @return array{type: string, coordinates: array{0: float, 1: float}}
+ */
+function fraction_along_gc_line(array $point1, array $point2, float $fraction): array
+{
+}

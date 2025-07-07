@@ -1,64 +1,78 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 18/08/14
- * Time: 10:07.
- */
 
 namespace Ricklab\Location\Ellipsoid;
 
-use Ricklab\Location\Converter\UnitConverter;
+use Override;
 
-abstract class Ellipsoid implements EllipsoidInterface
+class Ellipsoid implements EllipsoidInterface
 {
-    abstract protected static function getRadiusInMeters(): float;
-
-    abstract protected static function getMinorSemiAxisInMeters(): float;
-
-    abstract protected static function getMajorSemiAxisInMeters(): float;
+    /** @var float|numeric-string|null */
+    private float|string|null $flattening = null;
 
     /**
-     * Returns the average radius of the ellipsoid in specified units.
-     *
-     * @param string $unit can be 'km', 'miles', 'metres', 'feet', 'yards', 'nautical miles'
+     * @param float|numeric-string $radius
      */
-    public static function radius(string $unit = UnitConverter::UNIT_METERS): float
+    public static function fromRadius(float|string $radius): self
     {
-        return UnitConverter::convertFromMeters(static::getRadiusInMeters(), $unit);
+        return new self($radius, $radius, $radius);
     }
 
     /**
-     * @param string $unit The unit you want the multiplier of
-     *
-     * @return float The multiplier
-     *
-     * @deprecated use UnitConverter::getMultiplier();
+     * @param float|numeric-string $majorSemiAxis
+     * @param float|numeric-string $minorSemiAxis
      */
-    public static function getMultiplier(string $unit = UnitConverter::UNIT_METERS): float
+    public static function fromSemiAxes(float|string $majorSemiAxis, float|string $minorSemiAxis): self
     {
-        return UnitConverter::getMultiplier($unit);
+        return new self(((float) $majorSemiAxis + (float) $minorSemiAxis) / 2.0, $majorSemiAxis, $minorSemiAxis);
     }
 
     /**
-     * @param string $unit unit of measurement
+     * @param float|numeric-string $radius        in meters
+     * @param float|numeric-string $majorSemiAxis in meters
+     * @param float|numeric-string $minorSemiAxis in meters
      */
-    public static function getMajorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float
-    {
-        return UnitConverter::convertFromMeters(static::getMajorSemiAxisInMeters(), $unit);
+    public function __construct(
+        private readonly float|string $radius,
+        private readonly float|string $majorSemiAxis,
+        private readonly float|string $minorSemiAxis,
+    ) {
     }
 
-    /**
-     * @param string $unit unit of measurement
-     */
-    public static function getMinorSemiAxis(string $unit = UnitConverter::UNIT_METERS): float
+    #[Override]
+    public function radius(): float|string
     {
-        return UnitConverter::convertFromMeters(static::getMinorSemiAxisInMeters(), $unit);
+        return $this->radius;
     }
 
-    public static function getFlattening(): float
+    #[Override]
+    public function majorSemiAxis(): float|string
     {
-        return (static::getMajorSemiAxisInMeters() - static::getMinorSemiAxisInMeters()) / static::getMajorSemiAxisInMeters();
+        return $this->majorSemiAxis;
+    }
+
+    #[Override]
+    public function minorSemiAxis(): float|string
+    {
+        return $this->minorSemiAxis;
+    }
+
+    #[Override]
+    public function flattening(): float|string
+    {
+        if (null === $this->flattening) {
+            $this->flattening = ((float) $this->majorSemiAxis - (float) $this->minorSemiAxis) / (float) $this->majorSemiAxis;
+        }
+
+        return $this->flattening;
+    }
+
+    #[Override]
+    public function equals(Ellipsoid $ellipsoid): bool
+    {
+        return $ellipsoid === $this || ((float) $this->radius === (float) $ellipsoid->radius
+                && (float) $this->majorSemiAxis === (float) $ellipsoid->majorSemiAxis
+                && (float) $this->minorSemiAxis === (float) $ellipsoid->minorSemiAxis);
     }
 }

@@ -10,7 +10,9 @@ use function in_array;
 use InvalidArgumentException;
 use LogicException;
 
-class Geohash
+use function sprintf;
+
+final class Geohash
 {
     private const HASH_MAP = [
         '0',
@@ -85,7 +87,7 @@ class Geohash
 
         while (count($hash) < $resolution) {
             if (0 === $i % 2) {
-                $midLon = ($minLon + $maxLon) / 2;
+                $midLon = ($minLon + $maxLon) / 2.0;
 
                 if ($longitude >= $midLon) {
                     $idx = $idx * 2 + 1;
@@ -95,7 +97,7 @@ class Geohash
                     $maxLon = $midLon;
                 }
             } else {
-                $midLat = ($minLat + $maxLat) / 2;
+                $midLat = ($minLat + $maxLat) / 2.0;
 
                 if ($latitude >= $midLat) {
                     $idx = $idx * 2 + 1;
@@ -115,7 +117,7 @@ class Geohash
             ++$i;
         }
 
-        return new self(implode($hash));
+        return new self(implode('', $hash));
     }
 
     public function __construct(string $hash)
@@ -156,7 +158,6 @@ class Geohash
         $maxLon = Point::MAX_LONGITUDE;
         $minLat = Point::MIN_LATITUDE;
         $maxLat = Point::MAX_LATITUDE;
-        $i = 0;
 
         $hash = mb_str_split($this->hash);
         $indexes = array_flip(self::HASH_MAP);
@@ -169,7 +170,7 @@ class Geohash
                 $bitN = $index >> $i & 1;
 
                 if ($evenBit) {
-                    $midLon = ($minLon + $maxLon) / 2;
+                    $midLon = ($minLon + $maxLon) / 2.0;
 
                     if (1 === $bitN) {
                         $minLon = $midLon;
@@ -177,7 +178,7 @@ class Geohash
                         $maxLon = $midLon;
                     }
                 } else {
-                    $midLat = ($minLat + $maxLat) / 2;
+                    $midLat = ($minLat + $maxLat) / 2.0;
 
                     if (1 === $bitN) {
                         $minLat = $midLat;
@@ -247,7 +248,7 @@ class Geohash
         $type = mb_strlen($hash) % 2;
 
         if (false !== mb_strpos(self::BORDER[$direction][$type], $lastChar) && '' !== $parent) {
-            $parent = self::getAdjacent($parent, $direction);
+            $parent = (string) self::getAdjacent($parent, $direction);
         }
 
         return new self($parent.self::HASH_MAP[mb_strpos(self::NEIGHBOUR[$direction][$type], $lastChar)]);

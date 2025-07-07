@@ -6,7 +6,7 @@ namespace Ricklab\Location\Calculator;
 
 interface UsesGeoSpatialExtensionInterface
 {
-    public static function enableGeoSpatialExtension(): void;
+    public function enableGeoSpatialExtension(): void;
 
-    public static function disableGeoSpatialExtension(): void;
+    public function disableGeoSpatialExtension(): void;
 }

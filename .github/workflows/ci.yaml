@@ -7,8 +7,8 @@ jobs:
   test:
     strategy:
       matrix:
-        php-versions: ['7.4', '8.0', '8.1', '8.2', '8.3']
-        dependencies: ['', '--prefer-lowest']
+        php-versions: ['8.1', '8.2', '8.3', '8.4']
+        dependencies: ['']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -22,6 +22,6 @@ jobs:
       - name: Install dependencies
         run: composer update --no-progress --prefer-dist --optimize-autoloader ${{matrix.dependencies}}
       - name: Psalm
-        run: php vendor/bin/psalm --output-format=github --php-version=${{ matrix.php-versions }}
+        run: php vendor/bin/psalm --output-format=github --php-version=8.1
       - name: PHPUnit
         run: php vendor/bin/phpunit

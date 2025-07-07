@@ -4,28 +4,41 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use function count;
+
+use InvalidArgumentException;
+
+use function is_float;
+use function is_int;
+use function is_string;
+
 use const M_PI;
 
-use Ricklab\Location\Converter\UnitConverter;
+use Override;
+use Ricklab\Location\Converter\Unit;
 use Ricklab\Location\Ellipsoid\DefaultEllipsoid;
 use Ricklab\Location\Exception\BoundBoxRangeException;
 
-class BoundingBox extends Polygon
+final class BoundingBox implements GeometryInterface
 {
-    private float $minLon;
-    private float $maxLon;
-    private float $minLat;
-    private float $maxLat;
+    private ?Polygon $polygon = null;
+
+    private Point $northEast;
+    private ?Point $southEast = null;
+    private ?Point $northWest = null;
+    private Point $southWest;
 
     /**
+     * @param float|numeric-string $radius
+     *
      * @throws BoundBoxRangeException currently cannot create a bounding box over the meridian
      */
-    public static function fromCenter(Point $point, float $radius, string $unit = UnitConverter::UNIT_METERS): self
+    public static function fromCenter(Point $point, float|string $radius, Unit $unit = Unit::METERS): self
     {
         $maxLat = $point->getRelativePoint($radius, 0, $unit)->getLatitude();
         $minLat = $point->getRelativePoint($radius, 180, $unit)->getLatitude();
 
-        $radDist = $radius / DefaultEllipsoid::get()::radius($unit);
+        $radDist = (float) $radius / (float) $unit->fromMeters(DefaultEllipsoid::get()->radius());
         $radLon = $point->longitudeToRad();
         $deltaLon = asin(sin($radDist) / cos($point->latitudeToRad()));
 
@@ -35,12 +48,12 @@ class BoundingBox extends Polygon
         $minLon = $radLon - $deltaLon;
 
         if ($minLon < deg2rad(-180)) {
-            $minLon += 2 * M_PI;
+            $minLon += 2.0 * M_PI;
         }
         $maxLon = $radLon + $deltaLon;
 
         if ($maxLon > deg2rad(180)) {
-            $maxLon -= 2 * M_PI;
+            $maxLon -= 2.0 * M_PI;
         }
 
         $minLon = rad2deg($minLon);
@@ -59,10 +72,12 @@ class BoundingBox extends Polygon
         $points = $geometry->getPoints();
 
         foreach ($points as $point) {
-            $maxLat = ($point->getLatitude() > $maxLat) ? $point->getLatitude() : $maxLat;
-            $minLat = ($point->getLatitude() < $minLat) ? $point->getLatitude() : $minLat;
-            $maxLon = ($point->getLongitude() > $maxLon) ? $point->getLongitude() : $maxLon;
-            $minLon = ($point->getLongitude() < $minLon) ? $point->getLongitude() : $minLon;
+            $lat = $point->getLatitude();
+            $lon = $point->getLongitude();
+            $maxLat = max($lat, $maxLat);
+            $minLat = min($lat, $minLat);
+            $maxLon = max($lon, $maxLon);
+            $minLon = min($lon, $minLon);
         }
 
         return new self($minLon, $minLat, $maxLon, $maxLat);
@@ -76,36 +91,57 @@ class BoundingBox extends Polygon
         return self::fromGeometry(new GeometryCollection($geometries));
     }
 
-    /**
-     * @param array{0: float, 1: float, 2: float, 3: float} Array of coordinates in the order of: minimum longitude, minimum latitude, max longitude and maximum latitude
-     */
+    #[Override]
     public static function fromArray(array $geometries): self
     {
+        if (4 !== count($geometries)) {
+            throw new InvalidArgumentException('Array needs to have exactly 4 elements.');
+        }
+
         return new self(
-            $geometries[0],
-            $geometries[1],
-            $geometries[2],
-            $geometries[3]
+            self::toCoordinate($geometries[0]),
+            self::toCoordinate($geometries[1]),
+            self::toCoordinate($geometries[2]),
+            self::toCoordinate($geometries[3]),
         );
     }
 
+    /**
+     * @return float|numeric-string
+     */
+    private static function toCoordinate(mixed $coordinate): float|string
+    {
+        if (is_float($coordinate) || is_int($coordinate)) {
+            return (float) $coordinate;
+        }
+
+        if (is_string($coordinate) && is_numeric($coordinate)) {
+            return $coordinate;
+        }
+
+        throw new InvalidArgumentException('Coordinate needs to be a float or a numeric-string.');
+    }
+
+    #[Override]
     public function getBBox(): self
     {
         return $this;
     }
 
-    public function __construct(float $minLon, float $minLat, float $maxLon, float $maxLat)
-    {
-        $nw = Point::fromArray([$minLon, $maxLat]);
-        $ne = Point::fromArray([$maxLon, $maxLat]);
-        $se = Point::fromArray([$maxLon, $minLat]);
-        $sw = Point::fromArray([$minLon, $minLat]);
-
-        parent::__construct([new LineString([$nw, $ne, $se, $sw])]);
-        $this->minLon = $minLon;
-        $this->maxLon = $maxLon;
-        $this->minLat = $minLat;
-        $this->maxLat = $maxLat;
+    /**
+     * @param float|numeric-string $minLon
+     * @param float|numeric-string $maxLon
+     * @param float|numeric-string $minLat
+     * @param float|numeric-string $maxLat
+     */
+    public function __construct(
+        float|string $minLon,
+        float|string $minLat,
+        float|string $maxLon,
+        float|string $maxLat,
+    ) {
+        $this->southWest = new Point($minLon, $minLat);
+        $this->northEast = new Point($maxLon, $maxLat);
     }
 
     /**
@@ -114,39 +150,39 @@ class BoundingBox extends Polygon
     public function getBounds(): array
     {
         return [
-            $this->minLon,
-            $this->minLat,
-            $this->maxLon,
-            $this->maxLat,
+            $this->getMinLon(),
+            $this->getMinLat(),
+            $this->getMaxLon(),
+            $this->getMaxLat(),
         ];
     }
 
     public function getCenter(): Point
     {
-        $lat = ($this->minLat + $this->maxLat) / 2;
-        $lon = ($this->minLon + $this->maxLon) / 2;
+        $lat = ($this->getMinLat() + $this->getMaxLat()) / 2.0;
+        $lon = ($this->getMinLon() + $this->getMaxLon()) / 2.0;
 
         return new Point($lon, $lat);
     }
 
     public function getMinLon(): float
     {
-        return $this->minLon;
+        return $this->southWest->getLongitude();
     }
 
     public function getMaxLon(): float
     {
-        return $this->maxLon;
+        return $this->northEast->getLongitude();
     }
 
     public function getMinLat(): float
     {
-        return $this->minLat;
+        return $this->southWest->getLatitude();
     }
 
     public function getMaxLat(): float
     {
-        return $this->maxLat;
+        return $this->northEast->getLatitude();
     }
 
     public function contains(GeometryInterface $geometry): bool
@@ -156,10 +192,10 @@ class BoundingBox extends Polygon
             $lon = $point->getLongitude();
 
             if (
-                $lat < $this->minLat
-                || $lat > $this->maxLat
-                || $lon < $this->minLon
-                || $lon > $this->maxLon
+                $lat < $this->getMinLat()
+                || $lat > $this->getMaxLat()
+                || $lon < $this->getMinLon()
+                || $lon > $this->getMaxLon()
             ) {
                 return false;
             }
@@ -170,20 +206,105 @@ class BoundingBox extends Polygon
 
     public function intersects(GeometryInterface $geometry): bool
     {
+        [$minLon, $minLat, $maxLon, $maxLat] = $this->getBounds();
         foreach ($geometry->getPoints() as $point) {
             $lat = $point->getLatitude();
             $lon = $point->getLongitude();
 
             if (
-                $lat >= $this->minLat
-                && $lat <= $this->maxLat
-                && $lon >= $this->minLon
-                && $lon <= $this->maxLon
+                $lat >= $minLat
+                && $lat <= $maxLat
+                && $lon >= $minLon
+                && $lon <= $maxLon
             ) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    public function getPolygon(): Polygon
+    {
+        if (null === $this->polygon) {
+            $this->polygon = new Polygon([new LineString([
+                $this->getNorthWest(),
+                $this->getNorthEast(),
+                $this->getSouthEast(),
+                $this->getSouthWest(),
+            ])]);
+        }
+
+        return $this->polygon;
+    }
+
+    public function getNorthEast(): Point
+    {
+        return $this->northEast;
+    }
+
+    public function getSouthEast(): Point
+    {
+        if (null === $this->southEast) {
+            $this->southEast = new Point($this->getMaxLon(), $this->getMinLat());
+        }
+
+        return $this->southEast;
+    }
+
+    public function getNorthWest(): Point
+    {
+        if (null === $this->northWest) {
+            $this->northWest = new Point($this->getMinLon(), $this->getMaxLat());
+        }
+
+        return $this->northWest;
+    }
+
+    public function getSouthWest(): Point
+    {
+        return $this->southWest;
+    }
+
+    #[Override]
+    public function getPoints(): array
+    {
+        return $this->getPolygon()->getPoints();
+    }
+
+    #[Override]
+    public function toArray(): array
+    {
+        return $this->getPolygon()->toArray();
+    }
+
+    public function __toString(): string
+    {
+        return (string) $this->getPolygon();
+    }
+
+    #[Override]
+    public function wktFormat(): string
+    {
+        return $this->getPolygon()->wktFormat();
+    }
+
+    #[Override]
+    public function jsonSerialize(): array
+    {
+        return $this->getPolygon()->jsonSerialize();
+    }
+
+    #[Override]
+    public function equals(GeometryInterface $geometry): bool
+    {
+        return $geometry instanceof self && $this->getBounds() === $geometry->getBounds();
+    }
+
+    /** @return list<LineString> */
+    #[Override]
+    public function getChildren(): array
+    {
+        return $this->getPolygon()->getChildren();
     }
 }

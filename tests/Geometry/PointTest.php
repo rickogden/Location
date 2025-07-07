@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use function extension_loaded;
+
 use Generator;
-use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Calculator\DefaultDistanceCalculator;
+use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\VincentyCalculator;
+use Ricklab\Location\Converter\Axis;
 use Ricklab\Location\Converter\DegreesMinutesSeconds;
-use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Converter\Direction;
+use Ricklab\Location\Converter\Unit;
 
 class PointTest extends TestCase
 {
@@ -50,14 +54,9 @@ class PointTest extends TestCase
         $this->assertEquals($this->lon.' '.$this->lat, (string) $this->point);
     }
 
-    public function testToWktConversion(): void
-    {
-        $this->assertEquals('POINT('.$this->lon.' '.$this->lat.')', $this->point->toWkt());
-    }
-
     public function testRelativePoint(): void
     {
-        $newPoint = $this->point->getRelativePoint(2.783, 98.50833, 'km');
+        $newPoint = $this->point->getRelativePoint(2.783, 98.50833, Unit::fromString('km'));
         $this->assertEquals(53.48204, round($newPoint->getLatitude(), 5));
         $this->assertEquals(-2.23194, round($newPoint->getLongitude(), 5));
     }
@@ -65,19 +64,12 @@ class PointTest extends TestCase
     public function testDistanceTo(): void
     {
         $newPoint = new Point(-2.23194, 53.48204);
-        $this->assertEquals(1.729, round($this->point->distanceTo($newPoint, UnitConverter::UNIT_MILES), 3));
-        $this->assertEquals(2.783, round($this->point->distanceTo($newPoint, UnitConverter::UNIT_KM), 3));
+        $this->assertEquals(1.729, round($this->point->distanceTo($newPoint, Unit::MILES), 3));
+        $this->assertEquals(2.783, round($this->point->distanceTo($newPoint, Unit::KM), 3));
         $this->assertEquals(
             2.792,
-            round($this->point->distanceTo($newPoint, UnitConverter::UNIT_KM, new VincentyCalculator()), 3)
+            round($this->point->distanceTo($newPoint, Unit::KM, new VincentyCalculator()), 3)
         );
-    }
-
-    public function testDistanceToException(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $newPoint = new Point(-2.23194, 53.48204);
-        $this->point->distanceTo($newPoint, 'foo');
     }
 
     public function testJsonSerializable(): void
@@ -90,8 +82,8 @@ class PointTest extends TestCase
     public function testFromDms(): void
     {
         $point = Point::fromDms(
-            new DegreesMinutesSeconds(1, 2, 3.45, 'N'),
-            new DegreesMinutesSeconds(0, 6, 9, 'W')
+            new DegreesMinutesSeconds(1, 2, 3.45, Direction::NORTH),
+            new DegreesMinutesSeconds(0, 6, 9, Direction::WEST)
         );
 
         $this->assertSame(1.0342916666667, round($point->getLatitude(), 13));
@@ -101,8 +93,8 @@ class PointTest extends TestCase
     public function testFromDmsInverted(): void
     {
         $point = Point::fromDms(
-            new DegreesMinutesSeconds(0, 6, 9, 'W'),
-            new DegreesMinutesSeconds(1, 2, 3.45, 'N')
+            new DegreesMinutesSeconds(0, 6, 9, Direction::WEST),
+            new DegreesMinutesSeconds(1, 2, 3.45, Direction::NORTH)
         );
 
         $this->assertSame(1.0342916666667, round($point->getLatitude(), 13));
@@ -111,35 +103,55 @@ class PointTest extends TestCase
 
     public function testFractionAlongLine(): void
     {
-        DefaultDistanceCalculator::disableGeoSpatialExtension();
-        $this->fractionAlongLine();
-        DefaultDistanceCalculator::enableGeoSpatialExtension();
+        CalculatorRegistry::disableGeoSpatialExtension();
         $this->fractionAlongLine();
     }
 
-    public function testEqualsIsTrue(): void
+    public function testFractionAlongLineWithExtension(): void
+    {
+        if (!extension_loaded('geospatial')) {
+            $this->markTestSkipped('The geospatial extension is not available.');
+        }
+
+        CalculatorRegistry::enableGeoSpatialExtension();
+        $this->fractionAlongLine();
+    }
+
+    public static function equalProvider(): Generator
     {
         $point1 = new Point(1.1, -1.3);
         $point2 = new Point(1.1, -1.3);
+        yield 'Different objects' => [$point1, $point2];
+        yield 'Different objects reversed' => [$point2, $point1];
+        yield 'Same object' => [$point1, $point1];
+    }
+
+    #[DataProvider('equalProvider')]
+    public function testEqualsIsTrue(Point $point1, Point $point2): void
+    {
         $this->assertTrue($point1->equals($point2));
     }
 
-    public function testEqualsIsFalse(): void
+    public static function notEqualProvider(): Generator
     {
         $point1 = new Point(1.1, -1.3);
-        $this->assertFalse($point1->equals(new Point(1.1, 1.3)));
-        $this->assertFalse($point1->equals(new Point(1.1, -1.31)));
-        $this->assertFalse($point1->equals(new LineString([new Point(1.1, -1.3), new Point(1.1, -1.31)])));
+        yield 'Absolute values' => [$point1, new Point(1.1, 1.3)];
+        yield 'Additional decimal place' => [$point1, new Point(1.1, -1.31)];
+        yield 'Different geometry' => [$point1, new LineString([new Point(1.1, -1.3), new Point(1.1, -1.31)])];
     }
 
-    public function geoHahProvider(): Generator
+    #[DataProvider('notEqualProvider')]
+    public function testEqualsIsFalse(Point $point1, GeometryInterface $geometry): void
+    {
+        $this->assertFalse($point1->equals($geometry));
+    }
+
+    public static function geoHahProvider(): Generator
     {
         yield ['u4pruydqqvj', 10.40744, 57.64911];
     }
 
-    /**
-     * @dataProvider geoHahProvider
-     */
+    #[DataProvider('geoHahProvider')]
     public function testGetGeoHash(string $hash, float $lon, float $lat): void
     {
         $point = new Point($lon, $lat);
@@ -159,5 +171,95 @@ class PointTest extends TestCase
         $this->assertEquals(10.0239449437995, round($fraction02->getLatitude(), 13));
         $this->assertEquals($midpoint->getLatitude(), $fraction05->getLatitude());
         $this->assertEquals($midpoint->getLongitude(), $fraction05->getLongitude());
+    }
+
+    public function testInitialBearingTo(): void
+    {
+        $point2 = new Point(-2.23194, 53.48204);
+        $bearing = $this->point->initialBearingTo($point2);
+        $this->assertSame(98.50702, round($bearing, 5));
+    }
+
+    public function testFinalBearingTo(): void
+    {
+        $point2 = new Point(-2.23194, 53.48204);
+        $bearing = $this->point->finalBearingTo($point2);
+        $this->assertSame(98.54046, round($bearing, 5));
+    }
+
+    public function testGetBBoxByRadius(): void
+    {
+        $bbox = $this->point->getBBoxByRadius(10, Unit::KM);
+        $this->assertSame(20000.0, round($bbox->getNorthEast()->distanceTo($bbox->getSouthEast()), 5));
+        $this->assertSame(19957.57328, round($bbox->getNorthWest()->distanceTo($bbox->getNorthEast()), 5));
+    }
+
+    public function testRound(): void
+    {
+        $roundedPoint = $this->point->round(2);
+        $this->assertEquals(53.49, $roundedPoint->getLatitude());
+        $this->assertEquals(-2.27, $roundedPoint->getLongitude());
+    }
+
+    public function testToArray(): void
+    {
+        $array = $this->point->toArray();
+        $this->assertEquals([$this->lon, $this->lat], $array);
+    }
+
+    public function testGetLongitudeAsString(): void
+    {
+        $this->assertEquals((string) $this->lon, $this->point->getLongitudeAsString());
+    }
+
+    public function testGetLatitudeAsString(): void
+    {
+        $this->assertEquals((string) $this->lat, $this->point->getLatitudeAsString());
+    }
+
+    public function testGetPoints(): void
+    {
+        $points = $this->point->getPoints();
+        $this->assertCount(1, $points);
+        $this->assertSame($this->point, $points[0]);
+    }
+
+    public function testLineTo(): void
+    {
+        $point2 = new Point(-2.23194, 53.48204);
+        $line = $this->point->lineTo($point2);
+        $this->assertSame($this->point, $line->getFirst());
+        $this->assertSame($point2, $line->getLast());
+    }
+
+    public function testGetLongitudeInDms(): void
+    {
+        $dms = $this->point->getLongitudeInDms();
+        $this->assertSame(2, $dms->getDegrees());
+        $this->assertSame(16, $dms->getMinutes());
+        $this->assertSame(24.744, round($dms->getSeconds(), 5));
+        $this->assertSame(Direction::WEST, $dms->getDirection());
+        $this->assertSame(Axis::LONGITUDE, $dms->getAxis());
+    }
+
+    public function testGetLatitudeInDms(): void
+    {
+        $dms = $this->point->getLatitudeInDms();
+        $this->assertSame(53, $dms->getDegrees());
+        $this->assertSame(29, $dms->getMinutes());
+        $this->assertSame(8.7, round($dms->getSeconds(), 5));
+        $this->assertSame(Direction::NORTH, $dms->getDirection());
+        $this->assertSame(Axis::LATITUDE, $dms->getAxis());
+    }
+
+    public function testGetBBox(): void
+    {
+        $bbox = $this->point->getBBox();
+        $this->assertTrue($this->point->equals($bbox->getNorthEast()));
+        $this->assertTrue($this->point->equals($bbox->getNorthWest()));
+        $this->assertTrue($this->point->equals($bbox->getSouthEast()));
+        $this->assertTrue($this->point->equals($bbox->getSouthWest()));
+        $this->assertTrue($this->point->equals($bbox->getCenter()));
+        $this->assertSame([$this->lon, $this->lat, $this->lon, $this->lat], $bbox->getBounds());
     }
 }

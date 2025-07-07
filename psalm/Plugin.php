@@ -29,7 +29,7 @@ final class Plugin implements PluginEntryPointInterface
     {
         return Finder::create()
             ->in(self::STUB_DIR)
-            ->name('*.php')
+            ->name('*.phpstub')
             ;
     }
 }

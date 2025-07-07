@@ -5,7 +5,7 @@ $finder = PhpCsFixer\Finder::create()
 ;
 $config = new PhpCsFixer\Config();
 return $config->setRules([
-        '@PSR12' => true,
+        '@PER' => true,
         '@Symfony' => true,
         'align_multiline_comment' => ['comment_type' => 'phpdocs_only'],
         'array_indentation' => true,
@@ -24,7 +24,6 @@ return $config->setRules([
         'is_null' => true,
         'linebreak_after_opening_tag' => true,
         'list_syntax' => ['syntax' => 'short'],
-        'mb_str_functions' => true,
         'method_argument_space' => ['on_multiline' => 'ensure_fully_multiline'],
         'native_constant_invocation' => true,
         'native_function_invocation' => ['scope' => 'namespaced'],
@@ -40,6 +39,7 @@ return $config->setRules([
         'no_unreachable_default_argument_value' => true,
         'no_unset_on_property' => true,
         'no_useless_else' => true,
+        'nullable_type_declaration_for_default_null_value' => true,
         'ordered_imports' => true,
         'php_unit_dedicate_assert' => true,
         'php_unit_mock' => true,
@@ -47,6 +47,7 @@ return $config->setRules([
         'php_unit_set_up_tear_down_visibility' => true,
         'php_unit_test_case_static_method_calls' => ['call_type' => 'this'],
         'phpdoc_order' => true,
+        'phpdoc_to_comment' => false,
         'return_assignment' => true,
         'set_type_to_cast' => true,
     ])

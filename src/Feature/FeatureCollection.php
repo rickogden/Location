@@ -10,56 +10,54 @@ declare(strict_types=1);
 namespace Ricklab\Location\Feature;
 
 use ArrayIterator;
-
-use function count;
-
 use IteratorAggregate;
 use JsonSerializable;
+use Override;
 use Ricklab\Location\Geometry\BoundingBox;
 use Ricklab\Location\Geometry\MultiPoint;
+use Ricklab\Location\Transformer\GeoJsonTransformer;
 
 /**
  * @implements IteratorAggregate<Feature>
  */
-class FeatureCollection implements IteratorAggregate, JsonSerializable
+final class FeatureCollection implements IteratorAggregate, JsonSerializable
 {
     /**
-     * @var Feature[]
+     * @var list<Feature>
      */
-    protected array $features = [];
-    private bool $bbox;
+    private readonly array $features;
+    private readonly bool $withBbox;
     private ?BoundingBox $bboxCache = null;
 
-    public static function fromGeoJson(array $geojson): self
+    /**
+     * @param Feature[] $features
+     *
+     * @psalm-param list<Feature> $features
+     */
+    public static function createWithExistingBoundingBox(BoundingBox $bbox, array $features = []): self
     {
-        $features = array_map(
-            static fn (array $feature): Feature => Feature::fromGeoJson($feature),
-            $geojson['features'] ?? []
-        );
+        $fc = new self($features, true);
+        $fc->bboxCache = $bbox;
 
-        $collection = new FeatureCollection($features, isset($geojson['bbox']));
-
-        if (isset($geojson['bbox'])) {
-            $collection->bboxCache = BoundingBox::fromArray($geojson['bbox']);
-        }
-
-        return $collection;
+        return $fc;
     }
 
     /**
      * FeatureCollection constructor.
      *
      * @param Feature[] $features
+     *
+     * @psalm-param list<Feature> $features
      */
     public function __construct(array $features = [], bool $bbox = false)
     {
-        $this->features = (static fn (Feature ...$features): array => $features)(...$features);
-        $this->bbox = $bbox;
+        $this->features = $features;
+        $this->withBbox = $bbox;
     }
 
     public function getBbox(): ?BoundingBox
     {
-        if (false === $this->bbox) {
+        if (false === $this->withBbox) {
             return null;
         }
 
@@ -68,14 +66,11 @@ class FeatureCollection implements IteratorAggregate, JsonSerializable
             foreach ($this->features as $feature) {
                 $geometry = $feature->getGeometry();
 
-                if ($this->bbox && null !== $geometry) {
-                    $points[] = $geometry->getPoints();
+                if (null !== $geometry) {
+                    array_push($points, ...$geometry->getPoints());
                 }
             }
 
-            if (0 < count($points)) {
-                $points = array_merge(...$points);
-            }
             $this->bboxCache = BoundingBox::fromGeometry(new MultiPoint($points));
         }
 
@@ -84,7 +79,7 @@ class FeatureCollection implements IteratorAggregate, JsonSerializable
 
     public function withBbox(): self
     {
-        return $this->bbox ? $this : new self(
+        return $this->withBbox ? $this : new self(
             $this->features,
             true
         );
@@ -92,7 +87,7 @@ class FeatureCollection implements IteratorAggregate, JsonSerializable
 
     public function withoutBbox(): self
     {
-        return !$this->bbox ? $this : new self(
+        return !$this->withBbox ? $this : new self(
             $this->features,
             false
         );
@@ -102,7 +97,7 @@ class FeatureCollection implements IteratorAggregate, JsonSerializable
     {
         return new self(
             array_merge($this->features, [$feature]),
-            $this->bbox
+            $this->withBbox
         );
     }
 
@@ -111,34 +106,36 @@ class FeatureCollection implements IteratorAggregate, JsonSerializable
         $features = $this->features;
         foreach ($features as $i => $f) {
             if ($f === $feature) {
-                unset($this->features[$i]);
+                unset($features[$i]);
                 break;
             }
         }
 
-        return new self($features, $this->bbox);
+        return new self(array_values($features), $this->withBbox);
     }
 
+    #[Override]
     public function jsonSerialize(): array
     {
-        $features = array_map(static fn (Feature $f): array => $f->jsonSerialize(), $this->features);
-
-        $return = [];
-        $return['type'] = 'FeatureCollection';
-
-        $bbox = $this->getBbox();
-
-        if (null !== $bbox) {
-            $return['bbox'] = $bbox->getBounds();
-        }
-
-        $return['features'] = $features;
-
-        return $return;
+        return GeoJsonTransformer::jsonArray($this);
     }
 
+    /**
+     * @return ArrayIterator<int<0, max>, Feature>
+     */
+    #[Override]
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->features);
+    }
+
+    /**
+     * @return Feature[]
+     *
+     * @psalm-return list<Feature>
+     */
+    public function getFeatures(): array
+    {
+        return $this->features;
     }
 }

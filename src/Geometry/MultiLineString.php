@@ -1,43 +1,35 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Author: rick
- * Date: 16/07/15
- * Time: 16:34.
- */
 
 namespace Ricklab\Location\Geometry;
 
 use IteratorAggregate;
+use Override;
 use Ricklab\Location\Geometry\Traits\GeometryTrait;
 
 /**
  * @implements IteratorAggregate<LineString>
+ * @implements GeometryCollectionInterface<LineString>
  */
-class MultiLineString implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
+final class MultiLineString implements GeometryInterface, GeometryCollectionInterface, IteratorAggregate
 {
     /** @use GeometryTrait<LineString> */
     use GeometryTrait;
 
     /**
-     * @var LineString[]
+     * @readonly
+     *
+     * @var list<LineString>
      */
-    protected array $geometries = [];
+    protected readonly array $geometries;
 
-    public static function getGeoJsonType(): string
-    {
-        return 'MultiLineString';
-    }
-
-    public static function getWktType(): string
-    {
-        return 'MULTILINESTRING';
-    }
-
+    #[Override]
     public static function fromArray(array $geometries): self
     {
         $result = [];
+
+        /** @var LineString|array $lineString */
         foreach ($geometries as $lineString) {
             if ($lineString instanceof LineString) {
                 $result[] = $lineString;
@@ -49,16 +41,22 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface,
         return new self($result);
     }
 
+    /**
+     * @param LineString[] $lineStrings
+     *
+     * @psalm-param list<LineString> $lineStrings
+     */
     public function __construct(array $lineStrings)
     {
-        foreach ($lineStrings as $lineString) {
-            $this->addGeometry($lineString);
-        }
+        $this->geometries = $lineStrings;
     }
 
     /**
      * @return LineString[] an array of the LineStrings
+     *
+     * @psalm-return list<LineString> an array of the LineStrings
      */
+    #[Override]
     public function getGeometries(): array
     {
         return $this->geometries;
@@ -67,25 +65,38 @@ class MultiLineString implements GeometryInterface, GeometryCollectionInterface,
     /**
      * Adds a new LineString to the collection.
      */
-    public function addGeometry(LineString $lineString): void
+    public function withGeometry(LineString $lineString): self
     {
-        $this->geometries[] = $lineString;
+        $geometries = $this->geometries;
+        $geometries[] = $lineString;
+
+        return new self($geometries);
     }
 
     /**
      * Removes a LineString from the collection.
      */
-    public function removeGeometry(LineString $lineString): void
+    public function withoutGeometry(LineString $lineString): self
     {
-        foreach ($this->geometries as $index => $geom) {
-            if ($lineString === $geom) {
-                unset($this->geometries[$index]);
-            }
-        }
+        $geometries = array_filter($this->geometries, fn (LineString $ls): bool => $ls !== $lineString);
+
+        return new self(array_values($geometries));
     }
 
-    protected function getGeometryArray(): array
+    /**
+     * @return LineString[] an array of the LineStrings
+     *
+     * @psalm-return list<LineString> an array of the LineStrings
+     */
+    #[Override]
+    public function getChildren(): array
     {
         return $this->geometries;
+    }
+
+    #[Override]
+    public function getBBox(): BoundingBox
+    {
+        return BoundingBox::fromGeometry($this);
     }
 }

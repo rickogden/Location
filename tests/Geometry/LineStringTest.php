@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Ricklab\Location\Geometry;
 
+use function extension_loaded;
+
+use Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Ricklab\Location\Calculator\BearingCalculator;
+use Ricklab\Location\Calculator\CalculatorRegistry;
 use Ricklab\Location\Calculator\VincentyCalculator;
-use Ricklab\Location\Converter\UnitConverter;
-use TypeError;
+use Ricklab\Location\Converter\Unit;
 
 class LineStringTest extends TestCase
 {
@@ -34,14 +37,6 @@ class LineStringTest extends TestCase
         $this->assertInstanceOf(LineString::class, $line2);
     }
 
-    public function testInvalidPointException(): void
-    {
-        $this->expectException(TypeError::class);
-        $point1 = new Point(-2.27354, 53.48575);
-
-        $line = new LineString([$point1, 'foo']);
-    }
-
     public function testOnePointInArrayException(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -52,15 +47,22 @@ class LineStringTest extends TestCase
 
     public function testGetLength(): void
     {
-        $this->assertEquals(2.783, round($this->line->getLength(UnitConverter::UNIT_KM), 3));
-        $this->assertEquals(2.792, round($this->line->getLength(UnitConverter::UNIT_KM, new VincentyCalculator()), 3));
+        $this->assertEquals(2.783, round($this->line->getLength(Unit::KM), 3));
+        $this->assertEquals(2.792, round($this->line->getLength(Unit::KM, new VincentyCalculator()), 3));
     }
 
     public function testInitialBearing(): void
     {
-        BearingCalculator::disableGeoSpatialExtension();
+        CalculatorRegistry::disableGeoSpatialExtension();
         $this->assertEquals(98.50702, round($this->line->getInitialBearing(), 5));
-        BearingCalculator::enableGeoSpatialExtension();
+    }
+
+    public function testInitialBearingWithExtension(): void
+    {
+        if (!extension_loaded('geospatial')) {
+            $this->markTestSkipped('The geospatial extension is not available.');
+        }
+        CalculatorRegistry::enableGeoSpatialExtension();
         $this->assertEquals(98.50702, round($this->line->getInitialBearing(), 5));
     }
 
@@ -87,7 +89,7 @@ class LineStringTest extends TestCase
     {
         $this->assertJsonStringEqualsJsonString(
             '{"type":"Polygon","coordinates":[[[-2.27354,53.48575],[-2.23194,53.48575],[-2.23194,53.48204],[-2.27354,53.48204],[-2.27354,53.48575]]]}',
-            json_encode($this->line->getBBox())
+            json_encode($this->line->getBBox()->getPolygon())
         );
     }
 
@@ -114,12 +116,20 @@ class LineStringTest extends TestCase
         $this->assertEquals($original[1], $lineString->toArray()[1]);
     }
 
-    public function testEquals(): void
+    public static function equalProvider(): Generator
     {
         $original = [[-2.27354, 53.48575], [-2.23194, 53.48204]];
 
         $lineString = LineString::fromArray($original);
         $lineString2 = LineString::fromArray($original);
+        yield 'Different objects' => [$lineString, $lineString2];
+        yield 'Different objects reversed' => [$lineString2, $lineString];
+        yield 'Same object' => [$lineString, $lineString];
+    }
+
+    #[DataProvider('equalProvider')]
+    public function testEqualsIsTrue(LineString $lineString, LineString $lineString2): void
+    {
         $this->assertTrue($lineString->equals($lineString2));
     }
 
@@ -141,5 +151,67 @@ class LineStringTest extends TestCase
 
         $collection = new MultiPoint($lineString->getPoints());
         $this->assertFalse($lineString->equals($collection));
+    }
+
+    public function testGetFirst(): void
+    {
+        $firstPoint = $this->line->getFirst();
+        $this->assertInstanceOf(Point::class, $firstPoint);
+        $this->assertEquals(-2.27354, $firstPoint->getLongitude());
+        $this->assertEquals(53.48575, $firstPoint->getLatitude());
+    }
+
+    public function testGetLast(): void
+    {
+        $lastPoint = $this->line->getLast();
+        $this->assertInstanceOf(Point::class, $lastPoint);
+        $this->assertEquals(-2.23194, $lastPoint->getLongitude());
+        $this->assertEquals(53.48204, $lastPoint->getLatitude());
+    }
+
+    public function testGetPoints(): void
+    {
+        $points = $this->line->getPoints();
+        $this->assertCount(2, $points);
+        $this->assertInstanceOf(Point::class, $points[0]);
+        $this->assertInstanceOf(Point::class, $points[1]);
+    }
+
+    public function testAddPoint(): void
+    {
+        $newPoint = new Point(-2.20000, 53.40000);
+        $newLine = $this->line->addPoint($newPoint);
+        $this->assertCount(3, $newLine->getPoints());
+        $this->assertEquals($newPoint, $newLine->getLast());
+    }
+
+    public function testWithPoint(): void
+    {
+        $newPoint = new Point(-2.20000, 53.40000);
+        $newLine = $this->line->withPoint($newPoint);
+        $this->assertCount(3, $newLine->getPoints());
+        $this->assertEquals($newPoint, $newLine->getLast());
+    }
+
+    public function testGetClosedShape(): void
+    {
+        $closedLine = $this->line->getClosedShape();
+        $this->assertTrue($closedLine->isClosedShape());
+        $this->assertEquals($closedLine->getFirst(), $closedLine->getLast());
+    }
+
+    public function testIsClosedShape(): void
+    {
+        $this->assertFalse($this->line->isClosedShape());
+        $closedLine = $this->line->getClosedShape();
+        $this->assertTrue($closedLine->isClosedShape());
+    }
+
+    public function testContains(): void
+    {
+        $point = new Point(-2.27354, 53.48575);
+        $this->assertTrue($this->line->contains($point));
+        $pointNotInLine = new Point(-2.20000, 53.40000);
+        $this->assertFalse($this->line->contains($pointNotInLine));
     }
 }

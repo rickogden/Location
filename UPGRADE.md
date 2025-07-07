@@ -1,3 +1,25 @@
+# Upgrade from Version 6 to Version 7
+
+Basic usage should require minimal changes.
+
+* PHP 8.1 minimum version
+* BoundingBox is no longer a polygon, any polygon operations on bounding box use `getPolygon`.
+* Geometry and feature classes are now all final, they should be decorated rather than extended.
+* Numeric-strings are also valid for coordinates, for future calculator improvements (such as use of BC Math)
+* Removed deprecated methods
+* Calculator class methods are no longer static to allow for easier injection/replacement
+* Calculator registry is used to store default calculators
+* Improved type-safety
+* Deprecated methods removed
+* BoundingBox is no longer a Polygon (but `->getPolygon()` will create one from it)
+* ENUMs are now used for Unit, and Degrees/Minutes/Seconds direction/axis
+
+## New Features
+
+### Well-Known Binary (WKB)
+
+There is now a WKB transformer.
+
 # Upgrading from Version 5 to Version 6
 
 Version 6 a plethora of new features.
@@ -65,10 +87,10 @@ The `Point::distanceTo()` method now takes an instance of `DistanceCalculator` a
 ```injectablephp
 use Ricklab\Location\Calculator\DefaultDistanceCalculator;
 use Ricklab\Location\Calculator\VincentyCalculator;
-use Ricklab\Location\Converter\UnitConverter;
+use Ricklab\Location\Converter\NativeUnitConverter;
 
 // Override the default calculator
-$point1->distanceTo($point2, UnitConverter::UNIT_METERS, new VincentyCalculator());
+$point1->distanceTo($point2, NativeUnitConverter::UNIT_METERS, new VincentyCalculator());
 
 // Use the Vincenty Calculator as the default calculator
 DefaultDistanceCalculator::setDefaultCalculator(new VincentyCalculator());
@@ -93,10 +115,10 @@ There is now a dedicated `UnitConverter` class, which handles all the unit conve
 ```injectablephp
 
 // Deprecated
-use Ricklab\Location\Converter\UnitConverter;use Ricklab\Location\Location;Location::UNIT_METRES;
+use Ricklab\Location\Converter\NativeUnitConverter;use Ricklab\Location\Location;Location::UNIT_METRES;
 
 // From version 6
-UnitConverter::UNIT_METERS;
+NativeUnitConverter::UNIT_METERS;
 ```
 
 ### Immutable Features
