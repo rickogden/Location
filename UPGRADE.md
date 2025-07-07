@@ -115,7 +115,10 @@ There is now a dedicated `UnitConverter` class, which handles all the unit conve
 ```injectablephp
 
 // Deprecated
-use Ricklab\Location\Converter\NativeUnitConverter;use Ricklab\Location\Location;Location::UNIT_METRES;
+use Ricklab\Location\Converter\NativeUnitConverter;
+use Ricklab\Location\Location;
+
+Location::UNIT_METRES;
 
 // From version 6
 NativeUnitConverter::UNIT_METERS;

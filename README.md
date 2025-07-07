@@ -12,8 +12,10 @@ A brief example of how this library can be used:
 
 ```php
 use Ricklab\Location\Calculator\VincentyCalculator;
-use Ricklab\Location\Converter\DegreesMinutesSeconds;use Ricklab\Location\Converter\Unit;
-use Ricklab\Location\Geometry\GeometryCollection;use Ricklab\Location\Geometry\Point;
+use Ricklab\Location\Converter\DegreesMinutesSeconds;
+use Ricklab\Location\Converter\Unit;
+use Ricklab\Location\Geometry\GeometryCollection;
+use Ricklab\Location\Geometry\Point;
 use Ricklab\Location\Geometry\LineString;
 use Ricklab\Location\Geometry\BoundingBox;
 
@@ -128,7 +130,8 @@ Here is an example of how to use the `FeatureCollection` class:
 ```php
 use Ricklab\Location\Feature\Feature;
 use Ricklab\Location\Feature\FeatureCollection;
-use Ricklab\Location\Geometry\Point;use Ricklab\Location\Transformer\GeoJsonTransformer;
+use Ricklab\Location\Geometry\Point;
+use Ricklab\Location\Transformer\GeoJsonTransformer;
 
 $feature1 = new Feature(['name' => 'Feature 1'], new Point($longitude1, $latitude1));
 $feature2 = new Feature(['name' => 'Feature 1'], new Point($longitude2, $latitude2));
