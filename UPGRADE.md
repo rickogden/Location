@@ -2,7 +2,7 @@
 
 Basic usage should require minimal changes.
 
-* PHP 8.0 minimum version
+* PHP 8.1 minimum version
 * BoundingBox is no longer a polygon, any polygon operations on bounding box use `getPolygon`.
 * Geometry and feature classes are now all final, they should be decorated rather than extended.
 * Numeric-strings are also valid for coordinates, for future calculator improvements (such as use of BC Math)
