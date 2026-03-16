@@ -80,9 +80,11 @@ final class LineString implements GeometryInterface, IteratorAggregate
     public function getLength(Unit $unit = Unit::METERS, ?DistanceCalculator $calculator = null): float
     {
         $distance = 0.0;
+        $prev = $this->geometries[0];
 
         for ($i = 1, $iMax = count($this->geometries); $i < $iMax; ++$i) {
-            $distance += (float) $this->geometries[$i - 1]->distanceTo($this->geometries[$i], $unit, $calculator);
+            $distance += (float) $prev->distanceTo($this->geometries[$i], $unit, $calculator);
+            $prev = $this->geometries[$i];
         }
 
         return $distance;

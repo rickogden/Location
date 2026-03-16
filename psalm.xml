@@ -16,4 +16,7 @@
     <plugins>
         <pluginClass class="Ricklab\Location\Psalm\Plugin"/>
     </plugins>
+    <issueHandlers>
+        <InvalidAttribute errorLevel="suppress" />
+    </issueHandlers>
 </psalm>
